@@ -4,6 +4,7 @@ using KeeperDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KeeperDbContext.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    partial class DbKeeperContextModelSnapshot : ModelSnapshot
+    [Migration("20230602083918_trigger-for-project-table")]
+    partial class triggerforprojecttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +63,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("KeeperDbContext.Model.KeepModel", b =>
@@ -94,7 +96,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Keeps", (string)null);
+                    b.ToTable("Keeps");
                 });
 
             modelBuilder.Entity("KeeperDbContext.Model.ProjectModel", b =>
@@ -126,7 +128,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("KeeperDbContext.Model.UserModel", b =>
@@ -168,7 +170,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("KeepModelUserModel", b =>
@@ -183,7 +185,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasIndex("UsersID");
 
-                    b.ToTable("KeepModelUserModel", (string)null);
+                    b.ToTable("KeepModelUserModel");
                 });
 
             modelBuilder.Entity("ProjectModelUserModel", b =>
@@ -198,7 +200,7 @@ namespace KeeperDbContext.Migrations
 
                     b.HasIndex("UsersID");
 
-                    b.ToTable("ProjectModelUserModel", (string)null);
+                    b.ToTable("ProjectModelUserModel");
                 });
 
             modelBuilder.Entity("KeeperDbContext.Model.KeepModel", b =>

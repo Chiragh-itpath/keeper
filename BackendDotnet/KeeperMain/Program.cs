@@ -1,3 +1,5 @@
+using KeeperCore.Repositories;
+using KeeperCore.Repositories.Interfaces;
 using KeeperDbContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DbKeeperContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+builder.Services.AddScoped(typeof(IGenericRepo<>),typeof(GenericRepo<>));
 
 var app = builder.Build();
 
