@@ -1,0 +1,73 @@
+<script setup lang="ts">
+import TextFieldComponent from '@/components/TextFieldComponent.vue';
+import { ref, type Ref } from 'vue';
+
+
+const email: Ref<string> = ref('')
+const password: Ref<string> = ref('')
+const form = ref()
+// const showPwd: Ref<boolean> = ref(false)
+// const requiredRule = (val: string) => val.trim() == "" ? "Field is Required!" : true
+// const emailRules = (value: any) => /.+@.+\..+/.test(value) ? true : 'E-mail must be valid.'
+// const passwordRule = (val: string) => val.length < 8 ? "At least 8 characters!" : true
+async function login() {
+    const { valid } = await form.value.validate();
+    if (valid) {
+        alert("Valid")
+        form.value.reset();
+    }
+}
+</script>
+<template>
+    
+    <v-app>
+        <v-main>
+            <v-container fill-height fluid>
+                <v-row justify="center" align-content="center" >
+                    <v-col cols="12" lg="4" sm="12">
+                        <v-card class="elevation-12 my-auto">
+                            <v-card-title class="text-center mt-5">
+                                <h2 class="text-teal">Keeper</h2>
+                                Sign In
+                            </v-card-title>
+                            <v-card-subtitle class="text-center">
+                                to continue to Keeper
+                            </v-card-subtitle>
+                            <v-card-text>
+                                <v-form ref="form" @submit.prevent="login()">
+                                    <!-- <v-text-field v-model="email" prepend-icon="mdi-email" clearable name="email"
+                                        label="Email" type="email" placeholder="Email"
+                                        :rules="[requiredRule, emailRules]"></v-text-field> -->
+                                        <!-- <v-text-field v-model="password" prepend-icon="mdi-lock"
+                                            :append-icon="showPwd ? 'mdi-eye' : 'mdi-eye-off'"
+                                            :rules="[requiredRule, passwordRule]" :type="showPwd ? 'text' : 'password'"
+                                            label="Password"
+                                            @click:append="showPwd = !showPwd"></v-text-field> -->
+                                            <text-field-component prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
+                                            <text-field-component prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
+                                    <div class="text-right">
+                                        <a href="">Forgot Password?</a>
+                                    </div>
+                                    <v-card-actions>
+                                        <div class="d-flex flex-column justify-center mx-auto">
+                                            <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
+                                                variant="flat" color="teal" class="mt-4">Login</v-btn>
+                                            <div class="mt-5">
+                                                New User? <a href="">Create account</a>
+                                            </div>
+                                        </div>
+                                    </v-card-actions>
+                                </v-form>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-main>
+    </v-app>
+</template>
+<style>
+.v-messages__message {
+    margin-bottom: 20px;
+}
+</style>
