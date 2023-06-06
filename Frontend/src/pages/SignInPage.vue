@@ -29,7 +29,7 @@ async function login() {
                         <v-card class="elevation-12 my-auto">
                             <v-card-title class="text-center mt-5">
                                 <h2 class="text-teal">Keeper</h2>
-                                Sign In
+                                Login
                             </v-card-title>
                             <v-card-subtitle class="text-center">
                                 to continue to Keeper
@@ -40,14 +40,15 @@ async function login() {
                                             <text-field-component prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
                                             <text-field-component prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
                                     <div class="text-right">
-                                        <a href="">Forgot Password?</a>
+                                        <router-link :to="{ name: RouterEnum.FORGOTPASSWORD }">Forgot Password?</router-link>
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
                                             <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
                                                 variant="flat" color="teal" class="mt-4">Login</v-btn>
                                             <div class="mt-5">
-                                                New User? <a href="">Create account</a>
+                                                New User? 
+                                                <router-link :to="{ name: RouterEnum.SIGNUP }">Create an account</router-link>
                                             </div>
                                         </div>
                                     </v-card-actions>
