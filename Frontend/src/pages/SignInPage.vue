@@ -40,7 +40,7 @@ async function login() {
                                             <text-field-component prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
                                             <text-field-component prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
                                     <div class="text-right">
-                                        <router-link :to="{ name: RouterEnum.FORGOTPASSWORD }">Forgot Password?</router-link>
+                                        <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">

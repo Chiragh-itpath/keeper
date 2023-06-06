@@ -22,7 +22,7 @@ export const routes = [
     {
         path:'/forgotPassword',
         component:ForgotPassword,
-        name:RouterEnum.FORGOTPASSWORD
+        name:RouterEnum.FORGOT_PASSWORD
     },
 ]
 
