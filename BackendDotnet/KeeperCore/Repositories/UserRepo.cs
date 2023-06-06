@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace KeeperCore.Repositories
 {
-    public class UserRepo:GenericRepo<UserModel>,IGenericRepo<UserModel>,IUserRepo
+    public class UserRepo : IUserRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
-        private readonly IGenericRepo<UserModel> _genericRepo;
 
-        public UserRepo(DbKeeperContext dbKeeperContext, IGenericRepo<UserModel> genericRepo) : base(dbKeeperContext)
+
+        public UserRepo(DbKeeperContext dbKeeperContext)
         {
             _dbKeeperContext = dbKeeperContext;
-            _genericRepo = genericRepo;
+
 
         }
     }
