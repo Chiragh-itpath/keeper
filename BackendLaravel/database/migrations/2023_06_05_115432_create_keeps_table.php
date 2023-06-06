@@ -10,14 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('keeps', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('userName', 30);
-            $table->string('email', 50)->unique();
-            $table->string('contact', 10)->nullable();
-            $table->string('password');
+            $table->string('title', 50);
             $table->timestamp('createdOn');
-            $table->timestamp('updateOn')->nullable(true);
+            $table->timestamp('updatedOn')->nullable();
+            $table->boolean('isDeleted')->default(false);
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('keeps');
     }
 };

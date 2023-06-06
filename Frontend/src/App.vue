@@ -3,7 +3,7 @@ import home from "@/pages/HomePage.vue"
 </script>
 
 <template>
-<home/>
-<!-- <login/> -->
+    <router-view>
+    </router-view>
 </template>
 
