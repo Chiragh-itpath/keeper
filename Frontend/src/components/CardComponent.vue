@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-    variant?: NonNullable<"flat" | "text" | "elevated" | "tonal" | "outlined" | "plain"> | undefined;
+    variant?: NonNullable<"flat"> | undefined;
 }>(), {
     variant: 'flat'
 });
