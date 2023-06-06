@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KeeperDbContext.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,6 @@ namespace KeeperDbContext.Model
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
-        public int Type { get; set; } = 0;
-
+        public TagType Type { get; set; }
     }
 }

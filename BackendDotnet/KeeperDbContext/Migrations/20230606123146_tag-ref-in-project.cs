@@ -5,27 +5,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KeeperDbContext.Migrations
 {
-    public partial class projectkeeptablereference : Migration
+    public partial class tagrefinproject : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
-                name: "ProjectId",
-                table: "Keeps",
+                name: "TagId",
+                table: "Projects",
                 type: "uniqueidentifier",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
-                name: "IX_Keeps_ProjectId",
-                table: "Keeps",
-                column: "ProjectId");
+                name: "IX_Projects_TagId",
+                table: "Projects",
+                column: "TagId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Keeps_Projects_ProjectId",
-                table: "Keeps",
-                column: "ProjectId",
-                principalTable: "Projects",
+                name: "FK_Projects_Tags_TagId",
+                table: "Projects",
+                column: "TagId",
+                principalTable: "Tags",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -33,16 +33,16 @@ namespace KeeperDbContext.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Keeps_Projects_ProjectId",
-                table: "Keeps");
+                name: "FK_Projects_Tags_TagId",
+                table: "Projects");
 
             migrationBuilder.DropIndex(
-                name: "IX_Keeps_ProjectId",
-                table: "Keeps");
+                name: "IX_Projects_TagId",
+                table: "Projects");
 
             migrationBuilder.DropColumn(
-                name: "ProjectId",
-                table: "Keeps");
+                name: "TagId",
+                table: "Projects");
         }
     }
 }

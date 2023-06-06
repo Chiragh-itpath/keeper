@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KeeperDbContext.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    [Migration("20230602072107_keep-user-table")]
-    partial class keepusertable
+    [Migration("20230606123237_tag-ref-in-keep")]
+    partial class tagrefinkeep
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,8 +54,8 @@ namespace KeeperDbContext.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Type")
-                        .HasColumnType("bit");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<string>("URL")
                         .IsRequired()
@@ -72,24 +72,32 @@ namespace KeeperDbContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("Keeps");
                 });
@@ -98,6 +106,9 @@ namespace KeeperDbContext.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -110,25 +121,48 @@ namespace KeeperDbContext.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("KeeperDbContext.Model.TagModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("KeeperDbContext.Model.UserModel", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -145,15 +179,9 @@ namespace KeeperDbContext.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("KeepId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ProjectID")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdateOn")
                         .HasColumnType("datetime2");
@@ -163,69 +191,31 @@ namespace KeeperDbContext.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("KeepModelUserModel", b =>
+            modelBuilder.Entity("KeeperDbContext.Model.KeepModel", b =>
                 {
-                    b.Property<Guid>("KeepModelsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("UsersID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("KeepModelsId", "UsersID");
-
-                    b.HasIndex("UsersID");
-
-                    b.ToTable("KeepModelUserModel");
+                    b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("ProjectModelUserModel", b =>
+            modelBuilder.Entity("KeeperDbContext.Model.ProjectModel", b =>
                 {
-                    b.Property<Guid>("ProjectsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersID")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProjectsId", "UsersID");
-
-                    b.HasIndex("UsersID");
-
-                    b.ToTable("ProjectModelUserModel");
-                });
-
-            modelBuilder.Entity("KeepModelUserModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.KeepModel", null)
+                    b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
                         .WithMany()
-                        .HasForeignKey("KeepModelsId")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KeeperDbContext.Model.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UsersID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectModelUserModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.ProjectModel", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KeeperDbContext.Model.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UsersID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Tag");
                 });
 #pragma warning restore 612, 618
         }

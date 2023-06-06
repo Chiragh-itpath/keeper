@@ -13,7 +13,7 @@ namespace KeeperDbContext.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Contact = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
@@ -23,7 +23,7 @@ namespace KeeperDbContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.ID);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
         }
 

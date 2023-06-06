@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KeeperDbContext.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    [Migration("20230602063259_item-table")]
-    partial class itemtable
+    [Migration("20230606122838_tag-table")]
+    partial class tagtable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,8 +54,8 @@ namespace KeeperDbContext.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Type")
-                        .HasColumnType("bit");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<string>("URL")
                         .IsRequired()
@@ -72,6 +72,9 @@ namespace KeeperDbContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -82,6 +85,9 @@ namespace KeeperDbContext.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -95,6 +101,9 @@ namespace KeeperDbContext.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -112,6 +121,9 @@ namespace KeeperDbContext.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
@@ -120,9 +132,27 @@ namespace KeeperDbContext.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("KeeperDbContext.Model.TagModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("KeeperDbContext.Model.UserModel", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -151,7 +181,7 @@ namespace KeeperDbContext.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });

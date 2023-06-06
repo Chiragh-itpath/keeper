@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace KeeperCore.Repositories.Interfaces
 {
-    public interface IUserRepo:IGenericRepo<UserModel>
+    public interface IUserRepo
     {
+        List<UserModel> GetAll();
     }
 }

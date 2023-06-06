@@ -4,6 +4,7 @@ using KeeperDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KeeperDbContext.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    partial class DbKeeperContextModelSnapshot : ModelSnapshot
+    [Migration("20230606123146_tag-ref-in-project")]
+    partial class tagrefinproject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace KeeperDbContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -42,15 +41,9 @@ namespace KeeperDbContext.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("KeepId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -68,14 +61,7 @@ namespace KeeperDbContext.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("KeepId");
-
-                    b.HasIndex("TagId");
 
                     b.ToTable("Items");
                 });
@@ -95,12 +81,6 @@ namespace KeeperDbContext.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -113,10 +93,6 @@ namespace KeeperDbContext.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("TagId");
 
                     b.ToTable("Keeps");
                 });
@@ -215,74 +191,6 @@ namespace KeeperDbContext.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("KeepModelUserModel", b =>
-                {
-                    b.Property<Guid>("KeepsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("KeepsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("KeepModelUserModel");
-                });
-
-            modelBuilder.Entity("ProjectModelUserModel", b =>
-                {
-                    b.Property<Guid>("ProjectsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProjectsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ProjectModelUserModel");
-                });
-
-            modelBuilder.Entity("KeeperDbContext.Model.ItemModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.KeepModel", "Keep")
-                        .WithMany()
-                        .HasForeignKey("KeepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Keep");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("KeeperDbContext.Model.KeepModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.ProjectModel", "Project")
-                        .WithMany("Keeps")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Tag");
-                });
-
             modelBuilder.Entity("KeeperDbContext.Model.ProjectModel", b =>
                 {
                     b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
@@ -292,41 +200,6 @@ namespace KeeperDbContext.Migrations
                         .IsRequired();
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("KeepModelUserModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.KeepModel", null)
-                        .WithMany()
-                        .HasForeignKey("KeepsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KeeperDbContext.Model.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectModelUserModel", b =>
-                {
-                    b.HasOne("KeeperDbContext.Model.ProjectModel", null)
-                        .WithMany()
-                        .HasForeignKey("ProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KeeperDbContext.Model.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("KeeperDbContext.Model.ProjectModel", b =>
-                {
-                    b.Navigation("Keeps");
                 });
 #pragma warning restore 612, 618
         }
