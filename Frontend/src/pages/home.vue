@@ -4,7 +4,7 @@ import MyBtn from '@/components/MyBtn.vue';
 </script>
 
 <template>
- <v-toolbar color="white" density="comfortable" title="Keeper" class="pa-2"><v-btn color="teal-lighten-2" class="ma-5 mx-3 font-weight-bold" variant="outlined" rounded>Get Started</v-btn><v-btn color="light-green"  variant="outlined" class="ma-5 mx-3 font-weight-bold" rounded>Get Started</v-btn></v-toolbar>
+ <v-toolbar color="white" density="comfortable" title="Keeper" class="pa-2"><v-btn color="teal-lighten-2" class="ma-5 mx-3 font-weight-bold" variant="outlined" rounded>Login</v-btn><v-btn color="light-green"  variant="outlined" class="ma-5 mx-3 font-weight-bold" rounded>Register</v-btn></v-toolbar>
  <v-container fluid class="p-0">
     <v-row >
         <v-col cols="12" lg="6" sm="12">

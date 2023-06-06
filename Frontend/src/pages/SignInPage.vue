@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import TextFieldComponent from '@/components/TextFieldComponent.vue';
+import { RouterEnum } from '@/enum/RouterEnum';
 import { ref, type Ref } from 'vue';
 
 
 const email: Ref<string> = ref('')
 const password: Ref<string> = ref('')
 const form = ref()
-// const showPwd: Ref<boolean> = ref(false)
-// const requiredRule = (val: string) => val.trim() == "" ? "Field is Required!" : true
-// const emailRules = (value: any) => /.+@.+\..+/.test(value) ? true : 'E-mail must be valid.'
-// const passwordRule = (val: string) => val.length < 8 ? "At least 8 characters!" : true
-async function login() {
+async function login():Promise<void> {
     const { valid } = await form.value.validate();
     if (valid) {
         alert("Valid")
@@ -21,8 +18,8 @@ async function login() {
 <template>
     
     <v-app>
-        <v-main>
-            <v-container fill-height fluid>
+        <v-main class="d-flex justify-center align-center">
+           
                 <v-row justify="center" align-content="center" >
                     <v-col cols="12" lg="4" sm="12">
                         <v-card class="elevation-12 my-auto">
@@ -35,25 +32,17 @@ async function login() {
                             </v-card-subtitle>
                             <v-card-text>
                                 <v-form ref="form" @submit.prevent="login()">
-                                    <!-- <v-text-field v-model="email" prepend-icon="mdi-email" clearable name="email"
-                                        label="Email" type="email" placeholder="Email"
-                                        :rules="[requiredRule, emailRules]"></v-text-field> -->
-                                        <!-- <v-text-field v-model="password" prepend-icon="mdi-lock"
-                                            :append-icon="showPwd ? 'mdi-eye' : 'mdi-eye-off'"
-                                            :rules="[requiredRule, passwordRule]" :type="showPwd ? 'text' : 'password'"
-                                            label="Password"
-                                            @click:append="showPwd = !showPwd"></v-text-field> -->
-                                            <text-field-component prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
-                                            <text-field-component prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
+                                            <text-field-component v-model="email" prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
+                                            <text-field-component v-model="password" prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
                                     <div class="text-right">
-                                        <a href="">Forgot Password?</a>
+                                        <router-link :to="{name:RouterEnum.ForgotPassword}">Forgot Password?</router-link>   
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
                                             <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
-                                                variant="flat" color="teal" class="mt-4">Login</v-btn>
+                                                variant="flat" color="teal" class="mt-4">Sign In</v-btn>
                                             <div class="mt-5">
-                                                New User? <a href="">Create account</a>
+                                                New User? <router-link :to="{name:RouterEnum.SignUp}">Create Account</router-link>
                                             </div>
                                         </div>
                                     </v-card-actions>
@@ -62,7 +51,7 @@ async function login() {
                         </v-card>
                     </v-col>
                 </v-row>
-            </v-container>
+           
         </v-main>
     </v-app>
 </template>
