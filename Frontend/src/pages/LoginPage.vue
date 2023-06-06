@@ -34,15 +34,7 @@ async function login() {
                                 to continue to Keeper
                             </v-card-subtitle>
                             <v-card-text>
-                                <v-form ref="form" @submit.prevent="login()">
-                                    <!-- <v-text-field v-model="email" prepend-icon="mdi-email" clearable name="email"
-                                        label="Email" type="email" placeholder="Email"
-                                        :rules="[requiredRule, emailRules]"></v-text-field> -->
-                                        <!-- <v-text-field v-model="password" prepend-icon="mdi-lock"
-                                            :append-icon="showPwd ? 'mdi-eye' : 'mdi-eye-off'"
-                                            :rules="[requiredRule, passwordRule]" :type="showPwd ? 'text' : 'password'"
-                                            label="Password"
-                                            @click:append="showPwd = !showPwd"></v-text-field> -->
+                                <v-form ref="form" @submit.prevent="login()">                    
                                             <text-field-component prepend-icon="mdi-email" label="Email" :is-required=true text-type="email" @updatedValue="(val)=>email=val"/>
                                             <text-field-component prepend-icon="mdi-lock" label="Password" :is-required=true text-type="password" @updatedValue="(val)=>password=val"/>
                                     <div class="text-right">
