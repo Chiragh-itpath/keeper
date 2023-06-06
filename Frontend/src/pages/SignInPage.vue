@@ -38,8 +38,10 @@ async function login() {
                                     <TextFieldEmail v-model="email" label="Email" />
                                     <TextFieldPassword v-model="password" label="Password" />
                                     <div class="text-right">
-                                        <router-link :to="{ name: RouterEnum.FORGOTPASSWORD }">Forgot
-                                            Password?</router-link>
+
+
+                                        <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
+
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
