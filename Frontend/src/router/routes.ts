@@ -1,7 +1,7 @@
 import { RouterEnum } from "@/enum/RouterEnum";
-import home from "@/pages/home.vue";
+import home from "@/pages/HomePage.vue";
 import login from '@/pages/SignInPage.vue';
-import signUp from "@/pages/signUp.vue";
+import signUp from "@/pages/SignUpPage.vue";
 import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
 export const routes = [
     {
