@@ -17,13 +17,6 @@ namespace KeeperCore.Services
         {
             _userRepo = userRepo;
         }
-        public List<UserModel> GetUsers()
-        {
-            return _userRepo.GetAll();
-        }
-        public UserModel GetById(Guid id)
-        {
-            return _userRepo.GetById(id);
-        }
+        
     }
 }
