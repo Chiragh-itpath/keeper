@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace KeeperCore.Repositories
 {
+
     public class UserRepo:IUserRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
@@ -17,6 +18,7 @@ namespace KeeperCore.Repositories
         {
             _dbKeeperContext = dbKeeperContext;
         }
+
 
         public List<UserModel> GetAll()
         {

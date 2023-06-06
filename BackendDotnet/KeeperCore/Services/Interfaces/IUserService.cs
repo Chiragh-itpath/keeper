@@ -9,7 +9,6 @@ namespace KeeperCore.Services.Interfaces
 {
     public interface IUserService
     {
-        //UserModel GetById(Guid id);
-        List<UserModel> GetAllUsers();
+      List<UserModel> GetAllUsers()
     }
 }

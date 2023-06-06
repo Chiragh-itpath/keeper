@@ -2,6 +2,10 @@
 import { ref, type Ref, reactive } from 'vue';
 import textField from "@/components/TextFieldComponent.vue";
 import { RouterEnum } from '@/enum/RouterEnum';
+import TextFieldContact from "@/components/TextFieldContact.vue";
+import TextFieldEmail from "@/components/TextFieldEmail.vue";
+import TextFieldPassword from "@/components/TextFieldPassword.vue";
+import TextFieldText from "@/components/TextFieldText.vue";
 const form = ref()
 
 const username: Ref<string> = ref('')
@@ -14,7 +18,8 @@ async function register(): Promise<void> {
     if (valid) {
         alert("Valid")
         form.value.reset();
-    } 
+    }
+
 }
 </script>
 
@@ -34,31 +39,26 @@ async function register(): Promise<void> {
 
                     <v-form @submit.prevent="register" ref="form">
 
-                        <textField v-model="username" label="Username" placeholder="Username" prepend-icon="mdi-account"
-                            :is-required=true />
-                        <textField v-model="email" text-type="email" label="Email" placeholder="Email"
-                            prepend-icon="mdi-email" :is-required=true />
-                        <textField v-model="contact" :isContact=true :counter="10" :maxlength="10" label="Contact Number"
-                            placeholder="Contact Number" prepend-icon="mdi-account-box" />
-                        <textField v-model="password" text-type="password" label="Password" placeholder="Password"
-                            prepend-icon="mdi-lock" :is-required=true />
-
-                        <textField v-model="confirmPassword" text-type="password" label="Confirm Password"
-                            placeholder="Confirm Password" prepend-icon="mdi-key-variant" :is-required=true />
-
+                        <TextFieldText v-model="username" label="Username" prepend-icon="mdi-account" />
+                        <TextFieldContact label="Contact" :is-required="false" v-model="contact" />
+                        <TextFieldEmail v-model="email" label="Email" />
+                        <TextFieldPassword v-model="password" label="Password" />
+                        <TextFieldPassword v-model="confirmPassword" label="Confirm Password" />
+                        
 
                         <v-card-actions>
                             <div class="d-flex flex-column justify-center mx-auto">
                                 <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"
                                     color="teal" class="mt-4">Sign Up</v-btn>
                                 <div class="mt-5">
-                                    Already have an account? <router-link :to="{ name: RouterEnum.SignIn }">Sign
+                                    Already have an account? <router-link :to="{ name: RouterEnum.SIGNIN }">Sign
                                         In</router-link>
                                 </div>
                             </div>
                         </v-card-actions>
                     </v-form>
-            </v-card>
-        </v-col>
-    </v-main>
-</v-app></template>
+                </v-card>
+            </v-col>
+        </v-main>
+    </v-app>
+</template>

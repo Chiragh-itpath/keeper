@@ -17,14 +17,16 @@ namespace KeeperMain.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+
             return Ok(_userService.GetAllUsers());
         }
 
-        //[HttpGet]
-        //[Route("GetById/{id}")]
-        //public IActionResult Get(Guid id)
-        //{
-        //    return Ok(_userService.GetById(id));
-        //}
+        [HttpGet]
+        [Route("GetById/{id}")]
+        public IActionResult Get(Guid id)
+        {
+            return Ok();
+        }
+
     }
 }
