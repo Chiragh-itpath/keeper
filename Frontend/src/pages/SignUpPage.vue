@@ -52,8 +52,7 @@ async function register(): Promise<void> {
                                 <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"
                                     color="teal" class="mt-4">Sign Up</v-btn>
                                 <div class="mt-5">
-                                    Already have an account? <router-link :to="{ name: RouterEnum.SignIn }">Sign
-                                        In</router-link>
+                                    Already have an account? <router-link :to="{ name: RouterEnum.SIGNIN }">Sign In</router-link>
                                 </div>
                             </div>
                         </v-card-actions>
