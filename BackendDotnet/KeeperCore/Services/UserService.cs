@@ -17,6 +17,10 @@ namespace KeeperCore.Services
         {
             _userRepo = userRepo;
         }
-        
+
+        public List<UserModel> GetAllUsers()
+        {
+            return _userRepo.GetAll();
+        }
     }
 }

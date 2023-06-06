@@ -9,5 +9,6 @@ namespace KeeperCore.Repositories.Interfaces
 {
     public interface IUserRepo
     {
+        List<UserModel> GetAll();
     }
 }

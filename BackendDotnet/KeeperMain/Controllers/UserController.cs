@@ -17,7 +17,8 @@ namespace KeeperMain.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+
+            return Ok(_userService.GetAllUsers());
         }
 
         [HttpGet]
@@ -26,5 +27,6 @@ namespace KeeperMain.Controllers
         {
             return Ok();
         }
+
     }
 }

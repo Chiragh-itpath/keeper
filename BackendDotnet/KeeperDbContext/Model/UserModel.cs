@@ -11,7 +11,7 @@ namespace KeeperDbContext.Model
 {
     public class UserModel
     {
-        public Guid ID { get; set; }
+        public Guid Id { get; set; }
         [StringLength(30)]
         public string UserName { get; set; }
         [StringLength(50)]
@@ -21,11 +21,9 @@ namespace KeeperDbContext.Model
         public string Password { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdateOn { get; set; }
-        [ForeignKey(nameof(ProjectModel))]
-        public Guid ProjectID { get; set; }
         public virtual IEnumerable<ProjectModel> Projects { get; set; }
-        [ForeignKey(nameof(KeepModel))]
-        public Guid KeepId { get; set; }
-        public virtual IEnumerable<KeepModel> KeepModels { get; set; }
+        public virtual IEnumerable<KeepModel> Keeps { get; set; }
+
+
     }
 }

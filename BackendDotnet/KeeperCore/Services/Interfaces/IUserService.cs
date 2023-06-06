@@ -9,6 +9,6 @@ namespace KeeperCore.Services.Interfaces
 {
     public interface IUserService
     {
-        
+      List<UserModel> GetAllUsers()
     }
 }

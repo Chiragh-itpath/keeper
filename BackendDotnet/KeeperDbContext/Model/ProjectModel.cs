@@ -19,9 +19,14 @@ namespace KeeperDbContext.Model
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public bool IsDeleted { get; set; } = false;
-        [ForeignKey(nameof(UserModel))]
-        public Guid UserId { get; set; }
+        public Guid TagId { get; set; }
+        public virtual TagModel Tag { get; set; }
+
+        public Guid CreatedBy { get;set; }
+        public Guid UpdatedBy { get;set; }
         public virtual IEnumerable<UserModel> Users { get; set; }
         public virtual IEnumerable<KeepModel> Keeps { get; set; }
+
+        
     }
 }

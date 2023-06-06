@@ -4,6 +4,7 @@ using KeeperDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KeeperDbContext.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    partial class DbKeeperContextModelSnapshot : ModelSnapshot
+    [Migration("20230606131828_tag-ref-in-item")]
+    partial class tagrefinitem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace KeeperDbContext.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -41,9 +40,6 @@ namespace KeeperDbContext.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<Guid>("KeepId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Number")
                         .IsRequired()
@@ -68,12 +64,7 @@ namespace KeeperDbContext.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("KeepId");
 
                     b.HasIndex("TagId");
 
@@ -247,19 +238,11 @@ namespace KeeperDbContext.Migrations
 
             modelBuilder.Entity("KeeperDbContext.Model.ItemModel", b =>
                 {
-                    b.HasOne("KeeperDbContext.Model.KeepModel", "Keep")
-                        .WithMany()
-                        .HasForeignKey("KeepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KeeperDbContext.Model.TagModel", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Keep");
 
                     b.Navigation("Tag");
                 });
