@@ -1,6 +1,7 @@
 ﻿using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,10 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-
-        public List<UserModel> GetAll()
+        public async Task<List<UserModel>> GetAll()
         {
-            return _dbKeeperContext.Users.ToList();
+            var res= await _dbKeeperContext.Users.ToListAsync();
+            return res;
         }
 
         //public UserModel GetUserById(int id)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
-    [Route("[controller]")]
+    [Route("[api/controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -15,10 +15,10 @@ namespace Keeper.Main.Controllers
             _userService = userService;
         }
         [HttpGet]
-        public IActionResult Get()
+        public  async Task<IActionResult> Get()
         {
-
-            return Ok();
+            var res = await _userService.GetAllUsers();
+            return Ok(res);
         }
 
         [HttpGet]

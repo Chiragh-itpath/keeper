@@ -10,6 +10,6 @@ namespace Keeper.Services.Interfaces
 {
     public interface IUserService
     {
-        List<UserModel> GetAllUsers();
+        Task<List<UserModel>> GetAllUsers();
     }
 }

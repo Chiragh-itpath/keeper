@@ -9,6 +9,6 @@ namespace Keeper.Repos.Interfaces
 {
     public interface IUserRepo
     {
-        List<UserModel> GetAll();
+        Task<List<UserModel>> GetAll();
     }
 }

@@ -19,9 +19,11 @@ namespace KeeperCore.Services
             _userRepo = userRepo;
         }
 
-        public List<UserModel> GetAllUsers()
+        public async Task<List<UserModel>> GetAllUsers()
         {
-            return _userRepo.GetAll();
+            var res = await _userRepo.GetAll();
+            return res;
+
         }
     }
 }
