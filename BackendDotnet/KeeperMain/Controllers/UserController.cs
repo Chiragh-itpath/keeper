@@ -1,8 +1,8 @@
-﻿using KeeperCore.Services.Interfaces;
+﻿using Keeper.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace KeeperMain.Controllers
+namespace Keeper.Main.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -18,7 +18,7 @@ namespace KeeperMain.Controllers
         public IActionResult Get()
         {
 
-            return Ok(_userService.GetAllUsers());
+            return Ok();
         }
 
         [HttpGet]
