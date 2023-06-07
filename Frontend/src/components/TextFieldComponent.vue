@@ -51,20 +51,11 @@ const emailRules = (value: any) => /.+@.+\..+/.test(value) ? true : 'E-mail must
 const passwordRule = (val: string) => val.length < 8 ? "At least 8 characters!" : true
 const contactRules = (value : string) => /^[0-9]{10}$/.test(value) || value == '' ? true : 'Contact number must be valid'
 const userNameRules = (value: string) => /^[a-zA-Z ]{2,30}$/.test(value) ? true : 'Username must be valid.'
-const emit = defineEmits(['updatedValue']);
-
-const updateValue = (event: InputEvent) => {
-    emit('updatedValue', (event.target as HTMLInputElement).value);
-}
-
 </script>
-
 <template>
-    
     <v-text-field :label="props.label" :type="props.textType == 'password' ? showPwd ? 'text' : 'password' : props.textType"
         :append-inner-icon="props.textType == 'password' ? showPwd ? 'mdi-eye' : 'mdi-eye-off' : ''" :rules="rulesFun()"
         :prepend-inner-icon="props.prependIcon" @click:append-inner="showPwd = !showPwd"
         :clearable="props.textType == 'password' ? false : true" variant="outlined"
-        @input="updateValue"
         ></v-text-field>
 </template>

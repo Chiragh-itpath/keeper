@@ -5,7 +5,7 @@ import home from "@/pages/HomePage.vue"
 <template>
     <div></div>
 
-    <v-layout>
+    <!-- <v-layout>
         
         <v-app-bar>
             <template v-slot:prepend> 
@@ -18,8 +18,8 @@ import home from "@/pages/HomePage.vue"
             </template>
         </v-app-bar>
         
-    </v-layout>
-    <!-- <router-view>
-    </router-view> -->
+    </v-layout> -->
+    <router-view>
+    </router-view> 
 </template>
 

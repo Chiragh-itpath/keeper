@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import TextFieldComponent from '@/components/TextFieldComponent.vue';
 import { RouterEnum } from '@/enum/RouterEnum';
-import { ref, type Ref } from 'vue';
+import{ref,reactive} from 'vue';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import TextFieldPassword from "@/components/TextFieldPassword.vue";
-const email: Ref<string> = ref('')
-const password: Ref<string> = ref('')
+const state=reactive({
+    email:"",
+    password:""
+})
 const form = ref()
-// const showPwd: Ref<boolean> = ref(false)
-// const requiredRule = (val: string) => val.trim() == "" ? "Field is Required!" : true
-// const emailRules = (value: any) => /.+@.+\..+/.test(value) ? true : 'E-mail must be valid.'
-// const passwordRule = (val: string) => val.length < 8 ? "At least 8 characters!" : true
 async function login() {
     const { valid } = await form.value.validate();
     if (valid) {
@@ -35,13 +33,10 @@ async function login() {
                             </v-card-subtitle>
                             <v-card-text>
                                 <v-form ref="form" @submit.prevent="login()">
-                                    <TextFieldEmail v-model="email" label="Email" />
-                                    <TextFieldPassword v-model="password" label="Password" />
+                                    <TextFieldEmail v-model="state.email" label="Email" />
+                                    <TextFieldPassword v-model="state.password" label="Password" />
                                     <div class="text-right">
-
-
                                         <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
-
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
