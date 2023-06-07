@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Keeper.Context\Keeper.Context.csproj" />
-    <ProjectReference Include="..\KeeperDbContextt\KeeperDbContextt.csproj" />
   </ItemGroup>
 
 </Project>
