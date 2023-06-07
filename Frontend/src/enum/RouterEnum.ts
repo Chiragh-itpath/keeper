@@ -1,6 +1,6 @@
 export const enum RouterEnum{
     HOME="Home",
-    SIGNIN="SignIn",
+    LOGIN="Login",
     SIGNUP="SignUp",
     FORGOT_PASSWORD="ForgotPassword"
 }

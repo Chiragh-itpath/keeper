@@ -1,6 +1,6 @@
 import { RouterEnum } from "@/enum/RouterEnum";
 import home from "@/pages/HomePage.vue";
-import login from '@/pages/SignInPage.vue';
+import login from '@/pages/LoginPage.vue';
 import signUp from "@/pages/SignUpPage.vue";
 import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
 export const routes = [
@@ -10,9 +10,9 @@ export const routes = [
         name:RouterEnum.HOME
     },
     {
-        path:'/signin',
+        path:'/login',
         component:login,
-        name:RouterEnum.SIGNIN
+        name:RouterEnum.LOGIN
     },
     {
         path:'/signup',
