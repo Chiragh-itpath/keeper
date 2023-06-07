@@ -16,8 +16,7 @@ return new class extends Migration {
             $table->string('email', 50)->unique();
             $table->string('contact', 10)->nullable();
             $table->string('password');
-            $table->timestamp('createdOn');
-            $table->timestamp('updateOn')->nullable(true);
+            $table->timestamps();
         });
     }
 
