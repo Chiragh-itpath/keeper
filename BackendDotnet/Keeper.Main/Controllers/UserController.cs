@@ -16,8 +16,8 @@ namespace Keeper.Main.Controllers
             _userService = userService;
         }
         [HttpGet]
-        public  async Task<IActionResult> Get()
-        {          
+        public async Task<IActionResult> Get()
+        {
             return Ok(await _userService.GetAllUsers());
         }
 
@@ -35,6 +35,12 @@ namespace Keeper.Main.Controllers
             };
             await _userService.Insert(user);
             return Ok(res);
+        }
+        [HttpGet("{id}")]
+        
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok();
         }
     }
 }
