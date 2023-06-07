@@ -25,10 +25,5 @@ namespace Keeper.Repos.Repositories
             return _dbKeeperContext.Users.ToList();
         }
 
-        //public UserModel GetUserById(int id)
-        //{
-        //    var res = _dbKeeperContext.Users.FirstOrDefault(x=>x.Id);
-
-        //}
     }
 }

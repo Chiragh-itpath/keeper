@@ -1,4 +1,6 @@
 ﻿using Keeper.Services.Interfaces;
+using Keeper.Services.Services;
+using Keeper.Services.Services.Interfaces;
 using KeeperCore.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,6 +16,7 @@ namespace Keeper.Services.Config
         public static void RegisterServices(this IServiceCollection services)
         {
             services.AddTransient<IUserService,UserService>();
+            services.AddTransient<IProjectService,ProjectService>();
         }
     }
 }
