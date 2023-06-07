@@ -1,15 +1,12 @@
 ﻿
 using Keeper.Context.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Keeper.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserModel>> GetAllUsers();
+        Task<IEnumerable<UserModel>> GetAllUsers();
+        Task Insert(UserModel user);
     }
 }

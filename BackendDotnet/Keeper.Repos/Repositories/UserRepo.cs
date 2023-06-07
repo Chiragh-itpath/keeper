@@ -20,16 +20,16 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        public async Task<List<UserModel>> GetAll()
+
+        public async Task<IEnumerable<UserModel>> GetAllUsers()
         {
-            var res= await _dbKeeperContext.Users.ToListAsync();
-            return res;
+            return await _dbKeeperContext.Users.ToListAsync();
         }
 
-        //public UserModel GetUserById(int id)
-        //{
-        //    var res = _dbKeeperContext.Users.FirstOrDefault(x=>x.Id);
-
-        //}
+        public async Task Insert(UserModel user)
+        {
+            _dbKeeperContext.Users.Add(user);
+            await _dbKeeperContext.SaveChangesAsync();
+        }
     }
 }

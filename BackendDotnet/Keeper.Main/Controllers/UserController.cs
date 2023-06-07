@@ -1,10 +1,11 @@
-﻿using Keeper.Services.Interfaces;
+﻿using Keeper.Context.Model;
+using Keeper.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
-    [Route("[api/controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -16,17 +17,24 @@ namespace Keeper.Main.Controllers
         }
         [HttpGet]
         public  async Task<IActionResult> Get()
+        {          
+            return Ok(await _userService.GetAllUsers());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(UserModel user)
         {
-            var res = await _userService.GetAllUsers();
+            var res = new UserModel()
+            {
+                Id = Guid.NewGuid(),
+                UserName = user.UserName,
+                Email = user.Email,
+                Contact = user.Contact,
+                Password = user.Password,
+                CreatedOn = DateTime.Now,
+            };
+            await _userService.Insert(user);
             return Ok(res);
         }
-
-        [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult Get(Guid id)
-        {
-            return Ok();
-        }
-
     }
 }

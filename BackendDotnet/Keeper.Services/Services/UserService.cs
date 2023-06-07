@@ -2,15 +2,11 @@
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Keeper.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace KeeperCore.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IUserRepo _userRepo;
 
@@ -19,11 +15,23 @@ namespace KeeperCore.Services
             _userRepo = userRepo;
         }
 
-        public async Task<List<UserModel>> GetAllUsers()
+        public async Task<IEnumerable<UserModel>> GetAllUsers()
         {
-            var res = await _userRepo.GetAll();
+            var res = await _userRepo.GetAllUsers();
             return res;
+        }
+        public async Task Insert(UserModel user)
+        {
+            UserModel userModel = new()
+            {
+                Id = Guid.NewGuid(),
+                Contact = user.Contact,
+                Email = user.Email,
+                Password = user.Password,
+                UserName = user.UserName,
+            };
 
+            await _userRepo.Insert(userModel);
         }
     }
 }
