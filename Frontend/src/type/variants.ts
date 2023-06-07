@@ -1,0 +1,1 @@
+export type Tvariant = NonNullable<"outlined" | "elevated" | "flat" | "text" | "tonal" | "plain"> | undefined

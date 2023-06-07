@@ -7,13 +7,20 @@ import App from './App.vue'
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import "@mdi/font/css/materialdesignicons.css";
-import {routes} from "@/router/routes";
+import { routes } from "@/router/routes";
 import "@fortawesome/fontawesome-free/css/all.css";
-
+import { siteTheme } from '@/themes/theme';
 const app = createApp(App)
+
 const vuetify = createVuetify({
     components,
-    directives
+    directives,
+    theme: {
+        defaultTheme: "siteTheme",
+        themes: {
+            siteTheme
+        }
+    }
 })
 
 const router = createRouter({
