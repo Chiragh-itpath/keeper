@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace Keeper.Repos.Repositories
 {
 
-    public class UserRepo:IUserRepo
+    public class UserRepo : IUserRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
-        
+
         public UserRepo(DbKeeperContext dbKeeperContext)
         {
             _dbKeeperContext = dbKeeperContext;
@@ -29,14 +29,17 @@ namespace Keeper.Repos.Repositories
         public async Task<bool> Register(UserModel user)
         {
             _dbKeeperContext.Users.Add(user);
-            await _dbKeeperContext.SaveChangesAsync();
-            return true;
+            return await _dbKeeperContext.SaveChangesAsync()==1;
         }
 
         public async Task<UserModel> GetUserByEmail(string email)
+        {        
+            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel(); ;
+        }
+
+        public async Task<bool> Login(UserModel user)
         {
-           var res=  await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel() ;
-            return res;
+            return GetUserByEmail(user.Email) != null;
         }
     }
 }

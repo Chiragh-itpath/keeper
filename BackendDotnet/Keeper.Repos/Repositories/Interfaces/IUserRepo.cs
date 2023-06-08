@@ -7,5 +7,6 @@ namespace Keeper.Repos.Interfaces
         Task<IEnumerable<UserModel>> GetAllUsers();
         Task<bool> Register(UserModel user);
         Task<UserModel> GetUserByEmail(string email);
+        Task<bool> Login(UserModel user);
     }
 }

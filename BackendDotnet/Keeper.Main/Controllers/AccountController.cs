@@ -20,15 +20,18 @@ namespace Keeper.Main.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            
             var res = await _userService.GetUserByEmail(register.Email);
             if(res != null && res.Id!=Guid.Empty)
             {
+
                 ModelState.AddModelError("errors", "Email already exists");
                 return BadRequest(ModelState);
-            }
+            }   
+            var reg = await _userService.RegisterUser(register);
+            
+            
             return Ok(true);                             
         }
-
     }
 }

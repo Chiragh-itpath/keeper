@@ -28,18 +28,35 @@ namespace KeeperCore.Services
                 Id = Guid.NewGuid(),
                 UserName = register.UserName,
                 Email = register.Email,
-                Password=register.Password,
-                Contact=register.Contact,
+                Password = register.Password,
+                Contact = register.Contact,
                 CreatedOn = register.CreatedOn,
                 UpdateOn = null
             };
-            await _userRepo.Register(userModel);
-            return true;
+            try
+            {               
+                register.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync((string?)ex.Message);
+            }
+            return await _userRepo.Register(userModel);
         }
 
         public async Task<UserModel> GetUserByEmail(string email)
         {
-            return await  _userRepo.GetUserByEmail(email);
+            return await _userRepo.GetUserByEmail(email);
+        }
+
+        public async Task<bool> Login(UserModel user)
+        {
+            var res = await _userRepo.GetUserByEmail(user.Email);
+            if (res != null)
+            {
+                return BCrypt.Net.BCrypt.Verify(user.Password, res.Password);
+            }
+            return false;
         }
     }
 }
