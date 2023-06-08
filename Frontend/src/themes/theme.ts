@@ -1,6 +1,6 @@
 export const siteTheme = {
     dark: false,
     colors: {
-        primary: '#00796B',
+        primary: '#26A69A',
     },
 }
