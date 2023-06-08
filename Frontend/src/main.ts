@@ -1,15 +1,15 @@
 import 'vuetify/styles'
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify';
-import { createRouter, createWebHistory } from 'vue-router';
-import { createPinia } from 'pinia';
-import App from './App.vue'
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import "@mdi/font/css/materialdesignicons.css";
+import { createRouter, createWebHistory } from 'vue-router';
+import { createPinia } from 'pinia';
 import { routes } from "@/router/routes";
-import "@fortawesome/fontawesome-free/css/all.css";
 import { siteTheme } from '@/themes/theme';
+import App from './App.vue'
+
 const app = createApp(App)
 
 const vuetify = createVuetify({
@@ -20,7 +20,8 @@ const vuetify = createVuetify({
         themes: {
             siteTheme
         }
-    }
+    },
+    
 })
 
 const router = createRouter({

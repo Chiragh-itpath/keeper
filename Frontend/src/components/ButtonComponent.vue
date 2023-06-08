@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Tvariant } from '@/type/variants';
 const props = withDefaults(defineProps<{
-    rounded: boolean,
-    variant: Tvariant
-}>(),{
+    rounded?: boolean,
+    variant?: Tvariant 
+}>(), {
     rounded: true,
     variant: "outlined"
 })
@@ -13,3 +13,9 @@ const props = withDefaults(defineProps<{
         <slot></slot>
     </v-btn>
 </template>
+<style>
+.v-btn {
+    text-transform: capitalize;
+    font-size: medium;
+}
+</style>
