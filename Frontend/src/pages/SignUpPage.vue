@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import{ref,reactive} from 'vue';
-import textField from "@/components/TextFieldComponent.vue";
+import { ref, reactive } from 'vue';
 import { RouterEnum } from '@/enum/RouterEnum';
 import TextFieldContact from "@/components/TextFieldContact.vue";
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import TextFieldPassword from "@/components/TextFieldPassword.vue";
 import TextFieldText from "@/components/TextFieldText.vue";
-const state=reactive({
-    username:"",
-    email:"",
-    contact:"",
-    password:"",
-    confirmPassword:""
+import {requiredRule} from '@/data/ValidationRules'
+
+const state = reactive({
+    username: "",
+    email: "",
+    contact: "",
+    password: "",
+    confirmPassword: "",
+    errorMessage: ""
 })
- const form = ref()
+const form = ref()
 async function register(): Promise<void> {
     const { valid } = await form.value.validate();
     if (valid) {
@@ -21,6 +23,13 @@ async function register(): Promise<void> {
         form.value.reset();
     }
 }
+function validatePassword() {
+    if (state.password !== state.confirmPassword) {
+        return false;
+    }
+        return true;
+}
+
 </script>
 <template>
     <v-app>
@@ -35,13 +44,12 @@ async function register(): Promise<void> {
                         to continue to Keeper
                     </v-card-subtitle>
                     <v-form @submit.prevent="register" ref="form">
-                        <TextFieldText v-model="state.username" label="Username" prepend-icon="mdi-account" />
-                        <TextFieldContact label="Contact" :is-required="false" v-model="state.contact" />
-                        <TextFieldEmail v-model="state.email" label="Email" />
-                        
-                        <TextFieldPassword v-model="state.password" label="Password" />
-                        
-                        <TextFieldPassword v-model="state.confirmPassword" label="Confirm Password" />
+                        <TextFieldText v-model="state.username" label="Username" prepend-icon="mdi-account" color="primary"/>
+                        <TextFieldContact label="Contact" :is-required="false" v-model="state.contact" color="primary" />
+                        <TextFieldEmail v-model="state.email" label="Email" color="primary" />
+                        <TextFieldPassword v-model="state.password" label="Password" color="primary" />
+                        <TextFieldPassword v-model="state.confirmPassword" label="Confirm Password" color="primary"
+                            :rules="[requiredRule,validatePassword() ?true :'Password not match!']" />
                         <v-card-actions>
                             <div class="d-flex flex-column justify-center mx-auto">
                                 <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"

@@ -1,22 +1,13 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import {requiredRule,contactRules} from '@/data/ValidationRules'
 
-const props = defineProps({
-    
-    isRequired: {
-        type: Boolean,
-        default: true
-    },
-    label: {
-        type: String,
-        required: true
-    }
+const props=withDefaults(defineProps<{
+    label:string
+}>(),{
+    label:''
 })
-
-const requiredRule = (val: string) => val.trim()=="" ? "Field is Required!" : true
-const contactRules = (value : string) => /^[0-9]{10}$/.test(value) ? true : 'Contact number must be valid'
-let rulArr = ref([])
 </script>
 
 <template>

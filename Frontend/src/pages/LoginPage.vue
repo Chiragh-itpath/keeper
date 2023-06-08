@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TextFieldComponent from '@/components/TextFieldComponent.vue';
 import { RouterEnum } from '@/enum/RouterEnum';
 import{ref,reactive} from 'vue';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
@@ -33,8 +32,8 @@ async function login() {
                             </v-card-subtitle>
                             <v-card-text>
                                 <v-form ref="form" @submit.prevent="login()">
-                                    <TextFieldEmail v-model="state.email" label="Email" />
-                                    <TextFieldPassword v-model="state.password" label="Password" />
+                                    <TextFieldEmail v-model="state.email" label="Email" color="primary"/>
+                                    <TextFieldPassword v-model="state.password" label="Password" color="primary" />
                                     <div class="text-right">
                                         <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
                                     </div>
