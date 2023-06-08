@@ -1,0 +1,9 @@
+.hide-scrollerbar {
+    overflow: hidden;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
+.text-rotate {
+    transform: rotate(-10deg);
+}
