@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('title', 50);
             $table->text('description')->nullable();
             $table->string('url');
-            $table->boolean('type')->default(false);
-            $table->text('number')->nullable();
-            $table->text('to')->nullable();
-            $table->text('discussedBy')->nullable();
-            $table->boolean('isDeleted')->default(false);
+            $table->enum('type',['TICKET','PR']);
+            $table->string('number',10)->nullable();
+            $table->string('to',50)->nullable();
+            $table->string('discussedBy',50)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
