@@ -26,10 +26,17 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Users.ToListAsync();
         }
 
-        public async Task Insert(UserModel user)
+        public async Task<bool> Register(UserModel user)
         {
             _dbKeeperContext.Users.Add(user);
             await _dbKeeperContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<UserModel> GetUserByEmail(string email)
+        {
+           var res=  await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel() ;
+            return res;
         }
     }
 }

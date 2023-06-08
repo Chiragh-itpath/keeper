@@ -1,4 +1,5 @@
 ﻿
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Keeper.Services.Interfaces;
@@ -20,18 +21,25 @@ namespace KeeperCore.Services
             var res = await _userRepo.GetAllUsers();
             return res;
         }
-        public async Task Insert(UserModel user)
+        public async Task<bool> RegisterUser(RegisterVM register)
         {
             UserModel userModel = new()
             {
                 Id = Guid.NewGuid(),
-                Contact = user.Contact,
-                Email = user.Email,
-                Password = user.Password,
-                UserName = user.UserName,
+                UserName = register.UserName,
+                Email = register.Email,
+                Password=register.Password,
+                Contact=register.Contact,
+                CreatedOn = register.CreatedOn,
+                UpdateOn = null
             };
+            await _userRepo.Register(userModel);
+            return true;
+        }
 
-            await _userRepo.Insert(userModel);
+        public async Task<UserModel> GetUserByEmail(string email)
+        {
+            return await  _userRepo.GetUserByEmail(email);
         }
     }
 }

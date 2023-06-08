@@ -15,32 +15,5 @@ namespace Keeper.Main.Controllers
         {
             _userService = userService;
         }
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            return Ok(await _userService.GetAllUsers());
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Post(UserModel user)
-        {
-            var res = new UserModel()
-            {
-                Id = Guid.NewGuid(),
-                UserName = user.UserName,
-                Email = user.Email,
-                Contact = user.Contact,
-                Password = user.Password,
-                CreatedOn = DateTime.Now,
-            };
-            await _userService.Insert(user);
-            return Ok(res);
-        }
-        [HttpGet("{id}")]
-        
-        public async Task<IActionResult> Get(int id)
-        {
-            return Ok();
-        }
     }
 }

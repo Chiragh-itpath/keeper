@@ -20,7 +20,7 @@ namespace Keeper.Context.Model
         public string Contact { get; set; }
         public string Password { get; set; }
         public DateTime CreatedOn { get; set; }
-        public DateTime UpdateOn { get; set; }
+        public DateTime? UpdateOn { get; set; }
         public virtual IEnumerable<ProjectModel> Projects { get; set; }
         public virtual IEnumerable<KeepModel> Keeps { get; set; }
     }
