@@ -11,6 +11,7 @@ namespace Keeper.Common.Enums
         OK,
         ALREADY_EXISTS,
         NOT_FOUND,
-        NOT_AUTHORISED
+        NOT_AUTHORISED,
+        NOT_VALID,
     }
 }
