@@ -1,4 +1,5 @@
-﻿using Keeper.Context.Model;
+﻿using Keeper.Common.Response;
+using Keeper.Context.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IProjectRepo
     {
-        Task<ProjectModel> Insert(ProjectModel project);
+        Task<ResponseModel> GetProjects(Guid userId);
+        Task<ResponseModel> Insert(ProjectModel project);
         
     }
 }

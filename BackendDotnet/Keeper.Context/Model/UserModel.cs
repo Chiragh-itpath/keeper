@@ -23,7 +23,5 @@ namespace Keeper.Context.Model
         public DateTime UpdateOn { get; set; }
         public virtual IEnumerable<ProjectModel> Projects { get; set; }
         public virtual IEnumerable<KeepModel> Keeps { get; set; }
-
-
     }
 }

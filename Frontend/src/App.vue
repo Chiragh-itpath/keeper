@@ -1,25 +1,15 @@
 <script setup lang="ts">
-import home from "@/pages/HomePage.vue"
+import NavBar from '@/components/NavBar.vue';
+import SideBar from '@/components/SideBar.vue';
 </script>
 
 <template>
-    <div></div>
-
-    <v-layout>
-        
-        <v-app-bar>
-            <template v-slot:prepend> 
-                
-            </template>
-            <v-app-bar-title>Keeper</v-app-bar-title>
-            <template v-slot:append>
-                <v-btn class="mx-3">Login</v-btn>
-                <v-btn class="mx-3">Signup</v-btn>
-            </template>
-        </v-app-bar>
-        
+    <v-layout class="hide-scrollerbar">
+        <side-bar></side-bar>
+        <nav-bar></nav-bar>
+        <v-main>
+            <router-view>
+            </router-view>
+        </v-main>
     </v-layout>
-    <!-- <router-view>
-    </router-view> -->
 </template>
-

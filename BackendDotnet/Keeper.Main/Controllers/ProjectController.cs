@@ -1,4 +1,5 @@
-﻿using Keeper.Common.View_Models;
+﻿using Keeper.Common.Response;
+using Keeper.Common.View_Models;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,18 +15,22 @@ namespace Keeper.Main.Controllers
         {
             _projectService = projectService;
         }
-        [HttpPost]
-        public async Task<IActionResult> Insert(ProjectVM projectVM)
+
+        [HttpPost("")]
+        public async Task<ResponseModel> Post(ProjectVM projectVM)
         {
             if(ModelState.IsValid)
             {
-                var result= await _projectService.Insert(projectVM);
-                return Ok(result);
+                return await _projectService.Insert(projectVM);
+
             }
-            else
-            {
-                return BadRequest();
-            }
-        } 
+            return new ResponseModel();
+        }
+        [HttpGet("{id}")]
+        public async Task<ResponseModel> Get(Guid UserId)
+        {
+            return await _projectService.GetProjects(UserId);
+           
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Keeper.Context;
+﻿using Keeper.Common.Enums;
+using Keeper.Common.Response;
+using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +20,42 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        public async Task<ProjectModel> Insert(ProjectModel project)
+        public async Task<ResponseModel> Insert(ProjectModel project)
         {
             await _dbKeeperContext.Projects.AddAsync(project);
-            var res= await _dbKeeperContext.SaveChangesAsync();
-            return project;
+            await _dbKeeperContext.SaveChangesAsync();
+            return new ResponseModel
+            {
+                StatusCode = EResponse.OK,
+                IsSuccess = true,
+                Message = "Projects Inserted",
+                Data = project
+            };
+        }
+        public async Task<ResponseModel> GetProjects(Guid UserId)
+        {
+            var result=await _dbKeeperContext.Users.Include("Projects").Where(x => x.Id == UserId).ToListAsync();
+  
+            if (result.Count > 0)
+            {
+                return new ResponseModel
+                {
+                    StatusCode = EResponse.OK,
+                    IsSuccess = true,
+                    Message = "Projects",
+                    Data = result
+                };
+            }
+            else
+            {
+                return new ResponseModel
+                {
+                    StatusCode = EResponse.NOT_FOUND,
+                    IsSuccess = true,
+                    Message = "Projects Not Found",
+                    Data = result
+                };
+            }
         }
    
 

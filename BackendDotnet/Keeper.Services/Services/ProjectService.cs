@@ -1,4 +1,5 @@
-﻿using Keeper.Common.View_Models;
+﻿using Keeper.Common.Response;
+using Keeper.Common.View_Models;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
@@ -17,17 +18,23 @@ namespace Keeper.Services.Services
         {
             _repo = repo;
         }
-        public async Task<ProjectModel> Insert(ProjectVM projectVM)
-        { ProjectModel model = new ProjectModel
+        public async Task<ResponseModel> Insert(ProjectVM projectVM)
+        {
+            
+            ProjectModel model = new ProjectModel
             {
                 Id = Guid.NewGuid(),
                 Title = projectVM.Title,
                 Description = projectVM.Description,
                 CreatedOn = DateTime.MinValue,
                 CreatedBy = Guid.Empty,
-                TagId = Guid.Empty,
             };
             return await _repo.Insert(model);
         }
+        public async Task<ResponseModel> GetProjects(Guid UserId)
+        {
+            return await _repo.GetProjects(UserId);
+        }
+        
     }
 }

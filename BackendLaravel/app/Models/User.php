@@ -17,9 +17,15 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
-        'name',
+        'id',
+        'username',
         'email',
+        'contact',
         'password',
     ];
 
@@ -39,7 +45,22 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        // 'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function keeps()
+    {
+        return $this->hasMany(Keep::class);
+    }
 }
