@@ -16,7 +16,8 @@ namespace Keeper.Services.Config
         public static void RegisterServices(this IServiceCollection services)
         {
             services.AddTransient<IUserService,UserService>();
-            services.AddTransient<IProjectService,ProjectService>();
+            services.AddTransient<ITagService, TagService>();
+            services.AddTransient<IProjectService, ProjectService>();
         }
     }
 }
