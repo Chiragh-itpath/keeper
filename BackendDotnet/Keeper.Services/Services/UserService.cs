@@ -1,4 +1,5 @@
-﻿
+﻿using Keeper.Common.Enums;
+using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
@@ -21,8 +22,9 @@ namespace KeeperCore.Services
             var res = await _userRepo.GetAllUsers();
             return res;
         }
-        public async Task<bool> RegisterUser(RegisterVM register)
+        public async Task<ResponseModel> RegisterUser(RegisterVM register)
         {
+            ResponseModel responseModel;
             UserModel userModel = new()
             {
                 Id = Guid.NewGuid(),
@@ -33,15 +35,46 @@ namespace KeeperCore.Services
                 CreatedOn = register.CreatedOn,
                 UpdateOn = null
             };
-            try
-            {               
-                register.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
-            }
-            catch (Exception ex)
+            var user = await _userRepo.GetUserByEmail(register.Email);
+            if (user.Id != Guid.Empty)
             {
-                await Console.Out.WriteLineAsync((string?)ex.Message);
+                responseModel = new()
+                {
+                    IsSuccess = false,
+                    StatusCode = EResponse.ALREADY_EXISTS,
+                    Message = "Email already exists"
+                };
+                return responseModel;
             }
-            return await _userRepo.Register(userModel);
+            try
+            {
+                userModel.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
+                bool res = await _userRepo.Register(userModel);
+                if (res)
+                {
+                    responseModel = new()
+                    {
+                        IsSuccess = true,
+                        StatusCode = EResponse.OK,
+                        Message = "Registered successfully"
+                    };
+                    return responseModel;
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception)
+            {
+                responseModel = new()
+                {
+                    IsSuccess = false,
+                    StatusCode = EResponse.NOT_VALID,
+                    Message = "Error occured"
+                };
+                return responseModel;
+            }
         }
 
         public async Task<UserModel> GetUserByEmail(string email)
@@ -49,14 +82,53 @@ namespace KeeperCore.Services
             return await _userRepo.GetUserByEmail(email);
         }
 
-        public async Task<bool> Login(UserModel user)
+        public async Task<ResponseModel> Login(string email, string password)
         {
-            var res = await _userRepo.GetUserByEmail(user.Email);
-            if (res != null)
+
+            ResponseModel responseModel = new();
+            var user = await _userRepo.GetUserByEmail(email);
+            if (user.Id == Guid.Empty)
             {
-                return BCrypt.Net.BCrypt.Verify(user.Password, res.Password);
+                responseModel = new()
+                {
+                    StatusCode = EResponse.NOT_FOUND,
+                    Message = "Email is not registered",
+                    IsSuccess = false
+                };
+                return responseModel;
             }
-            return false;
+            try
+            {
+                if (BCrypt.Net.BCrypt.Verify(password, user.Password))
+                {
+                    responseModel = new()
+                    {
+                        IsSuccess = true,
+                        StatusCode = EResponse.OK,
+                        Message = "Logged in successfully"
+
+                    };
+                }
+                else
+                {
+                    responseModel = new()
+                    {
+                        StatusCode = EResponse.NOT_VALID,
+                        Message = "Password is not matched",
+                        IsSuccess = false
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                responseModel = new()
+                {
+                    IsSuccess = false,
+                    StatusCode = EResponse.NOT_VALID,
+                    Message = "Error occured"
+                };
+            }
+            return responseModel;
         }
     }
 }

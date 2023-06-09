@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.ComponentModel.DataAnnotations;
 namespace Keeper.Common.ViewModels
 {
     public class RegisterVM
     {
         [Required(ErrorMessage = "This field is required")]
-        public string UserName { get; set; } = default!;
+        public string UserName { get; set; } 
         [
             Required(ErrorMessage = "This field is required"),
             EmailAddress(ErrorMessage = "Enter an valid email")
         ]
-        public string Email { get; set; } = default!;
+        public string Email { get; set; }
 
         [
             Required(ErrorMessage = "This field is required"),

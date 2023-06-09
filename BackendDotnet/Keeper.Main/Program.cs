@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Keeper.Context.Config;
 using Keeper.Repos.Config;
 using Keeper.Services.Config;
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,12 +15,12 @@ builder.Services.RegisterDbContext(ConnectionString);
 builder.Services.RegisterRepos();
 builder.Services.RegisterServices();
 builder.Services.AddSwaggerGen();
-
-
+builder.Services.Configure<ApiBehaviorOptions>(option =>
+{
+    option.SuppressModelStateInvalidFilter = true; 
+});
 
 var app = builder.Build();
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

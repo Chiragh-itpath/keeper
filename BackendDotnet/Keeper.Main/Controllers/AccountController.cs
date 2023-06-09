@@ -1,7 +1,8 @@
-﻿using Keeper.Common.ViewModels;
+﻿using Keeper.Common.Response;
+using Keeper.Common.ViewModels;
 using Keeper.Services.Interfaces;
+using Keeper.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Keeper.Main.Controllers
 {
@@ -14,24 +15,29 @@ namespace Keeper.Main.Controllers
         {
             _userService = userService;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterVM register)
+        [HttpPost("Register")]
+        public async Task<ResponseModel> Register(RegisterVM register)
         {
+            ModelState.ClearValidationState(nameof(register));
+            ResponseModel responseModel;
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
-            var res = await _userService.GetUserByEmail(register.Email);
-            if(res != null && res.Id!=Guid.Empty)
             {
-
-                ModelState.AddModelError("errors", "Email already exists");
-                return BadRequest(ModelState);
-            }   
-            var reg = await _userService.RegisterUser(register);
-            
-            
-            return Ok(true);                             
+                responseModel = new ResponseModel()
+                {
+                    IsSuccess = false,
+                    StatusCode = EResponse.NOT_VALID,
+                    Data = ModelState.Values.SelectMany(x => x.Errors)
+                };
+                return responseModel;
+            }
+            responseModel = await _userService.RegisterUser(register);
+            return responseModel;
+        }
+        [HttpPost("Login")]
+        public async Task<ResponseModel> Login(string email, string password)
+        {
+            ResponseModel responseModel = new();                      
+            return await _userService.Login(email, password);
         }
     }
 }
