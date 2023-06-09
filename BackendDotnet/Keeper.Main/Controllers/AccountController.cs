@@ -19,19 +19,16 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel> Register(RegisterVM register)
         {
             ModelState.ClearValidationState(nameof(register));
-            ResponseModel responseModel;
             if (!ModelState.IsValid)
             {
-                responseModel = new ResponseModel()
+                return new ResponseModel
                 {
                     IsSuccess = false,
                     StatusCode = EResponse.NOT_VALID,
                     Data = ModelState.Values.SelectMany(x => x.Errors)
                 };
-                return responseModel;
             }
-            responseModel = await _userService.RegisterUser(register);
-            return responseModel;
+            return await _userService.RegisterUser(register);
         }
         [HttpPost("Login")]
         public async Task<ResponseModel> Login(string email, string password)

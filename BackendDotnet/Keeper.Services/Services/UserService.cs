@@ -5,7 +5,6 @@ using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Keeper.Services.Interfaces;
 
-
 namespace KeeperCore.Services
 {
     public class UserService : IUserService
@@ -24,7 +23,6 @@ namespace KeeperCore.Services
         }
         public async Task<ResponseModel> RegisterUser(RegisterVM register)
         {
-            ResponseModel responseModel;
             UserModel userModel = new()
             {
                 Id = Guid.NewGuid(),
@@ -37,14 +35,13 @@ namespace KeeperCore.Services
             };
             var user = await _userRepo.GetUserByEmail(register.Email);
             if (user.Id != Guid.Empty)
-            {
-                responseModel = new()
+            {            
+                return new ResponseModel
                 {
                     IsSuccess = false,
                     StatusCode = EResponse.ALREADY_EXISTS,
                     Message = "Email already exists"
                 };
-                return responseModel;
             }
             try
             {
@@ -52,13 +49,12 @@ namespace KeeperCore.Services
                 bool res = await _userRepo.Register(userModel);
                 if (res)
                 {
-                    responseModel = new()
+                    return new ResponseModel
                     {
                         IsSuccess = true,
                         StatusCode = EResponse.OK,
                         Message = "Registered successfully"
                     };
-                    return responseModel;
                 }
                 else
                 {
@@ -67,13 +63,12 @@ namespace KeeperCore.Services
             }
             catch (Exception)
             {
-                responseModel = new()
+                return new ResponseModel
                 {
                     IsSuccess = false,
                     StatusCode = EResponse.NOT_VALID,
                     Message = "Error occured"
                 };
-                return responseModel;
             }
         }
 
@@ -89,29 +84,27 @@ namespace KeeperCore.Services
             var user = await _userRepo.GetUserByEmail(email);
             if (user.Id == Guid.Empty)
             {
-                responseModel = new()
+                return new ResponseModel
                 {
                     StatusCode = EResponse.NOT_FOUND,
                     Message = "Email is not registered",
                     IsSuccess = false
                 };
-                return responseModel;
             }
             try
             {
                 if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
-                    responseModel = new()
+                    return new ResponseModel
                     {
                         IsSuccess = true,
                         StatusCode = EResponse.OK,
                         Message = "Logged in successfully"
-
                     };
                 }
                 else
                 {
-                    responseModel = new()
+                    return new ResponseModel
                     {
                         StatusCode = EResponse.NOT_VALID,
                         Message = "Password is not matched",
@@ -121,14 +114,13 @@ namespace KeeperCore.Services
             }
             catch (Exception)
             {
-                responseModel = new()
+                return new ResponseModel
                 {
                     IsSuccess = false,
                     StatusCode = EResponse.NOT_VALID,
                     Message = "Error occured"
                 };
             }
-            return responseModel;
         }
     }
 }
