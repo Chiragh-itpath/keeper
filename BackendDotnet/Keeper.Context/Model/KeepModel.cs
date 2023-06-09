@@ -21,7 +21,6 @@ namespace Keeper.Context.Model
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set;}
         public Guid TagId { get; set; }
-        public virtual TagModel Tag { get; set; }
 
         [ForeignKey(nameof(ProjectModel))]
         public Guid ProjectId { get; set; }
