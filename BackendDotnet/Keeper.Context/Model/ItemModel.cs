@@ -23,10 +23,10 @@ namespace Keeper.Context.Model
         public string DiscussedBy { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Guid TagId { get; set; }
-        public virtual TagModel Tag {  get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
-
         public Guid KeepId { get; set; }
         public virtual KeepModel Keep { get; set; }
 
