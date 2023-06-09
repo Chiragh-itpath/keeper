@@ -1,4 +1,5 @@
-﻿using Keeper.Common.Response;
+﻿using Keeper.Common.Enums;
+using Keeper.Common.Response;
 using Keeper.Common.View_Models;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -19,12 +20,16 @@ namespace Keeper.Main.Controllers
         [HttpPost("")]
         public async Task<ResponseModel> Post(ProjectVM projectVM)
         {
-            if(ModelState.IsValid)
+            if(!ModelState.IsValid)
             {
-                return await _projectService.Insert(projectVM);
-
+                return new ResponseModel()
+                {
+                    IsSuccess = false,
+                    StatusCode = EResponse.NOT_VALID,
+                    Data = ModelState.Values.SelectMany(x => x.Errors)
+                };
             }
-            return new ResponseModel();
+            return await _projectService.Insert(projectVM);
         }
         [HttpGet("")]
         public async Task<ResponseModel> Get(Guid UserId)

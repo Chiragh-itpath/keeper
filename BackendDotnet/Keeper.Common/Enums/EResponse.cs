@@ -13,5 +13,6 @@ namespace Keeper.Common.Enums
         NOT_FOUND,
         NOT_AUTHORISED,
         NOT_VALID,
+        INTERNAL_SERVER_ERROR
     }
 }

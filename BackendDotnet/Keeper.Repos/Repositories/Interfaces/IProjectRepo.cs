@@ -10,8 +10,8 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IProjectRepo
     {
-        Task<ResponseModel> GetProjects(Guid userId);
-        Task<ResponseModel> Insert(ProjectModel project);
+        Task<List<ProjectModel>> GetProjects(Guid userId);
+        Task<bool> Insert(ProjectModel project);
         
     }
 }

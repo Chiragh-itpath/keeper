@@ -20,42 +20,15 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        public async Task<ResponseModel> Insert(ProjectModel project)
+        public async Task<bool> Insert(ProjectModel project)
         {
             await _dbKeeperContext.Projects.AddAsync(project);
-            await _dbKeeperContext.SaveChangesAsync();
-            return new ResponseModel
-            {
-                StatusCode = EResponse.OK,
-                IsSuccess = true,
-                Message = "Projects Inserted",
-                Data = project
-            };
+            return await _dbKeeperContext.SaveChangesAsync() == 1;
         }
-        public async Task<ResponseModel> GetProjects(Guid UserId)
+        public async Task<List<ProjectModel>> GetProjects(Guid UserId)
         {
             var result=await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId).ToListAsync();
-  
-            if (result.Count > 0)
-            {
-                return new ResponseModel
-                {
-                    StatusCode = EResponse.OK,
-                    IsSuccess = true,
-                    Message = "Projects",
-                    Data = result
-                };
-            }
-            else
-            {
-                return new ResponseModel
-                {
-                    StatusCode = EResponse.NOT_FOUND,
-                    IsSuccess = true,
-                    Message = "No Projects",
-                    Data = result
-                };
-            }
+            return result;
         }
    
 
