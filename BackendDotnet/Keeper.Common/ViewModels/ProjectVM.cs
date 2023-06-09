@@ -13,7 +13,6 @@ namespace Keeper.Common.View_Models
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
-        public bool IsDeleted { get; set; } = false;
 
     }
 }

@@ -34,7 +34,7 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<ResponseModel> GetProjects(Guid UserId)
         {
-            var result=await _dbKeeperContext.Users.Include("Projects").Where(x => x.Id == UserId).ToListAsync();
+            var result=await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId).ToListAsync();
   
             if (result.Count > 0)
             {
@@ -52,7 +52,7 @@ namespace Keeper.Repos.Repositories
                 {
                     StatusCode = EResponse.NOT_FOUND,
                     IsSuccess = true,
-                    Message = "Projects Not Found",
+                    Message = "No Projects",
                     Data = result
                 };
             }

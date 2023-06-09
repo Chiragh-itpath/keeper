@@ -26,7 +26,7 @@ namespace Keeper.Main.Controllers
             }
             return new ResponseModel();
         }
-        [HttpGet("{id}")]
+        [HttpGet("")]
         public async Task<ResponseModel> Get(Guid UserId)
         {
             return await _projectService.GetProjects(UserId);
