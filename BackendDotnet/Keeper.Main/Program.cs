@@ -19,9 +19,7 @@ builder.Services.Configure<ApiBehaviorOptions>(option =>
 {
     option.SuppressModelStateInvalidFilter = true; 
 });
-=======
-    option.SuppressModelStateInvalidFilter = true;
-});
+
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
