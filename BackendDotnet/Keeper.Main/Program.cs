@@ -21,11 +21,11 @@ builder.Services.Configure<ApiBehaviorOptions>(option =>
     option.SuppressModelStateInvalidFilter = true;
 });
 
-
-
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 // Configure the HTTP request pipeline.
