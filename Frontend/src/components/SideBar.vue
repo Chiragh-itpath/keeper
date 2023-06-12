@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
-import { eventBus } from '@/data/EventBus';
+ import { eventBus } from '@/data/EventBus';
 const state = reactive({
     navigationBar: false
 });
