@@ -7,8 +7,8 @@ namespace Keeper.Services.Interfaces
     public interface IUserService
     {
         Task<IEnumerable<UserModel>> GetAllUsers();
-        Task<ResponseModel> RegisterUser(RegisterVM register);
+        Task<ResponseModel<string>> RegisterUser(RegisterVM register);
         Task<UserModel> GetUserByEmail(string email);
-        Task<ResponseModel> Login(string email, string password);
+        Task<ResponseModel<string>> Login(string email, string password);
     }
 }
