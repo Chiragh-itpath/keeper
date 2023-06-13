@@ -84,6 +84,7 @@ namespace KeeperCore.Services
             {
                 return new ResponseModel<string>
                 {
+                
                     StatusName = StatusType.NOT_FOUND,
                     Message = "Email is not registered",
                     IsSuccess = false

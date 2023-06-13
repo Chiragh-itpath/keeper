@@ -27,13 +27,8 @@ namespace Keeper.Main.Controllers
         [HttpPost("Login")]
         public async Task<ResponseModel<string>> Login(string email, string password)
         {
-            ResponseModel<string> responseModel = new();                      
+            ResponseModel<string> responseModel = new();
             return await _userService.Login(email, password);
-        }
-        [HttpPost("test")]
-        public string test(string str)
-        {
-            return str;
         }
     }
 }
