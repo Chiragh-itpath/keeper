@@ -21,7 +21,7 @@ namespace KeeperCore.Services
             var res = await _userRepo.GetAllUsers();
             return res;
         }
-        public async Task<ResponseModel> RegisterUser(RegisterVM register)
+        public async Task<ResponseModel<string>> RegisterUser(RegisterVM register)
         {
             UserModel userModel = new()
             {
@@ -36,10 +36,10 @@ namespace KeeperCore.Services
             var user = await _userRepo.GetUserByEmail(register.Email);
             if (user.Id != Guid.Empty)
             {            
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
                     IsSuccess = false,
-                    StatusCode = StatusType.ALREADY_EXISTS,
+                    StatusName = StatusType.ALREADY_EXISTS,
                     Message = "Email already exists"
                 };
             }
@@ -49,10 +49,10 @@ namespace KeeperCore.Services
                 bool res = await _userRepo.Register(userModel);
                 if (res)
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         IsSuccess = true,
-                        StatusCode = StatusType.OK,
+                        StatusName = StatusType.SUCCESS,
                         Message = "Registered successfully"
                     };
                 }
@@ -63,10 +63,10 @@ namespace KeeperCore.Services
             }
             catch (Exception)
             {
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
                     IsSuccess = false,
-                    StatusCode = StatusType.NOT_VALID,
+                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
                     Message = "Error occured"
                 };
             }
@@ -77,16 +77,15 @@ namespace KeeperCore.Services
             return await _userRepo.GetUserByEmail(email);
         }
 
-        public async Task<ResponseModel> Login(string email, string password)
+        public async Task<ResponseModel<string>> Login(string email, string password)
         {
-
-            ResponseModel responseModel = new();
             var user = await _userRepo.GetUserByEmail(email);
             if (user.Id == Guid.Empty)
             {
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
-                    StatusCode = StatusType.NOT_FOUND,
+                    StatusCode = EResponse.NOT_FOUND,
+                    StatusName = StatusType.NOT_FOUND,
                     Message = "Email is not registered",
                     IsSuccess = false
                 };
@@ -95,18 +94,18 @@ namespace KeeperCore.Services
             {
                 if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
                         IsSuccess = true,
-                        StatusCode = StatusType.OK,
+                        StatusName = StatusType.SUCCESS,
                         Message = "Logged in successfully"
                     };
                 }
                 else
                 {
-                    return new ResponseModel
+                    return new ResponseModel<string>
                     {
-                        StatusCode = StatusType.NOT_VALID,
+                        StatusName = StatusType.NOT_VALID,
                         Message = "Password is not matched",
                         IsSuccess = false
                     };
@@ -114,10 +113,10 @@ namespace KeeperCore.Services
             }
             catch (Exception)
             {
-                return new ResponseModel
+                return new ResponseModel<string>
                 {
                     IsSuccess = false,
-                    StatusCode = StatusType.NOT_VALID,
+                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
                     Message = "Error occured"
                 };
             }

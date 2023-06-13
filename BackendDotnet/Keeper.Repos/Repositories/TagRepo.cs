@@ -4,11 +4,7 @@ using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Keeper.Repos.Repositories
 {
@@ -20,11 +16,11 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        ResponseModel GetResponse(StatusType StatusType, string message, bool isSuccess, object? data = null, object? metadata = null)
+        ResponseModel GetResponse(StatusType eResponse, string message, bool isSuccess, object? data = null, object? metadata = null)
         {
             return new ResponseModel()
             {
-                StatusCode = StatusType,
+                StatusCode = eResponse,
                 Message = message,
                 IsSuccess = isSuccess,
                 Data = data,
