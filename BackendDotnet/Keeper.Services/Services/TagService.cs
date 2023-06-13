@@ -18,30 +18,46 @@ namespace Keeper.Services.Services
         {
             _tagRepo = tagRepo;
         }
-        public async Task<ResponseModel> Get()
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get()
         {
-            return await _tagRepo.Get();
+            var data=await _tagRepo.Get();
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel> Get(Guid Id)
+        public async Task<ResponseModel<TagModel>> Get(Guid Id)
         {
-            return await _tagRepo.Get(Id);
+            var data=await _tagRepo.Get(Id);
+            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
         }
-        public async Task<ResponseModel> Get(TagType type)
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(TagType type)
         {
-            return await _tagRepo.Get(type);
+            var data= await _tagRepo.Get(type); 
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel> Get(string title)
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(string title)
         {
-            return await _tagRepo.Get(title);
+            var data = await _tagRepo.Get(title);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel> Post(TagModel tagModel)
+        public async Task<ResponseModel<TagModel>> Post(TagModel tagModel)
         {
             tagModel.Id= Guid.NewGuid();
-            return await _tagRepo.Post(tagModel);
+            var data= await _tagRepo.Post(tagModel);
+
+            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record Inserted", IsSuccess = true, Data = data };
         }
-        public async Task<ResponseModel> Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             return await _tagRepo.Delete(id);
+        }
+        ResponseModel<IEnumerable<TagModel>> GetResponse(StatusType statusName, string message, bool isSuccess, IEnumerable<TagModel>? data = null, object? metadata = null)
+        {
+            return new ResponseModel<IEnumerable<TagModel>>()
+            {
+                StatusName=statusName,
+                Message = message,
+                IsSuccess = isSuccess,
+                Data = data,
+            };
         }
     }
 }

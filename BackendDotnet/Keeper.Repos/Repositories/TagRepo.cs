@@ -16,79 +16,43 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        ResponseModel GetResponse(StatusType eResponse, string message, bool isSuccess, object? data = null, object? metadata = null)
+       
+        public async Task<IEnumerable<TagModel>> Get()
         {
-            return new ResponseModel()
-            {
-                StatusCode = eResponse,
-                Message = message,
-                IsSuccess = isSuccess,
-                Data = data,
-                MetaData = metadata
-            };
-        }
-        public async Task<ResponseModel> Get()
-        {
-            var res = await _dbKeeperContext.Tags.ToListAsync();
-            ResponseModel response;
-            if (res.Count > 0)
-                response = GetResponse(StatusType.OK, "Tag Data", true, res);
-            else
-                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
-            return response;
+            return await _dbKeeperContext.Tags.ToListAsync();
         }
 
-        public async Task<ResponseModel> Get(Guid Id)
+        public async Task<TagModel> Get(Guid Id)
         {
-            var res = await _dbKeeperContext.Tags.FindAsync(Id);
-            ResponseModel response;
-            if (res != null)
-                response = GetResponse(StatusType.OK, "Tag Data", true, res);
-            else
-                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
-            return response;
+            return await _dbKeeperContext.Tags.FindAsync(Id);
         }
         
-        public async Task<ResponseModel> Get(TagType type)
+        public async Task<IEnumerable<TagModel>> Get(TagType type)
         {
-            var res = await _dbKeeperContext.Tags.Where(t=>t.Type==type).ToListAsync();
-            ResponseModel response;
-            if (res.Count > 0)
-                response = GetResponse(StatusType.OK, "Tag Data", true, res);
-            else
-                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
-            return response;
+            return await _dbKeeperContext.Tags.Where(t=>t.Type==type).ToListAsync();
         }
-        public async Task<ResponseModel> Get(string title)
+        public async Task<IEnumerable<TagModel>> Get(string title)
         {
-            var res = await _dbKeeperContext.Tags.Where(t=>t.Title== title).ToListAsync();
-            ResponseModel response;
-            if (res.Count > 0)
-                response = GetResponse(StatusType.OK, "Tag Data", true, res);
-            else
-                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
-            return response;
+            return await _dbKeeperContext.Tags.Where(t=>t.Title== title).ToListAsync();
         }
 
-        public async Task<ResponseModel> Post(TagModel tag)
+        public async Task<TagModel> Post(TagModel tag)
         {
             await _dbKeeperContext.Tags.AddAsync(tag);
-            if(await _dbKeeperContext.SaveChangesAsync()>0)
-                return GetResponse(StatusType.OK, "Record Inserted", true,tag);
-
-            return GetResponse(StatusType.NOT_VALID, "Something Wrong", false);
+            if (await _dbKeeperContext.SaveChangesAsync() > 0)
+                return tag;
+            return null; 
         }
-        public async Task<ResponseModel> Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             var res=await _dbKeeperContext.Tags.FindAsync(id);
             if (res != null)
             {
                 _dbKeeperContext.Tags.Remove(res);
                 _dbKeeperContext.SaveChanges();
-                return GetResponse(StatusType.OK, "Record Deleted", true, res);
+                return true;
             }
-
-            return GetResponse(StatusType.NOT_VALID, "Something Wrong", false);
+            return false;
         }
     }
 }
