@@ -17,7 +17,7 @@ namespace Keeper.Services.Services
         {
             _repo = repo;
         }
-        public async Task<ResponseModel<string>> Insert(ProjectVM projectVM)
+        public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
             ProjectModel model = new ProjectModel
             {
@@ -27,7 +27,7 @@ namespace Keeper.Services.Services
                 CreatedOn = DateTime.Now,
                 CreatedBy = Guid.Empty,
             };
-            await _repo.Insert(model);
+            await _repo.SaveAsync(model);
             {
                 return new ResponseModel<string>
                 {
@@ -37,9 +37,9 @@ namespace Keeper.Services.Services
                 };
             }
         }
-        public async Task<ResponseModel<List<ProjectModel>>> GetProjects(Guid UserId)
+        public async Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId)
         {
-            var result = await _repo.GetProjects(UserId);
+            var result = await _repo.GetAllAsync(UserId);
 
             return new ResponseModel<List<ProjectModel>>
             {
@@ -50,9 +50,9 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<string>> Delete(Guid id)
+        public async Task<ResponseModel<string>> DeleteByIdAsync(Guid id)
         {
-            await _repo.Delete(id);
+            await _repo.DeleteByIdAsync(id);
             return new ResponseModel<string>()
             {
                 StatusName = StatusType.SUCCESS,
@@ -61,14 +61,14 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate)
+        public async Task<ResponseModel<string>> UpdatedAsync(ProjectUpdateVM projectUpdate)
         {
-            ProjectModel existingModel = await _repo.GetProjectById(projectUpdate.Id);
+            ProjectModel existingModel = await _repo.GetByIdAsync(projectUpdate.Id);
             existingModel.Title = projectUpdate.Title;
             existingModel.Description = projectUpdate.Description;
             existingModel.UpdatedOn = DateTime.Now;
             existingModel.UpdatedBy = Guid.Empty;
-            await _repo.Update(existingModel);
+            await _repo.UpdatedAsync(existingModel);
             {
                 return new ResponseModel<string>()
                 {
@@ -80,9 +80,9 @@ namespace Keeper.Services.Services
 
         }
 
-        public async Task<ResponseModel<ProjectModel>> GetProjectById(Guid Id)
+        public async Task<ResponseModel<ProjectModel>> GetByIdAsync(Guid Id)
         {
-            var result = await _repo.GetProjectById(Id);
+            var result = await _repo.GetByIdAsync(Id);
 
             return new ResponseModel<ProjectModel>
             {

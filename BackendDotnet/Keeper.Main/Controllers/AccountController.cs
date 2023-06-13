@@ -1,11 +1,8 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
 using Keeper.Services.Interfaces;
-using Keeper.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
-using System.Web.Http.ModelBinding;
-using KeeperCore.Services;
-using Microsoft.Win32;
+
 
 namespace Keeper.Main.Controllers
 {
@@ -21,13 +18,12 @@ namespace Keeper.Main.Controllers
         [HttpPost("Register")]
         public async Task<ResponseModel<string>> Register(RegisterVM register)
         {
-            return await _userService.RegisterUser(register);
-
+            return await _userService.RegisterAsync(register);
         }
         [HttpPost("Login")]
-        public async Task<ResponseModel<string>> Login(string email, string password)
+        public async Task<ResponseModel<TokenModel>> Login(LoginVM loginVM)
         {
-            return await _userService.Login(email, password);
+            return await _userService.LoginAsync(loginVM);
         }
     }
 }

@@ -3,8 +3,8 @@ namespace Keeper.Repos.Interfaces
 {
     public interface IUserRepo
     {
-        Task<IEnumerable<UserModel>> GetAllUsers();
-        Task<bool> Register(UserModel user);
-        Task<UserModel> GetUserByEmail(string email);       
+        Task<IEnumerable<UserModel>> GetAllAsync();
+        Task<bool> RegisterAsync(UserModel user);
+        Task<UserModel> GetByEmailAsync(string email);       
     }
 }

@@ -11,11 +11,11 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IProjectRepo
     {
-        Task<List<ProjectModel>> GetProjects(Guid userId);
-        Task<ProjectModel> GetProjectById(Guid Id);
-        Task<bool> Insert(ProjectModel project);
-        Task<bool> Delete(Guid projectid);
-        Task<bool> Update(ProjectModel project);
+        Task<List<ProjectModel>> GetAllAsync(Guid userId);
+        Task<ProjectModel> GetByIdAsync(Guid Id);
+        Task<bool> SaveAsync(ProjectModel project);
+        Task<bool> DeleteByIdAsync(Guid projectid);
+        Task<bool> UpdatedAsync(ProjectModel project);
 
     }
 }

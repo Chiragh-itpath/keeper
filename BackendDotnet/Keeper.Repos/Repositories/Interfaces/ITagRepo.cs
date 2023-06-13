@@ -11,11 +11,11 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface ITagRepo
     {
-        Task<bool> Delete(Guid id);
-        Task<IEnumerable<TagModel>> Get();
-        Task<TagModel> Get(Guid Id);
-        Task<IEnumerable<TagModel>> Get(TagType type);
-        Task<IEnumerable<TagModel>> Get(string title);
-        Task<TagModel> Post(TagModel tag);
+        Task<bool> DeleteByIdAsync(Guid id);
+        Task<IEnumerable<TagModel>> GetAllAsync();
+        Task<TagModel> GetByIdAsync(Guid Id);
+        Task<IEnumerable<TagModel>> GetByTypeAsync(TagType type);
+        Task<IEnumerable<TagModel>> GetByTitleAsync(string title);
+        Task<TagModel> SaveAsync(TagModel tag);
     }
 }
