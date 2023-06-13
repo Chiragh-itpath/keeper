@@ -3,6 +3,7 @@ import home from "@/pages/HomePage.vue";
 import login from '@/pages/LoginPage.vue';
 import signUp from "@/pages/SignUpPage.vue";
 import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
+import ProjectPage from '@/pages/ProjectPage.vue';
 export const routes = [
     {
         path: '/', 
@@ -24,5 +25,10 @@ export const routes = [
         component:ForgotPassword,
         name:RouterEnum.FORGOT_PASSWORD
     },
+    {
+        path: '/Projects',
+        component: ProjectPage,
+        name: RouterEnum.PROJECT
+    }
 ]
 

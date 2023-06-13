@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Common.View_Models
 {
-    public class ProjectVM
+    public class ProjectVM:IDisposable
     {
        
         [Required]
@@ -15,5 +15,9 @@ namespace Keeper.Common.View_Models
         [Required]
         public string Description { get; set; }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

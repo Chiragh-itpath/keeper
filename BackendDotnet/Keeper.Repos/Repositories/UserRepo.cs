@@ -11,16 +11,16 @@ namespace Keeper.Repos.Repositories
         {
             _dbKeeperContext = dbKeeperContext;
         }
-        public async Task<IEnumerable<UserModel>> GetAllUsers()
+        public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
             return await _dbKeeperContext.Users.ToListAsync();
         }
-        public async Task<bool> Register(UserModel user)
+        public async Task<bool> RegisterAsync(UserModel user)
         {
             _dbKeeperContext.Users.Add(user);
-            return await _dbKeeperContext.SaveChangesAsync()==1;
+            return _dbKeeperContext.SaveChanges()==1;
         }
-        public async Task<UserModel> GetUserByEmail(string email)
+        public async Task<UserModel> GetByEmailAsync(string email)
         {        
             return await _dbKeeperContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel(); ;
         }      

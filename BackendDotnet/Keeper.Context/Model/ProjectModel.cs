@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Keeper.Context.Model
 {
-    public class ProjectModel
+    public class ProjectModel : IDisposable
     {
         public Guid Id { get; set; }
         [StringLength(50)]
@@ -19,6 +19,9 @@ namespace Keeper.Context.Model
         public virtual IEnumerable<UserModel> Users { get; set; }
         public virtual IEnumerable<KeepModel> Keeps { get; set; }
 
-        
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

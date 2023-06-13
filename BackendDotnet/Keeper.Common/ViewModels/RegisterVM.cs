@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Keeper.Common.ViewModels
 {
-    public class RegisterVM
+    public class RegisterVM:IDisposable
     {
         [Required(ErrorMessage = "This field is required")]
         public string UserName { get; set; } 
@@ -29,5 +29,10 @@ namespace Keeper.Common.ViewModels
             Compare("Password",ErrorMessage ="Confrim password and Password must be same")
         ]
         public string ConfirmPassword { get; set; } = default!;
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

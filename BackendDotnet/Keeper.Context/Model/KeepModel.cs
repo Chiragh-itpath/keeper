@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Context.Model
 {
-    public class KeepModel
+    public class KeepModel:IDisposable
     {
         public Guid Id { get; set; }
         [StringLength(50)]
@@ -26,5 +26,10 @@ namespace Keeper.Context.Model
         public Guid ProjectId { get; set; }
         public virtual ProjectModel Project { get; set; }
         public virtual IEnumerable<UserModel> Users { get; set; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
