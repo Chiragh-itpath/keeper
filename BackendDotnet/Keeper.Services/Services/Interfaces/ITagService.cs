@@ -11,11 +11,11 @@ namespace Keeper.Services.Services.Interfaces
 {
     public interface ITagService
     {
-        Task<ResponseModel> Delete(Guid id);
-        Task<ResponseModel> Get();
-        Task<ResponseModel> Get(Guid Id);
-        Task<ResponseModel> Get(TagType type);
-        Task<ResponseModel> Get(string title);
-        Task<ResponseModel> Post(TagModel tagModel);
+        Task<bool> Delete(Guid id);
+        Task<ResponseModel<IEnumerable<TagModel>>> Get();
+        Task<ResponseModel<TagModel>> Get(Guid Id);
+        Task<ResponseModel<IEnumerable<TagModel>>> Get(TagType type);
+        Task<ResponseModel<IEnumerable<TagModel>>> Get(string title);
+        Task<ResponseModel<TagModel>> Post(TagModel tagModel);
     }
 }
