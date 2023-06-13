@@ -8,14 +8,14 @@ using Keeper.Services.Services.Interfaces;
 
 namespace Keeper.Services.Services
 {
-    public class ProjectService:IProjectService
+    public class ProjectService : IProjectService
     {
         private readonly IProjectRepo _repo;
         public ProjectService(IProjectRepo repo)
         {
             _repo = repo;
         }
-        public async Task<ResponseModel> Insert(ProjectVM projectVM)
+        public async Task<ResponseModel<string>> Insert(ProjectVM projectVM)
         {
 
             ProjectModel model = new ProjectModel
@@ -28,45 +28,35 @@ namespace Keeper.Services.Services
             };
             if (await _repo.Insert(model))
             {
-                return new ResponseModel()
+                return new ResponseModel<string>
                 {
-                    StatusCode = EResponse.OK,
+                    StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
                     Message = "Project Created SuccessFully",
                 };
             }
             else
             {
-                return new ResponseModel()
+                return new ResponseModel<string>
                 {
-                    StatusCode = EResponse.INTERNAL_SERVER_ERROR,
+                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
                     IsSuccess = false,
                     Message = "Project Not Created",
                 };
             }
         }
-        public async Task<ResponseModel> GetProjects(Guid UserId)
+        public async Task<ResponseModel<List<ProjectModel>>> GetProjects(Guid UserId)
         {
-            var res = await _repo.GetProjects(UserId);
-            if (res.Count > 0)
+            var result = await _repo.GetProjects(UserId);
+
+            return new ResponseModel<List<ProjectModel>>
             {
-                return new ResponseModel()
-                {
-                    StatusCode = EResponse.OK,
-                    IsSuccess = true,
-                    Message = "All Projects",
-                    Data = res
-                };
-            }
-            else
-            {
-                return new ResponseModel()
-                {
-                    StatusCode = EResponse.NOT_FOUND,
-                    IsSuccess = false,
-                    Message = "No Projects",
-                };
-            }
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "All Projects",
+                Data = result
+            };
+
         }
     }
 }

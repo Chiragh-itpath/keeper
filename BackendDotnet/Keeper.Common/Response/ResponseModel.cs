@@ -2,21 +2,11 @@
 
 namespace Keeper.Common.Response
 {
-    public class ResponseModel
+    public class ResponseModel<T>
     {
-        public EResponse StatusCode { get; set; }
+        public StatusType StatusName { get; set; }
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = default!;
-        public object? Data { get; set; } 
-        public object? MetaData { get; set; }
-        public ResponseModel GenerateResponse(EResponse statusCode, bool isSuccess, string message, object? data, object? metaData)
-        {
-            StatusCode = statusCode;
-            IsSuccess = isSuccess;
-            Message = message;
-            Data = data;
-            MetaData = metaData;
-            return this;
-        }
+        public T? Data { get; set; }
     }
 }

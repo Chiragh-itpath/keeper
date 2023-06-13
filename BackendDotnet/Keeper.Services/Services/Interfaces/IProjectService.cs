@@ -11,7 +11,7 @@ namespace Keeper.Services.Services.Interfaces
 {
     public interface IProjectService
     {
-        Task<ResponseModel> Insert(ProjectVM projectVM);
-        Task<ResponseModel> GetProjects(Guid UserId);
+        Task<ResponseModel<string>> Insert(ProjectVM projectVM);
+        Task<ResponseModel<List<ProjectModel>>> GetProjects(Guid UserId);
     }
 }
