@@ -34,10 +34,9 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<bool> DeleteByIdAsync(Guid id)
         {
-            var result = await _dbKeeperContext.Projects.FindAsync(id);
+            var result= await GetByIdAsync(id);
             result.IsDeleted = true;
-            _dbKeeperContext.Entry(result).State = EntityState.Modified;
-            return _dbKeeperContext.SaveChanges() == 1;
+            return await UpdatedAsync(result);
         }
 
         public async Task<ProjectModel> GetByIdAsync(Guid Id)
