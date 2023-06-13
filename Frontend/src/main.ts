@@ -8,6 +8,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia';
 import { routes } from "@/router/routes";
 import { siteTheme } from '@/themes/theme';
+import piniaPluginPersistedState from "pinia-plugin-persistedstate"
 import App from './App.vue'
 
 const app = createApp(App)
@@ -30,7 +31,7 @@ const router = createRouter({
 });
 
 const pinia = createPinia()
-
+pinia.use(piniaPluginPersistedState)
 app.use(vuetify)
 app.use(router)
 app.use(pinia)

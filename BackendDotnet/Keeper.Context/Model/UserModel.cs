@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Keeper.Context.Model
 {
-    public class UserModel
+    public class UserModel:IDisposable
     {
         public Guid Id { get; set; }
         [StringLength(30)]
@@ -15,5 +15,10 @@ namespace Keeper.Context.Model
         public DateTime? UpdateOn { get; set; }
         public virtual IEnumerable<ProjectModel> Projects { get; set; }
         public virtual IEnumerable<KeepModel> Keeps { get; set; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

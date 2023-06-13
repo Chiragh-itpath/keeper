@@ -3,6 +3,9 @@ using Keeper.Common.ViewModels;
 using Keeper.Services.Interfaces;
 using Keeper.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
+using System.Web.Http.ModelBinding;
+using KeeperCore.Services;
+using Microsoft.Win32;
 
 namespace Keeper.Main.Controllers
 {
@@ -18,16 +21,6 @@ namespace Keeper.Main.Controllers
          [HttpPost("Register")]
          public async Task<ResponseModel> Register(RegisterVM register)
          {
-             ModelState.ClearValidationState(nameof(register));
-             if (!ModelState.IsValid)
-             {
-                 return new ResponseModel
-                 {
-                     IsSuccess = false,
-                     StatusCode = StatusType.NOT_VALID,
-                     Data = ModelState.Values.SelectMany(x => x.Errors)
-                 };
-             }
              return await _userService.RegisterAsync(register);
          }
          [HttpPost("Login")]
@@ -37,5 +30,7 @@ namespace Keeper.Main.Controllers
              return await _userService.LoginAsync(email, password);
          }
      }
+
+        
     }
 }

@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace Keeper.Common.ViewModels
 {
-    public class ProjectUpdateVM
+    public class ProjectUpdateVM:IDisposable
     {
         public Guid Id { get; set; }
         [Required]
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
