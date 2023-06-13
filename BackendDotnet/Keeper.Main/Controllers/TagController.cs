@@ -19,33 +19,33 @@ namespace Keeper.Main.Controllers
             _tagService = tagService;
         }
         [HttpGet]
-        public async Task<ResponseModel> Get()
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get()
         {
             return await _tagService.Get();
         }
         [HttpGet("{id}")]
-        public async Task<ResponseModel> Get(Guid id)
+        public async Task<ResponseModel<TagModel>> Get(Guid id)
         {
             return await _tagService.Get(id);
         }
-        [HttpGet("{type}")]
-        public async Task<ResponseModel> Get(TagType type)
+        [HttpGet("Type/{type}")]
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(TagType type)
         {
             return await _tagService.Get(type);
         }
-        [HttpGet("{title}")]
-        public async Task<ResponseModel> Get(string title)
+        [HttpGet("Title/{title}")]
+        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(string title)
         {
             return await _tagService.Get(title);
         }
 
         [HttpPost]
-        public async Task<ResponseModel> Post(TagModel tagModel)
+        public async Task<ResponseModel<TagModel>> Post(TagModel tagModel)
         {
             return await _tagService.Post(tagModel);
         }
         [HttpDelete]
-        public async Task<ResponseModel> Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
             return await _tagService.Delete(id);
         }
