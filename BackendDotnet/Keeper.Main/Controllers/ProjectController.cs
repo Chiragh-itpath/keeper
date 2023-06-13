@@ -1,6 +1,7 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -37,9 +38,9 @@ namespace Keeper.Main.Controllers
 
         }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update(ProjectVM project)
+        public async Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate)
         {
-            return await _projectService.Update(project);
+            return await _projectService.Update(projectUpdate);
         }
         [HttpDelete]
         public async Task<ResponseModel<string>> Delete(Guid id)

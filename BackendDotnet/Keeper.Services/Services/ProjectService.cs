@@ -1,6 +1,7 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
+using Keeper.Common.ViewModels;
 using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
@@ -18,7 +19,6 @@ namespace Keeper.Services.Services
         }
         public async Task<ResponseModel<string>> Insert(ProjectVM projectVM)
         {
-
             ProjectModel model = new ProjectModel
             {
                 Id = Guid.NewGuid(),
@@ -27,22 +27,13 @@ namespace Keeper.Services.Services
                 CreatedOn = DateTime.Now,
                 CreatedBy = Guid.Empty,
             };
-            if (await _repo.Insert(model))
+            await _repo.Insert(model);
             {
                 return new ResponseModel<string>
                 {
                     StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
                     Message = "Project Created SuccessFully",
-                };
-            }
-            else
-            {
-                return new ResponseModel<string>
-                {
-                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
-                    IsSuccess = false,
-                    Message = "Project Not Created",
                 };
             }
         }
@@ -62,28 +53,22 @@ namespace Keeper.Services.Services
         public async Task<ResponseModel<string>> Delete(Guid id)
         {
             await _repo.Delete(id);
-
             return new ResponseModel<string>()
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
                 Message = "Project Deleted",
             };
-
-
         }
 
-        public async Task<ResponseModel<string>> Update(ProjectVM project)
+        public async Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate)
         {
-            ProjectModel model = new ProjectModel
-            {
-                Id = project.Id,
-                Title = project.Title,
-                Description = project.Description,
-                UpdatedOn = DateTime.Now,
-                UpdatedBy = Guid.Empty
-            };
-            await _repo.Update(model);
+            ProjectModel existingModel = await _repo.GetProjectById(projectUpdate.Id);
+            existingModel.Title = projectUpdate.Title;
+            existingModel.Description = projectUpdate.Description;
+            existingModel.UpdatedOn = DateTime.Now;
+            existingModel.UpdatedBy = Guid.Empty;
+            await _repo.Update(existingModel);
             {
                 return new ResponseModel<string>()
                 {

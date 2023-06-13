@@ -29,8 +29,8 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<List<ProjectModel>> GetProjects(Guid UserId)
         {
-            var result = await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
-            return result;
+            return await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
+             
         }
         public async Task<bool> Delete(Guid id)
         {
@@ -42,8 +42,7 @@ namespace Keeper.Repos.Repositories
 
         public async Task<ProjectModel> GetProjectById(Guid Id)
         {
-            var result = await _dbKeeperContext.Projects.FindAsync(Id);
-            return result;
+            return await _dbKeeperContext.Projects.FindAsync(Id);   
         }
 
         public async Task<bool> Update(ProjectModel project)
