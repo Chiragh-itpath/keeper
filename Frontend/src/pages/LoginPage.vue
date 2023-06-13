@@ -3,16 +3,23 @@ import { RouterEnum } from '@/enum/RouterEnum';
 import{ref,reactive} from 'vue';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import TextFieldPassword from "@/components/TextFieldPassword.vue";
+import type { ILogin } from '@/Models/LoginModel';
+import  {signin} from "@/Services/AccountService";
 const state=reactive({
     email:"",
     password:""
 })
 const form = ref()
-async function login() {
-    const { valid } = await form.value.validate();
-    if (valid) {
-        alert("Valid")
-        form.value.reset();
+async function login() :Promise<void>{
+    const user:ILogin={
+        Email:state.email,
+        Password:state.password
+    }
+    try{
+        signin(user)
+    }
+    catch(e){
+        console.log(e);
     }
 }
 </script>
