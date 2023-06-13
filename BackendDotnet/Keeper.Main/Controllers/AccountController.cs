@@ -10,7 +10,7 @@ namespace Keeper.Main.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        /* private readonly IUserService _userService;
+         private readonly IUserService _userService;
          public AccountController(IUserService userService)
          {
              _userService = userService;
@@ -36,6 +36,6 @@ namespace Keeper.Main.Controllers
              ResponseModel responseModel = new();                      
              return await _userService.Login(email, password);
          }
-     }*/
+     }
     }
 }
