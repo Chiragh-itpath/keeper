@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Repos.Repositories
 {
-    public class ProjectRepo:IProjectRepo
+    public class ProjectRepo : IProjectRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
         public ProjectRepo(DbKeeperContext dbKeeperContext)
@@ -29,34 +29,27 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<List<ProjectModel>> GetProjects(Guid UserId)
         {
-            var result=await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted==false).ToListAsync();
+            var result = await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
             return result;
         }
         public async Task<bool> Delete(Guid id)
         {
             var result = await _dbKeeperContext.Projects.FindAsync(id);
-            if (result != null)
-            {
-                result.IsDeleted = true;
-                _dbKeeperContext.Entry(result).State = EntityState.Modified;
-                return _dbKeeperContext.SaveChanges() == 1;
-            }
-            else 
-            {
-                return false;
-            }
+            result.IsDeleted = true;
+            _dbKeeperContext.Entry(result).State = EntityState.Modified;
+            return _dbKeeperContext.SaveChanges() == 1;
         }
 
         public async Task<ProjectModel> GetProjectById(Guid Id)
         {
             var result = await _dbKeeperContext.Projects.FindAsync(Id);
-            return result;    
+            return result;
         }
 
         public async Task<bool> Update(ProjectModel project)
         {
-            _dbKeeperContext.Entry(project).State= EntityState.Modified;
-             return await _dbKeeperContext.SaveChangesAsync()==1;
+            _dbKeeperContext.Entry(project).State = EntityState.Modified;
+            return await _dbKeeperContext.SaveChangesAsync() == 1;
         }
     }
 }

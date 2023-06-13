@@ -59,58 +59,52 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel> Delete(Guid id)
+        public async Task<ResponseModel<string>> Delete(Guid id)
         {
-            if (await _repo.Delete(id))
-            {
-                return new ResponseModel() 
-                { 
-                    StatusCode = StatusType.OK,
-                    IsSuccess = true,
-                    Message="Project Deleted",
-                };
-            }
-            else
-            {
-                return new ResponseModel()
-                {
-                    StatusCode = StatusType.NOT_FOUND,
-                    IsSuccess = false,
-                    Message = "Project Not Found",
-                };
+            await _repo.Delete(id);
 
-            }
+            return new ResponseModel<string>()
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "Project Deleted",
+            };
+
+
         }
 
-        public async Task<ResponseModel> Update(ProjectVM project)
+        public async Task<ResponseModel<string>> Update(ProjectVM project)
         {
             ProjectModel model = new ProjectModel
-            {   Id=project.Id,
+            {
+                Id = project.Id,
                 Title = project.Title,
                 Description = project.Description,
-                UpdatedOn=DateTime.Now,
-                UpdatedBy=Guid.Empty
+                UpdatedOn = DateTime.Now,
+                UpdatedBy = Guid.Empty
             };
-            if (await _repo.Update(model))
+            await _repo.Update(model);
             {
-                return new ResponseModel()
+                return new ResponseModel<string>()
                 {
-                    StatusCode = StatusType.OK,
+                    StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
                     Message = "Project Updated SuccessFully",
                 };
             }
-            else
+
+        }
+
+        public async Task<ResponseModel<ProjectModel>> GetProjectById(Guid Id)
+        {
+            var result = await _repo.GetProjectById(Id);
+
+            return new ResponseModel<ProjectModel>
             {
-                return new ResponseModel()
-                {
-                    StatusCode = StatusType.INTERNAL_SERVER_ERROR,
-                    IsSuccess = false,
-                    Message = "Project Not Created",
-                };
-            }
-
-
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Data = result
+            };
 
         }
     }
