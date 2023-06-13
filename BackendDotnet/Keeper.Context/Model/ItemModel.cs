@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Context.Model
 {
-    public class ItemModel
+    public class ItemModel:IDisposable
     {
         public Guid Id { get; set; }
         [StringLength(50)]
@@ -30,5 +30,9 @@ namespace Keeper.Context.Model
         public Guid KeepId { get; set; }
         public virtual KeepModel Keep { get; set; }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
