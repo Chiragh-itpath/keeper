@@ -1,4 +1,5 @@
-export  interface RegisterModel{
+export  interface IRegister
+{
     UserName:string
     Email:string
     Contact:string

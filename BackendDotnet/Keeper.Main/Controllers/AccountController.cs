@@ -21,14 +21,12 @@ namespace Keeper.Main.Controllers
         [HttpPost("Register")]
         public async Task<ResponseModel<string>> Register(RegisterVM register)
         {
-
             return await _userService.RegisterUser(register);
 
         }
         [HttpPost("Login")]
         public async Task<ResponseModel<string>> Login(string email, string password)
         {
-            ResponseModel<string> responseModel = new();
             return await _userService.Login(email, password);
         }
     }
