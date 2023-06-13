@@ -9,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("Allow All", builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 string ConnectionString = builder.Configuration.GetConnectionString("DbConnection");
 
 builder.Services.RegisterDbContext(ConnectionString);
@@ -30,7 +39,7 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -17,25 +17,25 @@ namespace Keeper.Main.Controllers
             _projectService = projectService;
         }
 
-        [HttpPost("")]
-        public async Task<ResponseModel> Post(ProjectVM projectVM)
-        {
-            if(!ModelState.IsValid)
-            {
-                return new ResponseModel()
-                {
-                    IsSuccess = false,
-                    StatusCode = StatusType.NOT_VALID,
-                    Data = ModelState.Values.SelectMany(x => x.Errors)
-                };
-            }
-            return await _projectService.Insert(projectVM);
-        }
-        [HttpGet("")]
-        public async Task<ResponseModel> Get(Guid UserId)
-        {
-            return await _projectService.GetProjects(UserId);
+        //[HttpPost("")]
+        //public async Task<ResponseModel> Post(ProjectVM projectVM)
+        //{
+        //    if(!ModelState.IsValid)
+        //    {
+        //        return new ResponseModel()
+        //        {
+        //            IsSuccess = false,
+        //            StatusCode = StatusType.NOT_VALID,
+        //            Data = ModelState.Values.SelectMany(x => x.Errors)
+        //        };
+        //    }
+        //    return await _projectService.Insert(projectVM);
+        //}
+        //[HttpGet("")]
+        //public async Task<ResponseModel> Get(Guid UserId)
+        //{
+        //    return await _projectService.GetProjects(UserId);
            
-        }
+        //}
     }
 }

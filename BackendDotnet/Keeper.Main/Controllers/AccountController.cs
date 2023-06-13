@@ -30,5 +30,10 @@ namespace Keeper.Main.Controllers
             ResponseModel<string> responseModel = new();                      
             return await _userService.Login(email, password);
         }
+        [HttpPost("test")]
+        public string test(string str)
+        {
+            return str;
+        }
     }
 }
