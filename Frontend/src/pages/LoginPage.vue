@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { RouterEnum } from '@/enum/RouterEnum';
-import{ref,reactive} from 'vue';
+import { ref, reactive } from 'vue';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import TextFieldPassword from "@/components/TextFieldPassword.vue";
 import type { ILogin } from '@/Models/LoginModel';
-import  {signin} from "@/Services/AccountService";
-const state=reactive({
-    email:"",
-    password:""
+import { signin } from "@/Services/AccountService";
+const state = reactive({
+    email: "",
+    password: ""
 })
 const form = ref()
-async function login() :Promise<void>{
-    const user:ILogin={
-        Email:state.email,
-        Password:state.password
+async function login(): Promise<void> {
+    const user: ILogin = {
+        Email: state.email,
+        Password: state.password
     }
-    try{
+    try {
         signin(user)
     }
-    catch(e){
+    catch (e) {
         console.log(e);
     }
 }
@@ -39,10 +39,11 @@ async function login() :Promise<void>{
                             </v-card-subtitle>
                             <v-card-text>
                                 <v-form ref="form" @submit.prevent="login()">
-                                    <TextFieldEmail v-model="state.email" label="Email" color="primary"/>
+                                    <TextFieldEmail v-model="state.email" label="Email" color="primary" />
                                     <TextFieldPassword v-model="state.password" label="Password" color="primary" />
                                     <div class="text-right">
-                                        <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
+                                        <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot
+                                            Password?</router-link>
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
