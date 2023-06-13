@@ -39,7 +39,7 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors("Allow All");
 app.UseAuthorization();
 
 app.MapControllers();
