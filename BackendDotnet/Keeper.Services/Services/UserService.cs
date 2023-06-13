@@ -39,7 +39,7 @@ namespace KeeperCore.Services
                 return new ResponseModel
                 {
                     IsSuccess = false,
-                    StatusCode = EResponse.ALREADY_EXISTS,
+                    StatusCode = StatusType.ALREADY_EXISTS,
                     Message = "Email already exists"
                 };
             }
@@ -52,7 +52,7 @@ namespace KeeperCore.Services
                     return new ResponseModel
                     {
                         IsSuccess = true,
-                        StatusCode = EResponse.OK,
+                        StatusCode = StatusType.OK,
                         Message = "Registered successfully"
                     };
                 }
@@ -66,7 +66,7 @@ namespace KeeperCore.Services
                 return new ResponseModel
                 {
                     IsSuccess = false,
-                    StatusCode = EResponse.NOT_VALID,
+                    StatusCode = StatusType.NOT_VALID,
                     Message = "Error occured"
                 };
             }
@@ -86,7 +86,7 @@ namespace KeeperCore.Services
             {
                 return new ResponseModel
                 {
-                    StatusCode = EResponse.NOT_FOUND,
+                    StatusCode = StatusType.NOT_FOUND,
                     Message = "Email is not registered",
                     IsSuccess = false
                 };
@@ -98,7 +98,7 @@ namespace KeeperCore.Services
                     return new ResponseModel
                     {
                         IsSuccess = true,
-                        StatusCode = EResponse.OK,
+                        StatusCode = StatusType.OK,
                         Message = "Logged in successfully"
                     };
                 }
@@ -106,7 +106,7 @@ namespace KeeperCore.Services
                 {
                     return new ResponseModel
                     {
-                        StatusCode = EResponse.NOT_VALID,
+                        StatusCode = StatusType.NOT_VALID,
                         Message = "Password is not matched",
                         IsSuccess = false
                     };
@@ -117,7 +117,7 @@ namespace KeeperCore.Services
                 return new ResponseModel
                 {
                     IsSuccess = false,
-                    StatusCode = EResponse.NOT_VALID,
+                    StatusCode = StatusType.NOT_VALID,
                     Message = "Error occured"
                 };
             }

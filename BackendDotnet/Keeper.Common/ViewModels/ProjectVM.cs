@@ -9,6 +9,7 @@ namespace Keeper.Common.View_Models
 {
     public class ProjectVM
     {
+        public Guid Id { get; set; }
         [Required]
         public string Title { get; set; }
         [Required]

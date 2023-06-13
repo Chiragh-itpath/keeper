@@ -20,11 +20,11 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        ResponseModel GetResponse(EResponse eResponse, string message, bool isSuccess, object? data = null, object? metadata = null)
+        ResponseModel GetResponse(StatusType StatusType, string message, bool isSuccess, object? data = null, object? metadata = null)
         {
             return new ResponseModel()
             {
-                StatusCode = eResponse,
+                StatusCode = StatusType,
                 Message = message,
                 IsSuccess = isSuccess,
                 Data = data,
@@ -36,9 +36,9 @@ namespace Keeper.Repos.Repositories
             var res = await _dbKeeperContext.Tags.ToListAsync();
             ResponseModel response;
             if (res.Count > 0)
-                response = GetResponse(EResponse.OK, "Tag Data", true, res);
+                response = GetResponse(StatusType.OK, "Tag Data", true, res);
             else
-                response = GetResponse(EResponse.NOT_FOUND, "Tag Data not found", false);
+                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
             return response;
         }
 
@@ -47,9 +47,9 @@ namespace Keeper.Repos.Repositories
             var res = await _dbKeeperContext.Tags.FindAsync(Id);
             ResponseModel response;
             if (res != null)
-                response = GetResponse(EResponse.OK, "Tag Data", true, res);
+                response = GetResponse(StatusType.OK, "Tag Data", true, res);
             else
-                response = GetResponse(EResponse.NOT_FOUND, "Tag Data not found", false);
+                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
             return response;
         }
         
@@ -58,9 +58,9 @@ namespace Keeper.Repos.Repositories
             var res = await _dbKeeperContext.Tags.Where(t=>t.Type==type).ToListAsync();
             ResponseModel response;
             if (res.Count > 0)
-                response = GetResponse(EResponse.OK, "Tag Data", true, res);
+                response = GetResponse(StatusType.OK, "Tag Data", true, res);
             else
-                response = GetResponse(EResponse.NOT_FOUND, "Tag Data not found", false);
+                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
             return response;
         }
         public async Task<ResponseModel> Get(string title)
@@ -68,9 +68,9 @@ namespace Keeper.Repos.Repositories
             var res = await _dbKeeperContext.Tags.Where(t=>t.Title== title).ToListAsync();
             ResponseModel response;
             if (res.Count > 0)
-                response = GetResponse(EResponse.OK, "Tag Data", true, res);
+                response = GetResponse(StatusType.OK, "Tag Data", true, res);
             else
-                response = GetResponse(EResponse.NOT_FOUND, "Tag Data not found", false);
+                response = GetResponse(StatusType.NOT_FOUND, "Tag Data not found", false);
             return response;
         }
 
@@ -78,9 +78,9 @@ namespace Keeper.Repos.Repositories
         {
             await _dbKeeperContext.Tags.AddAsync(tag);
             if(await _dbKeeperContext.SaveChangesAsync()>0)
-                return GetResponse(EResponse.OK, "Record Inserted", true,tag);
+                return GetResponse(StatusType.OK, "Record Inserted", true,tag);
 
-            return GetResponse(EResponse.NOT_VALID, "Something Wrong", false);
+            return GetResponse(StatusType.NOT_VALID, "Something Wrong", false);
         }
         public async Task<ResponseModel> Delete(Guid id)
         {
@@ -89,10 +89,10 @@ namespace Keeper.Repos.Repositories
             {
                 _dbKeeperContext.Tags.Remove(res);
                 _dbKeeperContext.SaveChanges();
-                return GetResponse(EResponse.OK, "Record Deleted", true, res);
+                return GetResponse(StatusType.OK, "Record Deleted", true, res);
             }
 
-            return GetResponse(EResponse.NOT_VALID, "Something Wrong", false);
+            return GetResponse(StatusType.NOT_VALID, "Something Wrong", false);
         }
     }
 }

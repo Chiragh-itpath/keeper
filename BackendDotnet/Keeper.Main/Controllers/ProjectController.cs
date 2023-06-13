@@ -20,12 +20,12 @@ namespace Keeper.Main.Controllers
         [HttpPost("")]
         public async Task<ResponseModel> Post(ProjectVM projectVM)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return new ResponseModel()
                 {
                     IsSuccess = false,
-                    StatusCode = EResponse.NOT_VALID,
+                    StatusCode = StatusType.NOT_VALID,
                     Data = ModelState.Values.SelectMany(x => x.Errors)
                 };
             }
@@ -35,7 +35,25 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel> Get(Guid UserId)
         {
             return await _projectService.GetProjects(UserId);
-           
+
         }
+        [HttpGet]
+        [Route("{Id}")]
+        public async Task<ResponseModel> GetById(Guid Id)
+        {
+            return await _projectService.GetProjectById(Id);
+
+        }
+        [HttpPut]
+        public async Task<ResponseModel> Update(ProjectVM project)
+        {
+            return await _projectService.Update(project);
+        }
+        [HttpDelete]
+        public async Task<ResponseModel> Delete(Guid id)
+        {
+            return await _projectService.Delete(id);
+        }
+        
     }
 }

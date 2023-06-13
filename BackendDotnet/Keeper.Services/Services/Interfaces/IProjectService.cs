@@ -13,5 +13,8 @@ namespace Keeper.Services.Services.Interfaces
     {
         Task<ResponseModel> Insert(ProjectVM projectVM);
         Task<ResponseModel> GetProjects(Guid UserId);
+        Task<ResponseModel> GetProjectById(Guid Id);
+        Task<ResponseModel> Delete(Guid Id);
+        Task<ResponseModel> Update(ProjectVM project);
     }
 }

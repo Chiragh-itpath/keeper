@@ -24,7 +24,7 @@ namespace Keeper.Main.Controllers
                 return new ResponseModel
                 {
                     IsSuccess = false,
-                    StatusCode = EResponse.NOT_VALID,
+                    StatusCode = StatusType.NOT_VALID,
                     Data = ModelState.Values.SelectMany(x => x.Errors)
                 };
             }
