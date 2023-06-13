@@ -9,6 +9,6 @@ namespace Keeper.Services.Interfaces
         Task<IEnumerable<UserModel>> GetAllUsers();
         Task<ResponseModel<string>> RegisterUser(RegisterVM register);
         Task<UserModel> GetUserByEmail(string email);
-        Task<ResponseModel<string>> Login(string email, string password);
+        Task<ResponseModel<TokenModel>> Login(LoginVM loginVM);
     }
 }
