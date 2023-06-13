@@ -1,5 +1,6 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.View_Models;
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,8 @@ namespace Keeper.Services.Services.Interfaces
     {
         Task<ResponseModel<string>> Insert(ProjectVM projectVM);
         Task<ResponseModel<List<ProjectModel>>> GetProjects(Guid UserId);
+        Task<ResponseModel<ProjectModel>> GetProjectById(Guid Id);
+        Task<ResponseModel<string>> Delete(Guid Id);
+        Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate);
     }
 }
