@@ -16,12 +16,12 @@ namespace KeeperCore.Services
             _userRepo = userRepo;
         }
 
-        public async Task<IEnumerable<UserModel>> GetAllUsers()
+        public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
-            var res = await _userRepo.GetAllUsers();
+            var res = await _userRepo.GetAllAsync();
             return res;
         }
-        public async Task<ResponseModel<string>> RegisterUser(RegisterVM register)
+        public async Task<ResponseModel<string>> RegisterAsync(RegisterVM register)
         {
             UserModel userModel = new()
             {
@@ -33,7 +33,7 @@ namespace KeeperCore.Services
                 CreatedOn = register.CreatedOn,
                 UpdateOn = null
             };
-            var user = await _userRepo.GetUserByEmail(register.Email);
+            var user = await _userRepo.GetByEmailAsync(register.Email);
             if (user.Id != Guid.Empty)
             {            
                 return new ResponseModel<string>
@@ -46,7 +46,7 @@ namespace KeeperCore.Services
             try
             {
                 userModel.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
-                bool res = await _userRepo.Register(userModel);
+                bool res = await _userRepo.RegisterAsync(userModel);
                 if (res)
                 {
                     return new ResponseModel<string>
@@ -72,14 +72,14 @@ namespace KeeperCore.Services
             }
         }
 
-        public async Task<UserModel> GetUserByEmail(string email)
+        public async Task<UserModel> GetByEmailAsync(string email)
         {
-            return await _userRepo.GetUserByEmail(email);
+            return await _userRepo.GetByEmailAsync(email);
         }
 
-        public async Task<ResponseModel<string>> Login(string email, string password)
+        public async Task<ResponseModel<string>> LoginAsync(string email, string password)
         {
-            var user = await _userRepo.GetUserByEmail(email);
+            var user = await _userRepo.GetByEmailAsync(email);
             if (user.Id == Guid.Empty)
             {
                 return new ResponseModel<string>

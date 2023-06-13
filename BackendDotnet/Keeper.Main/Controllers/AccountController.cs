@@ -28,13 +28,13 @@ namespace Keeper.Main.Controllers
                      Data = ModelState.Values.SelectMany(x => x.Errors)
                  };
              }
-             return await _userService.RegisterUser(register);
+             return await _userService.RegisterAsync(register);
          }
          [HttpPost("Login")]
          public async Task<ResponseModel> Login(string email, string password)
          {
              ResponseModel responseModel = new();                      
-             return await _userService.Login(email, password);
+             return await _userService.LoginAsync(email, password);
          }
      }
     }

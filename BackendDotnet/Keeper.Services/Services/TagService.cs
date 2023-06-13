@@ -18,36 +18,36 @@ namespace Keeper.Services.Services
         {
             _tagRepo = tagRepo;
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get()
+        public async Task<ResponseModel<IEnumerable<TagModel>>> GetAllAsync()
         {
-            var data=await _tagRepo.Get();
+            var data=await _tagRepo.GetAllAsync();
             return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel<TagModel>> Get(Guid Id)
+        public async Task<ResponseModel<TagModel>> GetByIdAsync(Guid Id)
         {
-            var data=await _tagRepo.Get(Id);
+            var data=await _tagRepo.GetByIdAsync(Id);
             return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(TagType type)
+        public async Task<ResponseModel<IEnumerable<TagModel>>> GetByTypeAsync(TagType type)
         {
-            var data= await _tagRepo.Get(type); 
+            var data= await _tagRepo.GetByTypeAsync(type); 
             return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(string title)
+        public async Task<ResponseModel<IEnumerable<TagModel>>> GetByTitleAsync(string title)
         {
-            var data = await _tagRepo.Get(title);
+            var data = await _tagRepo.GetByTitleAsync(title);
             return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
         }
-        public async Task<ResponseModel<TagModel>> Post(TagModel tagModel)
+        public async Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel)
         {
             tagModel.Id= Guid.NewGuid();
-            var data= await _tagRepo.Post(tagModel);
+            var data= await _tagRepo.SaveAsync(tagModel);
 
             return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record Inserted", IsSuccess = true, Data = data };
         }
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> DeleteByIdAsync(Guid id)
         {
-            return await _tagRepo.Delete(id);
+            return await _tagRepo.DeleteByIdAsync(id);
         }
         ResponseModel<IEnumerable<TagModel>> GetResponse(StatusType statusName, string message, bool isSuccess, IEnumerable<TagModel>? data = null, object? metadata = null)
         {
