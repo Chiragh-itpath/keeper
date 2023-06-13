@@ -1,6 +1,8 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Keeper.Services.Interfaces
 {
@@ -9,6 +11,6 @@ namespace Keeper.Services.Interfaces
         Task<IEnumerable<UserModel>> GetAllAsync();
         Task<ResponseModel<string>> RegisterAsync(RegisterVM register);
         Task<UserModel> GetByEmailAsync(string email);
-        Task<ResponseModel<string>> LoginAsync(string email, string password);
+        Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM);
     }
 }
