@@ -2,7 +2,7 @@
 import { reactive } from 'vue';
 import { eventBus } from '@/data/EventBus';
 const state = reactive({
-    navigationBar: false
+    navigationBar: true
 });
 eventBus.on('toggle-sidebar', () => {
     state.navigationBar = !state.navigationBar
