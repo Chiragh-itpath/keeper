@@ -16,23 +16,27 @@ const state = reactive({
     confirmPassword: "",
     errorMessage: ""
 })
-// async function register(): Promise<void> {
-//     const { valid } = await form.value.validate();
-//     if (valid) {
-//         alert("Valid")
-//         form.value.reset();
-//     }
-// }
+async function register(): Promise<void> {
+    try {
+        const data = await axios.post(
+            'https://localhost:7134/api/Account/Register',
+            {
+                username: state.username,
+                email: state.email,
+                contact: state.contact,
+                password: state.password,
+                confirmPassword: state.confirmPassword,
 
-
-const register = async () => {
-  try {
-    const response = await axios.post('https://localhost:7134/api/Account/Register', { data:
-         '' });
-    console.log(response.data); // Handle the response data here
-  } catch (error) {
-    console.error(error); // Handle any errors here
-  }
+            }
+        )
+            .then(function (response) {
+                console.table(response);
+            })
+        console.log(data);
+    }
+    catch (e) {
+        console.log(e);
+    }
 }
 
 function validatePassword() {

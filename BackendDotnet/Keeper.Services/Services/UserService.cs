@@ -30,7 +30,7 @@ namespace KeeperCore.Services
                 Email = register.Email,
                 Password = register.Password,
                 Contact = register.Contact,
-                CreatedOn = register.CreatedOn,
+                CreatedOn = DateTime.Now,
                 UpdateOn = null
             };
             var user = await _userRepo.GetUserByEmail(register.Email);

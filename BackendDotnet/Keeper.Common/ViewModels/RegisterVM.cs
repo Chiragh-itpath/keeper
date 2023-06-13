@@ -29,7 +29,5 @@ namespace Keeper.Common.ViewModels
             Compare("Password",ErrorMessage ="Confrim password and Password must be same")
         ]
         public string ConfirmPassword { get; set; } = default!;
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
-
     }
 }
