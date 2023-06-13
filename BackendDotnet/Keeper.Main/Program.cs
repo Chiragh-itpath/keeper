@@ -17,9 +17,7 @@ builder.Services.RegisterServices();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<ApiBehaviorOptions>(option =>
 {
-    option.SuppressModelStateInvalidFilter = true; 
-});
-=======
+
     option.SuppressModelStateInvalidFilter = true;
 });
 
