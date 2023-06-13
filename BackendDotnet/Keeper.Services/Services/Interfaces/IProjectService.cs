@@ -12,10 +12,10 @@ namespace Keeper.Services.Services.Interfaces
 {
     public interface IProjectService
     {
-        Task<ResponseModel<string>> Insert(ProjectVM projectVM);
-        Task<ResponseModel<List<ProjectModel>>> GetProjects(Guid UserId);
-        Task<ResponseModel<ProjectModel>> GetProjectById(Guid Id);
-        Task<ResponseModel<string>> Delete(Guid Id);
-        Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate);
+        Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM);
+        Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId);
+        Task<ResponseModel<ProjectModel>> GetByIdAsync(Guid Id);
+        Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
+        Task<ResponseModel<string>> UpdatedAsync(ProjectUpdateVM projectUpdate);
     }
 }

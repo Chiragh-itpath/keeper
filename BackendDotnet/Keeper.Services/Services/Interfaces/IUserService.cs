@@ -6,9 +6,9 @@ namespace Keeper.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerable<UserModel>> GetAllUsers();
-        Task<ResponseModel<string>> RegisterUser(RegisterVM register);
-        Task<UserModel> GetUserByEmail(string email);
-        Task<ResponseModel<string>> Login(string email, string password);
+        Task<IEnumerable<UserModel>> GetAllAsync();
+        Task<ResponseModel<string>> RegisterAsync(RegisterVM register);
+        Task<UserModel> GetByEmailAsync(string email);
+        Task<ResponseModel<string>> LoginAsync(string email, string password);
     }
 }

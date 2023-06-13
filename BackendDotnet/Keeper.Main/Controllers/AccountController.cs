@@ -13,21 +13,24 @@ namespace Keeper.Main.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public AccountController(IUserService userService)
-        {
-            _userService = userService;
-        }
-        [HttpPost("Register")]
-        public async Task<ResponseModel<string>> Register(RegisterVM register)
-        {
-            return await _userService.RegisterUser(register);
+         private readonly IUserService _userService;
+         public AccountController(IUserService userService)
+         {
+             _userService = userService;
+         }
+         [HttpPost("Register")]
+         public async Task<ResponseModel> Register(RegisterVM register)
+         {
+             return await _userService.RegisterAsync(register);
+         }
+         [HttpPost("Login")]
+         public async Task<ResponseModel> Login(string email, string password)
+         {
+             ResponseModel responseModel = new();                      
+             return await _userService.LoginAsync(email, password);
+         }
+     }
 
-        }
-        [HttpPost("Login")]
-        public async Task<ResponseModel<string>> Login(string email, string password)
-        {
-            return await _userService.Login(email, password);
-        }
+        
     }
 }

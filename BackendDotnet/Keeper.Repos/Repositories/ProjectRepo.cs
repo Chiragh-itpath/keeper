@@ -22,17 +22,17 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        public async Task<bool> Insert(ProjectModel project)
+        public async Task<bool> SaveAsync(ProjectModel project)
         {
             await _dbKeeperContext.Projects.AddAsync(project);
-            return await _dbKeeperContext.SaveChangesAsync() == 1;
+            return _dbKeeperContext.SaveChanges() == 1;
         }
-        public async Task<List<ProjectModel>> GetProjects(Guid UserId)
+        public async Task<List<ProjectModel>> GetAllAsync(Guid UserId)
         {
             return await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
              
         }
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> DeleteByIdAsync(Guid id)
         {
             var result = await _dbKeeperContext.Projects.FindAsync(id);
             result.IsDeleted = true;
@@ -40,15 +40,15 @@ namespace Keeper.Repos.Repositories
             return _dbKeeperContext.SaveChanges() == 1;
         }
 
-        public async Task<ProjectModel> GetProjectById(Guid Id)
+        public async Task<ProjectModel> GetByIdAsync(Guid Id)
         {
             return await _dbKeeperContext.Projects.FindAsync(Id);   
         }
 
-        public async Task<bool> Update(ProjectModel project)
+        public async Task<bool> UpdatedAsync(ProjectModel project)
         {
             _dbKeeperContext.Entry(project).State = EntityState.Modified;
-            return await _dbKeeperContext.SaveChangesAsync() == 1;
+            return _dbKeeperContext.SaveChanges() == 1;
         }
     }
 }
