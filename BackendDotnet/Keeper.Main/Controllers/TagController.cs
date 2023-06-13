@@ -2,12 +2,14 @@
 using Keeper.Common.Response;
 using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Keeper.Main.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TagController : ControllerBase

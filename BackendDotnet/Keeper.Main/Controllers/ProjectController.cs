@@ -4,11 +4,13 @@ using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectController : ControllerBase
