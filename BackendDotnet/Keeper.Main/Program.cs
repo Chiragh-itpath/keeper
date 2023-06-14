@@ -21,9 +21,9 @@ builder.Services.AddCors(option =>
         .AllowAnyMethod();
     });
 });
-string ConnectionString = builder.Configuration.GetConnectionString("DbConnection");
 
-builder.Services.RegisterDbContext(ConnectionString);
+
+builder.Services.RegisterDbContext(builder.Configuration);
 builder.Services.RegisterRepos();
 builder.Services.RegisterServices();
 builder.Services.AddSwaggerGen();
