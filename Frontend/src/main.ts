@@ -22,7 +22,6 @@ const vuetify = createVuetify({
             siteTheme
         }
     },
-    
 })
 
 const router = createRouter({
@@ -30,8 +29,11 @@ const router = createRouter({
     routes: routes
 });
 
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedState)
+
+
 app.use(vuetify)
 app.use(router)
 app.use(pinia)
