@@ -8,17 +8,24 @@ import TextFieldText from "@/components/TextFieldText.vue";
 import { requiredRule } from '@/data/ValidationRules'
 import type { IRegister } from "@/Models/RegisterModel";
 import { useAccountStore } from '@/stores/AccountStore';
+import { StatusType } from '@/enum/StatusType'
+import { useRouter } from 'vue-router';
 
-const { registerUser } = useAccountStore()
-const form = ref()
+const { registerUser } = useAccountStore();
+const router = useRouter();
+const form = ref();
 const state = reactive({
     username: "",
     email: "",
     contact: "",
     password: "",
     confirmPassword: "",
-    errorMessage: ""
+    isSuccess: false,
+    errorMessage: "",
+    successMessage: "",
+    emailExists: false
 })
+
 async function register(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid)
@@ -30,8 +37,21 @@ async function register(): Promise<void> {
         Password: state.password,
         ConfirmPassword: state.confirmPassword
     }
-    const response=await registerUser(user);
-    console.log(response);
+    const response = await registerUser(user);
+    state.emailExists = false;
+    if (response.data.statusName != StatusType.SUCCESS) {
+        state.errorMessage = response.data.message
+        state.emailExists = true
+    }
+    else {
+        state.isSuccess = true
+        state.successMessage = response.data.message
+        state.emailExists = false
+        form.value.reset()
+        setTimeout(() => {
+            router.push({ name: RouterEnum.LOGIN })
+        }, 1000);
+    }
 }
 
 function validatePassword() {
@@ -58,12 +78,17 @@ function validatePassword() {
                         <TextFieldText v-model="state.username" label="Username" prepend-icon="mdi-account"
                             color="primary" />
                         <TextFieldContact label="Contact" :is-required="false" v-model="state.contact" color="primary" />
-                        <TextFieldEmail v-model="state.email" label="Email" color="primary" />
+                        <TextFieldEmail v-model="state.email" label="Email" color="primary"
+                            :error-messages="state.emailExists ? state.errorMessage : ''" />
                         <TextFieldPassword v-model="state.password" label="Password" color="primary" />
                         <TextFieldPassword v-model="state.confirmPassword" label="Confirm Password" color="primary"
                             :rules="[requiredRule, validatePassword() ? true : 'Password not match!']" />
                         <v-card-actions>
                             <div class="d-flex flex-column justify-center mx-auto">
+                                <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right"
+                                    v-model="state.isSuccess">
+                                    {{ state.successMessage }}
+                                </v-snackbar>
                                 <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"
                                     color="teal" class="mt-4">Sign Up</v-btn>
                                 <div class="mt-5">
