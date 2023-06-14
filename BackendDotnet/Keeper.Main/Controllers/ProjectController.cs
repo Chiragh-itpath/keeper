@@ -44,7 +44,7 @@ namespace Keeper.Main.Controllers
         {
             return await _projectService.UpdatedAsync(projectUpdate);
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ResponseModel<string>> Delete(Guid id)
         {
             return await _projectService.DeleteByIdAsync(id);
