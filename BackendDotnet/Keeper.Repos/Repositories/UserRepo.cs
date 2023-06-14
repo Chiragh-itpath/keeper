@@ -2,6 +2,7 @@
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 namespace Keeper.Repos.Repositories
 {
     public class UserRepo : IUserRepo
@@ -23,6 +24,11 @@ namespace Keeper.Repos.Repositories
         public async Task<UserModel> GetByEmailAsync(string email)
         {        
             return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel(); 
-        }      
+        }
+
+        public async Task<UserModel> GetByIdAsync(Guid id)
+        {
+            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Id == id) ?? new UserModel();
+        }
     }
 }

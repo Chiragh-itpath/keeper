@@ -5,6 +5,7 @@ namespace Keeper.Repos.Interfaces
     {
         Task<IEnumerable<UserModel>> GetAllAsync();
         Task<bool> RegisterAsync(UserModel user);
-        Task<UserModel> GetByEmailAsync(string email);       
+        Task<UserModel> GetByEmailAsync(string email);
+        Task<UserModel> GetByIdAsync(Guid id);
     }
 }

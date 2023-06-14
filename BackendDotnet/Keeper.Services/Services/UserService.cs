@@ -20,7 +20,7 @@ namespace KeeperCore.Services
         public UserService(IUserRepo userRepo, IConfiguration configuration)
         {
             _userRepo = userRepo;
-            _configuration=configuration;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<UserModel>> GetAllAsync()
@@ -42,7 +42,7 @@ namespace KeeperCore.Services
             };
             var user = await _userRepo.GetByEmailAsync(register.Email);
             if (user.Id != Guid.Empty)
-            {            
+            {
                 return new ResponseModel<string>
                 {
                     IsSuccess = false,
@@ -91,7 +91,6 @@ namespace KeeperCore.Services
             {
                 return new ResponseModel<TokenModel>
                 {
-                
                     StatusName = StatusType.NOT_FOUND,
                     Message = "Email is not registered",
                     IsSuccess = false
@@ -107,7 +106,7 @@ namespace KeeperCore.Services
                         IsSuccess = true,
                         StatusName = StatusType.SUCCESS,
                         Message = "Logged in successfully",
-                        Data= new TokenModel() { UserId=user.Id ,Token=GenerateToken(user)}
+                        Data = new TokenModel() { UserId = user.Id, Token = GenerateToken(user) }
                     };
                 }
                 else
@@ -150,6 +149,35 @@ namespace KeeperCore.Services
                 expires: DateTime.UtcNow.AddMinutes(59),
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<ResponseModel<UserVM>> GetByIdAsync(Guid id)
+        {
+            var user = await _userRepo.GetByIdAsync(id);
+            if(user.Id == Guid.Empty)
+            {
+                return new ResponseModel<UserVM>
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = true,
+                    Message = "No User found with this id",
+                };
+            }
+            var userVm = new UserVM()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Contact = user.Contact,
+                Password = user.Password
+            };
+            return new ResponseModel<UserVM>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "User Found",
+                Data = userVm
+            };
         }
     }
 }
