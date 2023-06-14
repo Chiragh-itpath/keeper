@@ -42,7 +42,7 @@ namespace Keeper.Main.Controllers
             return await _tagService.GetByTitleAsync(title);
         }
 
-        [HttpPost]
+        [HttpPost("")]
         public async Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel)
         {
             return await _tagService.SaveAsync(tagModel);
