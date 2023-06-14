@@ -6,24 +6,24 @@ import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
 import ProjectPage from '@/pages/ProjectPage.vue';
 export const routes = [
     {
-        path: '/', 
+        path: '/',
         component: home,
-        name:RouterEnum.HOME
+        name: RouterEnum.HOME
     },
     {
-        path:'/login',
-        component:login,
-        name:RouterEnum.LOGIN
+        path: '/login',
+        component: login,
+        name: RouterEnum.LOGIN
     },
     {
-        path:'/signup',
-        component:signUp,
-        name:RouterEnum.SIGNUP
+        path: '/signup',
+        component: signUp,
+        name: RouterEnum.SIGNUP
     },
     {
-        path:'/forgotPassword',
-        component:ForgotPassword,
-        name:RouterEnum.FORGOT_PASSWORD
+        path: '/forgotPassword',
+        component: ForgotPassword,
+        name: RouterEnum.FORGOT_PASSWORD
     },
     {
         path: '/Projects',

@@ -7,6 +7,8 @@ import type { ILogin } from '@/Models/LoginModel';
 import { useAccountStore } from "@/stores/AccountStore";
 import { StatusType } from '@/enum/StatusType';
 import { useRouter } from 'vue-router';
+import { UserStore } from '@/stores/UserStore';
+import { useCookies } from 'vue3-cookies';
 
 const { loginUser } = useAccountStore();
 const router = useRouter();
@@ -22,6 +24,8 @@ const state = reactive({
     successMessage: "",
 
 })
+const { StoreUser } = UserStore();
+const { cookies } = useCookies();
 async function login(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid) return
@@ -34,11 +38,13 @@ async function login(): Promise<void> {
         state.emailError = true;
         state.passwordError = false;
         state.emailErrorMessage = response.data.message;
+        return;
     }
     if (response.data.statusName == StatusType.NOT_VALID) {
         state.passwordError = true;
         state.emailError = false;
         state.passwordErrorMessage = response.data.message;
+        return;
     }
     if (response.data.statusName == StatusType.SUCCESS) {
         state.emailError = false;
@@ -46,6 +52,9 @@ async function login(): Promise<void> {
         state.isSuccess = true;
         state.successMessage = response.data.message;
         form.value.reset();
+        const { token, userId } = response.data.data;
+        await StoreUser(userId)
+        cookies.set('token', token)
         setTimeout(() => {
             router.push({ name: RouterEnum.PROJECT })
         }, 1000);
