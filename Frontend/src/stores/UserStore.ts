@@ -6,7 +6,7 @@ import { ref } from 'vue';
 
 export const UserStore = defineStore('user', () => {
     const User = ref<IUser>();
-    async function StoreUser(id: Guid) {
+    async function StoreUser(id: Guid): Promise<void> {
         User.value = await GetUser(id)
     }
     return {

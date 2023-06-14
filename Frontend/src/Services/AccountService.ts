@@ -17,7 +17,6 @@ async function signup(user: IRegister): Promise<any> {
 }
 
 async function signin(user: ILogin): Promise<any> {
-    console.log(user);   
     try {
         const response = await axios.post(
             'https://localhost:7134/api/Account/Login',
