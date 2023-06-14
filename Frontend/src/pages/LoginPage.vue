@@ -34,13 +34,11 @@ async function login(): Promise<void> {
         state.emailError = true;
         state.passwordError = false;
         state.emailErrorMessage = response.data.message;
-        return;
     }
     if (response.data.statusName == StatusType.NOT_VALID) {
         state.passwordError = true;
         state.emailError = false;
         state.passwordErrorMessage = response.data.message;
-        return;
     }
     if (response.data.statusName == StatusType.SUCCESS) {
         state.emailError = false;
