@@ -4,24 +4,25 @@ import { ref, reactive } from 'vue';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import TextFieldPassword from "@/components/TextFieldPassword.vue";
 import type { ILogin } from '@/Models/LoginModel';
-import { signin } from "@/Services/AccountService";
+import { useAccountStore } from "@/stores/AccountStore";
+
+const { loginUser } = useAccountStore()
+const form = ref()
 const state = reactive({
     email: "",
     password: ""
 })
-const form = ref()
 async function login(): Promise<void> {
+    const { valid } = await form.value.validate();
+    if (!valid) return
     const user: ILogin = {
         Email: state.email,
         Password: state.password
     }
-    try {
-        signin(user)
-    }
-    catch (e) {
-        console.log(e);
-    }
+    const response = await loginUser(user);
+    console.log(response);
 }
+
 </script>
 <template>
     <v-app>
@@ -38,7 +39,7 @@ async function login(): Promise<void> {
                                 to continue to Keeper
                             </v-card-subtitle>
                             <v-card-text>
-                                <v-form ref="form" @submit.prevent="login()">
+                                <v-form ref="form" @submit.prevent="login">
                                     <TextFieldEmail v-model="state.email" label="Email" color="primary" />
                                     <TextFieldPassword v-model="state.password" label="Password" color="primary" />
                                     <div class="text-right">

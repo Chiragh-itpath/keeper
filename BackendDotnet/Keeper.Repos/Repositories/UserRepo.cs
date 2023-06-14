@@ -22,7 +22,7 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<UserModel> GetByEmailAsync(string email)
         {        
-            return await _dbKeeperContext.Users.Where(x => x.Email.Contains(email)).SingleOrDefaultAsync() ?? new UserModel(); 
+            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel(); 
         }      
     }
 }
