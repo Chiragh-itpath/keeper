@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import homeimg from '@/assests/images/Home.jpg';
 import ButtonComponent from '@/components/ButtonComponent.vue';
+import { RouterEnum } from '@/enum/RouterEnum';
 </script>
 
 <template>
@@ -28,8 +29,12 @@ import ButtonComponent from '@/components/ButtonComponent.vue';
                     </v-row>
 
                     <div class="d-flex mt-5 justify-center">
-                        <button-component class="mx-3 ">Login</button-component>
-                        <button-component variant="elevated" class="mx-3">Signup</button-component>
+                        <router-link :to="{ name: RouterEnum.LOGIN }">
+                            <button-component class="mx-3 ">Login</button-component>
+                        </router-link>
+                        <router-link :to="{ name: RouterEnum.SIGNUP }">
+                            <button-component variant="elevated" class="mx-3">Signup</button-component>
+                        </router-link>
                     </div>
                 </v-sheet>
             </v-col>
