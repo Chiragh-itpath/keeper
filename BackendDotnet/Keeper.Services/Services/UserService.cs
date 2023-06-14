@@ -169,7 +169,6 @@ namespace KeeperCore.Services
                 UserName = user.UserName,
                 Email = user.Email,
                 Contact = user.Contact,
-                Password = user.Password
             };
             return new ResponseModel<UserVM>
             {
