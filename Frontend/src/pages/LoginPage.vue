@@ -47,9 +47,9 @@ async function login(): Promise<void> {
                                             Password?</router-link>
                                     </div>
                                     <v-card-actions>
-                                        <div class="d-flex flex-column justify-center mx-auto">
-                                            <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
-                                                variant="flat" color="teal" class="mt-4">Login</v-btn>
+                                        <div class="d-flex flex-column justify-center mx-auto">                                   
+                                                    <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
+                                                        variant="flat" color="teal" class="mt-4">Login</v-btn>                                                                                                                      
                                             <div class="mt-5">
                                                 New User?
                                                 <router-link :to="{ name: RouterEnum.SIGNUP }">Create an

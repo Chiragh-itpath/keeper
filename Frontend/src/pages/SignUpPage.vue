@@ -8,7 +8,7 @@ import TextFieldText from "@/components/TextFieldText.vue";
 import { requiredRule } from '@/data/ValidationRules'
 import type { IRegister } from "@/Models/RegisterModel";
 import { useAccountStore } from '@/stores/AccountStore';
-
+import { StatusType } from '@/enum/StatusType'
 const { registerUser } = useAccountStore()
 const form = ref()
 const state = reactive({
@@ -17,8 +17,11 @@ const state = reactive({
     contact: "",
     password: "",
     confirmPassword: "",
-    errorMessage: ""
+    isSuccess: false,
+    errorMessage: "",
+    successMessage: ""
 })
+
 async function register(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid)
@@ -30,8 +33,8 @@ async function register(): Promise<void> {
         Password: state.password,
         ConfirmPassword: state.confirmPassword
     }
-    const response=await registerUser(user);
-    console.log(response);
+    const response = await registerUser(user);
+    console.log(response.data.message);
 }
 
 function validatePassword() {
@@ -64,8 +67,16 @@ function validatePassword() {
                             :rules="[requiredRule, validatePassword() ? true : 'Password not match!']" />
                         <v-card-actions>
                             <div class="d-flex flex-column justify-center mx-auto">
+                                <v-snackbar :timeout="2000" color="#26A69A" variant="outlined" location="top"
+                                    v-if="state.isSuccess">
+                                    <template v-slot:activator="{ props }">
+                                        <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"
+                                            color="teal" class="mt-4" v-bind="props">Sign Up</v-btn>
+                                    </template>
+                                    {{ state.errorMessage }}
+                                </v-snackbar>
                                 <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat"
-                                    color="teal" class="mt-4">Sign Up</v-btn>
+                                    color="teal" class="mt-4" V-ELSE>Sign Up</v-btn>
                                 <div class="mt-5">
                                     Already have an account? <router-link :to="{ name: RouterEnum.LOGIN }">Sign
                                         In</router-link>
