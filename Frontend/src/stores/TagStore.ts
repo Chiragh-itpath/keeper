@@ -4,7 +4,7 @@ import type { TagTypeEnum } from "@/enum/TagTypeEnum";
 import axios from "axios";
 import type { ITag } from "@/Models/TagModel";
 export const tagStore=defineStore("TagStore",()=>{
-    async function Get():Promise<any>{
+    async function GetAll():Promise<any>{
         try{
             return await Get();
         }
@@ -12,7 +12,7 @@ export const tagStore=defineStore("TagStore",()=>{
             console.log(error);
         }
     }
-     async function GetByType(tagType:TagTypeEnum):Promise<any>{
+     async function GetByTagType(tagType:TagTypeEnum):Promise<any>{
         try {
             return await GetByType(tagType);
         } catch (error) {
@@ -20,7 +20,7 @@ export const tagStore=defineStore("TagStore",()=>{
         }
     }
     
-     async function GetByTitle(title:string):Promise<any>{
+     async function GetByTagTitle(title:string):Promise<any>{
         try {
             return await GetByTitle(title);
         } catch (error) {
@@ -28,7 +28,7 @@ export const tagStore=defineStore("TagStore",()=>{
         }
     }
     
-     async function Post(tag:ITag):Promise<any>{
+     async function Add(tag:ITag):Promise<any>{
         try {
             return await Post(tag);
         } catch (error) {
@@ -36,7 +36,7 @@ export const tagStore=defineStore("TagStore",()=>{
         }
     }
     return{
-        Get,GetByTitle,GetByType,Post
+        GetAll,GetByTagTitle,GetByTagType,Add
     }
 })
 
