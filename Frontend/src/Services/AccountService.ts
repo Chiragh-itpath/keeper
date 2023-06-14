@@ -1,11 +1,10 @@
 import type { ILogin } from "@/Models/LoginModel";
 import type { IRegister } from "@/Models/RegisterModel";
-import axios from "axios";
-
+import { http} from "@/GlobalConfig/ApiClient";
 async function signup(user: IRegister): Promise<any> { 
     try {
-        const response = await axios.post(
-            'https://localhost:7134/api/Account/Register',
+        const response = await http.post(
+            '/Account/Register',
             user
         )
         return response;
@@ -13,13 +12,12 @@ async function signup(user: IRegister): Promise<any> {
     catch (e) {
         return e;
     }
-    
 }
 
 async function signin(user: ILogin): Promise<any> {
     try {
-        const response = await axios.post(
-            'https://localhost:7134/api/Account/Login',
+        const response = await http.post(
+            '/Account/Login',
             user
         )
         return response;
