@@ -85,7 +85,7 @@ function validatePassword() {
                             :rules="[requiredRule, validatePassword() ? true : 'Password not match!']" />
                         <v-card-actions>
                             <div class="d-flex flex-column justify-center mx-auto">
-                                <v-snackbar :timeout="2000" color="#26A69A" variant="tonal" location="top"
+                                <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right"
                                     v-model="state.isSuccess">
                                     {{ state.successMessage }}
                                 </v-snackbar>
