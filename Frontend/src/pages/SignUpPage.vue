@@ -42,6 +42,7 @@ async function register(): Promise<void> {
     if (response.data.statusName != StatusType.SUCCESS) {
         state.errorMessage = response.data.message
         state.emailExists = true
+        return;
     }
     else {
         state.isSuccess = true
