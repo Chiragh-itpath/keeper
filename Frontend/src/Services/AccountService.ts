@@ -13,6 +13,7 @@ async function signup(user: IRegister): Promise<any> {
     catch (e) {
         return e;
     }
+    
 }
 
 async function signin(user: ILogin): Promise<any> {

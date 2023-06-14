@@ -7,7 +7,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue';
     <v-container fluid>
         <v-row class="flex-wrap-reverse">
             <v-col cols="12" md="6">
-                <v-sheet  class="text-center">
+                <v-sheet class="text-center">
                     <v-row class="mt-3 mt-md-6 mt-lg-10">
                         <v-col cols="12" class="text-md-h2 text-sm-h3 text-h4">
                             <span class="text-primary ">Create.</span>
