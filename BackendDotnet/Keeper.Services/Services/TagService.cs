@@ -1,5 +1,6 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
@@ -18,25 +19,25 @@ namespace Keeper.Services.Services
         {
             _tagRepo = tagRepo;
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> GetAllAsync()
+        public async Task<ResponseModel<List<TagVM>>> GetAllAsync()
         {
             var data=await _tagRepo.GetAllAsync();
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
         public async Task<ResponseModel<TagModel>> GetByIdAsync(Guid Id)
         {
             var data=await _tagRepo.GetByIdAsync(Id);
             return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> GetByTypeAsync(TagType type)
+        public async Task<ResponseModel<List<TagVM>>> GetByTypeAsync(TagType type)
         {
-            var data= await _tagRepo.GetByTypeAsync(type); 
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
+            var data = await _tagRepo.GetByTypeAsync(type);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
-        public async Task<ResponseModel<IEnumerable<TagModel>>> GetByTitleAsync(string title)
+        public async Task<ResponseModel<List<TagVM>>> GetByTitleAsync(string title)
         {
             var data = await _tagRepo.GetByTitleAsync(title);
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, data);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
         public async Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel)
         {
@@ -49,15 +50,24 @@ namespace Keeper.Services.Services
         {
             return await _tagRepo.DeleteByIdAsync(id);
         }
-        ResponseModel<IEnumerable<TagModel>> GetResponse(StatusType statusName, string message, bool isSuccess, IEnumerable<TagModel>? data = null, object? metadata = null)
+        ResponseModel<List<TagVM>> GetResponse(StatusType statusName, string message, bool isSuccess, List<TagVM>? data = null, object? metadata = null)
         {
-            return new ResponseModel<IEnumerable<TagModel>>()
+            return new ResponseModel<List<TagVM>>()
             {
                 StatusName=statusName,
                 Message = message,
                 IsSuccess = isSuccess,
                 Data = data,
             };
+        }
+        List<TagVM> ConvertToVM(IEnumerable<TagModel> data)
+        {
+            List<TagVM> list = new List<TagVM>();
+            foreach (var item in data)
+            {
+                list.Add(new TagVM() { Title = item.Title, Type = item.Type });
+            }
+            return list;
         }
     }
 }

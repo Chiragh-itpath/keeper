@@ -1,5 +1,6 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +22,7 @@ namespace Keeper.Main.Controllers
             _tagService = tagService;
         }
         [HttpGet]
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get()
+        public async Task<ResponseModel<List<TagVM>>> Get()
         {
             return await _tagService.GetAllAsync();
         }
@@ -31,12 +32,12 @@ namespace Keeper.Main.Controllers
             return await _tagService.GetByIdAsync(id);
         }
         [HttpGet("Type/{type}")]
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(TagType type)
+        public async Task<ResponseModel<List<TagVM>>> Get(TagType type)
         {
             return await _tagService.GetByTypeAsync(type);
         }
         [HttpGet("Title/{title}")]
-        public async Task<ResponseModel<IEnumerable<TagModel>>> Get(string title)
+        public async Task<ResponseModel<List<TagVM>>> Get(string title)
         {
             return await _tagService.GetByTitleAsync(title);
         }
