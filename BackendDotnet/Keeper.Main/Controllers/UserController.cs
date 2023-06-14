@@ -1,6 +1,6 @@
-﻿using Keeper.Context.Model;
+﻿using Keeper.Common.Response;
+using Keeper.Common.ViewModels;
 using Keeper.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
@@ -14,6 +14,11 @@ namespace Keeper.Main.Controllers
         public UserController(IUserService userService)
         {
             _userService = userService;
+        }
+        [HttpGet("{id}")]
+        public async Task<ResponseModel<UserVM>> Get(Guid id)
+        {
+            return await _userService.GetByIdAsync(id);
         }
     }
 }

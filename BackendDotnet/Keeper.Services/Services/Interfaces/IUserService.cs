@@ -12,5 +12,6 @@ namespace Keeper.Services.Interfaces
         Task<ResponseModel<string>> RegisterAsync(RegisterVM register);
         Task<UserModel> GetByEmailAsync(string email);
         Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM);
+        Task<ResponseModel<UserVM>> GetByIdAsync(Guid id);
     }
 }
