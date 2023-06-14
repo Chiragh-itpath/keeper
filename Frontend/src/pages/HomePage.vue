@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import homeimg from '@/assests/images/Home.jpg';
 import ButtonComponent from '@/components/ButtonComponent.vue';
+import { RouterEnum } from '@/enum/RouterEnum';
 </script>
 
 <template>
     <v-container fluid>
         <v-row class="flex-wrap-reverse">
             <v-col cols="12" md="6">
-                <v-sheet  class="text-center">
+                <v-sheet class="text-center">
                     <v-row class="mt-3 mt-md-6 mt-lg-10">
                         <v-col cols="12" class="text-md-h2 text-sm-h3 text-h4">
                             <span class="text-primary ">Create.</span>
@@ -28,8 +29,12 @@ import ButtonComponent from '@/components/ButtonComponent.vue';
                     </v-row>
 
                     <div class="d-flex mt-5 justify-center">
-                        <button-component class="mx-3 ">Login</button-component>
-                        <button-component variant="elevated" class="mx-3">Signup</button-component>
+                        <router-link :to="{ name: RouterEnum.LOGIN }">
+                            <button-component class="mx-3 ">Login</button-component>
+                        </router-link>
+                        <router-link :to="{ name: RouterEnum.SIGNUP }">
+                            <button-component variant="elevated" class="mx-3">Signup</button-component>
+                        </router-link>
                     </div>
                 </v-sheet>
             </v-col>
