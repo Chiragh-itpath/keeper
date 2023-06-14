@@ -107,7 +107,7 @@ namespace KeeperCore.Services
                         IsSuccess = true,
                         StatusName = StatusType.SUCCESS,
                         Message = "Logged in successfully",
-                        Data= new TokenModel() { Token=GenerateToken(user)}
+                        Data= new TokenModel() { UserId=user.Id ,Token=GenerateToken(user)}
                     };
                 }
                 else
@@ -147,7 +147,7 @@ namespace KeeperCore.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddMinutes(59),
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
