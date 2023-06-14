@@ -10,5 +10,5 @@ const props = withDefaults(defineProps<{
 
 <template>
     <v-text-field :label="props.label" type="email" :rules="[requiredRule, emailRules]" prepend-inner-icon="mdi-email"
-        clearable variant="outlined"></v-text-field>
+        clearable variant="outlined" ></v-text-field>
 </template>
