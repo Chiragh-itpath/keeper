@@ -146,7 +146,7 @@ namespace KeeperCore.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(59),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
