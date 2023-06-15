@@ -22,6 +22,9 @@ const props = withDefaults(defineProps<{
                 <slot name="text">
                 </slot>
             </v-card-text>
+            <v-card-actions>
+                <slot name="actions"></slot>
+            </v-card-actions>
         </div>
         <div>
             <slot name="image"></slot>
