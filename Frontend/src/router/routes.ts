@@ -1,4 +1,6 @@
 import { RouterEnum } from "@/enum/RouterEnum";
+import { useUserStore } from '@/stores/UserStore';
+import { type RouteLocationNormalized, type NavigationGuardNext } from 'vue-router';
 import home from "@/pages/HomePage.vue";
 import login from '@/pages/LoginPage.vue';
 import signUp from "@/pages/SignUpPage.vue";
@@ -30,17 +32,25 @@ export const routes = [
     {
         path: '/Projects',
         component: ProjectPage,
-        name: RouterEnum.PROJECT
+        name: RouterEnum.PROJECT,
+        beforeEnter: routeGuard,
     },
     {
         path: '/Keeps',
         component: KeepPage,
-        name: RouterEnum.KEEP
+        name: RouterEnum.KEEP,
+        beforeEnter: routeGuard,
     },
     {
         path: '/Items',
         component: ItemPage,
-        name: RouterEnum.ITEM
+        name: RouterEnum.ITEM,
+        beforeEnter: routeGuard,
     }
 ]
 
+function routeGuard(to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) {
+    const { isLoggedin } = useUserStore()
+    if (isLoggedin) next()
+    else next({ name: RouterEnum.LOGIN })
+}
