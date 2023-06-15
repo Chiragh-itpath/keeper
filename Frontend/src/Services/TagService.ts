@@ -4,7 +4,6 @@ import type { TagTypeEnum } from "@/enum/TagTypeEnum";
 import { http } from "@/GlobalConfig/ApiClient";
 export async function Get():Promise<any>{
     try {
-        debugger
         return await http.get("Tag");
     } catch (error) {
         console.log(error);
