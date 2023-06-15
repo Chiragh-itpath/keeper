@@ -7,7 +7,7 @@ import type { ILogin } from '@/Models/LoginModel';
 import { useAccountStore } from "@/stores/AccountStore";
 import { StatusType } from '@/enum/StatusType';
 import { useRouter } from 'vue-router';
-import { UserStore } from '@/stores/UserStore';
+import { useUserStore } from '@/stores/UserStore';
 import { useCookies } from 'vue3-cookies';
 
 const { loginUser } = useAccountStore();
@@ -24,7 +24,7 @@ const state = reactive({
     successMessage: "",
 
 })
-const { StoreUser } = UserStore();
+const { StoreUser } = useUserStore();
 const { cookies } = useCookies();
 async function login(): Promise<void> {
     const { valid } = await form.value.validate();
