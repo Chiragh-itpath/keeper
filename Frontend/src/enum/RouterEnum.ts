@@ -3,5 +3,7 @@ export const enum RouterEnum{
     LOGIN="Login",
     SIGNUP="SignUp",
     FORGOT_PASSWORD="ForgotPassword",
-    PROJECT = "Projects"
+    PROJECT = "Projects",
+    KEEP="Keeps",
+    ITEM="Items"
 }
