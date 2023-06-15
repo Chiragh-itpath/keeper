@@ -2,21 +2,13 @@
 import { ref } from 'vue';
 const dialog = ref(false);
 const form = ref()
-const props = defineProps({
-    dialog: {
-        type: Boolean,
-        default: false
-    },
-    width: {
-        type: Number,
-        default: 800
-    }
+const props = withDefaults(defineProps<{
+    dialog: boolean
+    width: number
+}>(),{
+    dialog:false,
+    width:800
 })
-
-const emit = defineEmits<{
-    (e: 'change', dialog: boolean): void
-}>()
-
 
 </script>
 
