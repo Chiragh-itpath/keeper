@@ -9,8 +9,8 @@ import Card from '@/components/CardComponent.vue';
                 <v-text-field color="primary" type="date"></v-text-field>
             </v-col>
             <v-col cols="12" md="2" sm="12" class="my-auto">
-                <Button  variant="elevated" size="small" class="my-auto">
-                  <v-icon size="small">mdi-folder-plus</v-icon>
+                <Button class="w-100" :rounded="false" variant="elevated" prepend-icon="mdi-plus">
+                    new folder
                 </Button>
             </v-col>
         </v-row>
