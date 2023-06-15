@@ -3,22 +3,23 @@ import { Guid } from 'guid-typescript';
 import { defineStore } from 'pinia';
 import { GetUser } from '@/Services/UserService';
 import { computed, ref } from 'vue';
-import { useCookies } from 'vue3-cookies';
-const { cookies } = useCookies();
-
+import { useTokenStore } from '@/stores/TokenStore';
 
 export const useUserStore = defineStore('user', () => {
     const User = ref<IUser>();
+    const { getToken } = useTokenStore();
     async function StoreUser(id: Guid): Promise<void> {
         User.value = await GetUser(id)
     }
-    const isLoggedin = computed(() => { return User.value != undefined || cookies.get('token') != undefined });
-    
+    const isLoggedin = computed(
+        () => User.value != undefined && getToken() != null
+    );
+
     return {
         StoreUser,
         User,
         isLoggedin
     }
-},{
+}, {
     persist: true
 })
