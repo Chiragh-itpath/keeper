@@ -4,6 +4,7 @@ import login from '@/pages/LoginPage.vue';
 import signUp from "@/pages/SignUpPage.vue";
 import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
 import ProjectPage from '@/pages/ProjectPage.vue';
+import KeepPage from "@/pages/KeepPage.vue";
 export const routes = [
     {
         path: '/',
@@ -29,6 +30,11 @@ export const routes = [
         path: '/Projects',
         component: ProjectPage,
         name: RouterEnum.PROJECT
+    },
+    {
+        path: '/Keeps',
+        component: KeepPage,
+        name: RouterEnum.KEEP
     }
 ]
 

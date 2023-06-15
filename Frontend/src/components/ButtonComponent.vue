@@ -2,15 +2,18 @@
 import type { Tvariant } from '@/type/variants';
 const props = withDefaults(defineProps<{
     rounded?: boolean,
-    variant?: Tvariant 
+    variant?: Tvariant,
+    icon?: string
 }>(), {
     rounded: true,
-    variant: "outlined"
+    variant: "outlined",
+    icon: 'mdi-plus'
 })
 </script>
 <template>
-    <v-btn :rounded="props.rounded" class="px-5" color="primary" :variant="props.variant">
+    <v-btn :rounded="props.rounded" color="primary" :variant="props.variant" :icon="props.icon" >
         <slot></slot>
+        
     </v-btn>
 </template>
 <style>
