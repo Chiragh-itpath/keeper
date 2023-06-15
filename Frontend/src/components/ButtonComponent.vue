@@ -10,8 +10,7 @@ const props = withDefaults(defineProps<{
 </script>
 <template>
     <v-btn :rounded="props.rounded" color="primary" :variant="props.variant"  >
-        <slot></slot>
-        
+        <slot></slot>     
     </v-btn>
 </template>
 <style>
