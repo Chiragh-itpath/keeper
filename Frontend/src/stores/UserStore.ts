@@ -7,16 +7,18 @@ import { useCookies } from 'vue3-cookies';
 const { cookies } = useCookies();
 
 
-export const UserStore = defineStore('user', () => {
+export const useUserStore = defineStore('user', () => {
     const User = ref<IUser>();
     async function StoreUser(id: Guid): Promise<void> {
         User.value = await GetUser(id)
     }
-    const isLoggedin = computed(() => { return cookies.get('token') != null });
+    const isLoggedin = computed(() => { return User.value != undefined || cookies.get('token') != undefined });
     
     return {
         StoreUser,
         User,
         isLoggedin
     }
+},{
+    persist: true
 })
