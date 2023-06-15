@@ -58,7 +58,7 @@ async function SubmitForm() {
                         <Button @click="state.dialog = false"><v-icon icon="mdi-menu-left" size="x-large"></v-icon> Back</Button>
                     </v-col>
                     
-                    <v-col cols="12" sm="6" md="10" lg="10" class="text-end">
+                    <v-col cols="12" sm="6" md="10" lg="10" class="text-center">
                         <h4 class="text-primary">Create New Project</h4>
                     </v-col>
                 </v-row>
@@ -99,8 +99,8 @@ async function SubmitForm() {
         </template>
 
         <template #actionBtn>
-            <Button variant="outlined"  @click="()=>{form.reset()}">Clear</Button>
-            <Button variant="elevated" @click="SubmitForm">Create</Button>
+            <Button variant="outlined" width="100" @click="()=>{form.reset()}">Clear</Button>
+            <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
         </template>
     </ModalComponent>
 
