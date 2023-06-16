@@ -19,6 +19,7 @@ namespace Keeper.Services.Config
             services.AddTransient<ITagService, TagService>();
             services.AddTransient<IProjectService, ProjectService>();
             services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IKeepService, KeepService>();
         }
     }
 }
