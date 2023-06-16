@@ -5,7 +5,6 @@ import ModalComponent from "@/components/ModalComponent.vue";
 import { ref } from 'vue';
 import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
-
 const state = reactive({
     projectName: '',
     tag: '',
