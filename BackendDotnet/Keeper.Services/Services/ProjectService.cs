@@ -1,8 +1,6 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
-using Keeper.Common.ViewModels;
-using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
@@ -21,7 +19,6 @@ namespace Keeper.Services.Services
         {
             ProjectModel model = new ProjectModel
             {
-                Id = Guid.NewGuid(),
                 Title = projectVM.Title,
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
