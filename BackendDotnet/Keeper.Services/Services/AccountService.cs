@@ -28,7 +28,6 @@ namespace Keeper.Services.Services
         {
             UserModel userModel = new()
             {
-                Id = Guid.NewGuid(),
                 UserName = register.UserName,
                 Email = register.Email,
                 Password = register.Password,
