@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
 const state = reactive({
-    folderName: '',
+    projectName: '',
     tag: '',
     description: '',
     value: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
@@ -50,18 +50,10 @@ async function SubmitForm() {
     </v-container>
     <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
         <template #title>
-            <div>
-                <v-row>
-
-                    <v-col cols="12" sm="6" md="2" lg="2">
-                        <Button @click="state.dialog = false"><v-icon icon="mdi-menu-left" size="x-large"></v-icon>
-                            Back</Button>
-                    </v-col>
-
-                    <v-col cols="12" sm="6" md="10" lg="10" class="text-center">
-                        <h4 class="text-primary">Create New Project</h4>
-                    </v-col>
-                </v-row>
+            <div class="text-left ml-4 mt-3"><Button @click="state.dialog = false"
+                    prepend-icon="mdi-arrow-left-circle">Back</Button></div>
+            <div class="text-center text-primary mt-2">
+                Create New Project
             </div>
         </template>
 
@@ -70,7 +62,7 @@ async function SubmitForm() {
                 <v-container>
                     <v-row>
                         <v-col cols="12" md="8" sm="9">
-                            <TextFieldText label="Folder Name" v-model="state.folderName" />
+                            <TextFieldText label="Project Name" v-model="state.projectName" />
                         </v-col>
                         <v-col cols="12" md="4" sm="3">
                             <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
@@ -95,12 +87,16 @@ async function SubmitForm() {
                     </v-row>
                 </v-container>
             </v-form>
-
         </template>
-
         <template #actionBtn>
-            <Button variant="outlined" width="100" @click="() => { form.reset() }">Clear</Button>
-            <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+            <div class="mb-2">
+                <v-row>
+                    <v-col>
+                        <Button width="100" @click="() => { form.reset() }">Clear</Button>
+                        <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+                    </v-col>
+                </v-row>
+            </div>
         </template>
     </ModalComponent>
 
