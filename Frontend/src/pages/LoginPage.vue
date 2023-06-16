@@ -22,7 +22,6 @@ const state = reactive({
     isSuccess: true,
     emailErrorMessage: "",
     passwordErrorMessage: "",
-    successMessage: "",
     showSnackbar: false,
     SnackbarMessage: "",
     isDisable: false,
@@ -56,7 +55,8 @@ async function login(): Promise<void> {
             state.emailError = false;
             state.passwordError = false;
             state.isSuccess = true;
-            state.successMessage = response.data.message;
+            state.showSnackbar=true;
+            state.SnackbarMessage = response.data.message;
             form.value.reset();
             const { token, userId } = response.data.data;
             await StoreUser(userId)
