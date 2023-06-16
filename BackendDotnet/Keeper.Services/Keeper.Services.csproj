@@ -13,5 +13,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Keeper.Repos\Keeper.Repos.csproj" />
   </ItemGroup>
-
+	
+  <ItemGroup>
+	<FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+	
 </Project>
