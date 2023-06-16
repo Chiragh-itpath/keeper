@@ -3,15 +3,15 @@ import type { Tvariant } from '@/type/variants';
 const props = withDefaults(defineProps<{
     rounded?: boolean,
     variant?: Tvariant,
-    width: string
+    minWidth: string
 }>(), {
     rounded: true,
     variant: "outlined",
-    width: "100"
+    minWidth: "100"
 })
 </script>
 <template>
-    <v-btn :rounded="props.rounded" color="primary" :variant="props.variant" :width="props.width">
+    <v-btn :rounded="props.rounded" color="primary" :variant="props.variant" :min-width="props.minWidth">
         <slot></slot>
     </v-btn>
 </template>

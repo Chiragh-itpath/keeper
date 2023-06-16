@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
-import { ref } from 'vue';
 import {requiredRule,contactRules} from '@/data/ValidationRules'
 
 const props=withDefaults(defineProps<{
