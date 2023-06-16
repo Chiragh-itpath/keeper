@@ -11,8 +11,7 @@ namespace Keeper.Common.View_Models
     {
         public Guid Id { get; set; }
         [Required]
-        public string? Title { get; set; }
-        [Required]
+        public string Title { get; set; }
         public string? Description { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
