@@ -1,5 +1,4 @@
 import type { IProject } from '@/Models/ProjectModel';
-// import type { IProjectUpdate } from '@/Models/ProjectUpdateModel';
 import{Insert,GetById,Delete,Update,GetAll} from '@/Services/ProjectService'
 import{defineStore} from 'pinia';
 export const useProjectStore=defineStore('ProjectStore',()=>{
