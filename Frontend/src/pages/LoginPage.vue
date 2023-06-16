@@ -9,6 +9,7 @@ import { StatusType } from '@/enum/StatusType';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/UserStore';
 import { useTokenStore } from '@/stores/TokenStore';
+import Snackbar from "@/components/SnackbarComponent.vue";
 
 const { loginUser } = useAccountStore();
 const router = useRouter();
@@ -18,49 +19,62 @@ const state = reactive({
     password: "",
     emailError: false,
     passwordError: false,
-    isSuccess: false,
+    isSuccess: true,
     emailErrorMessage: "",
     passwordErrorMessage: "",
     successMessage: "",
-
+    showSnackbar: false,
+    SnackbarMessage: "",
+    isDisable: false,
+    serverError: false
 })
 const { StoreUser } = useUserStore();
 const { setToken } = useTokenStore();
 async function login(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid) return
+    state.isDisable = true;
     const user: ILogin = {
         Email: state.email,
         Password: state.password
     }
-    const response = await loginUser(user);
-    if (response.data.statusName == StatusType.NOT_FOUND) {
-        state.emailError = true;
-        state.passwordError = false;
-        state.emailErrorMessage = response.data.message;
-        return;
+    try {
+        const response = await loginUser(user);
+        if (response.data.statusName == StatusType.NOT_FOUND) {
+            state.emailError = true;
+            state.passwordError = false;
+            state.emailErrorMessage = response.data.message;
+            return;
+        }
+        if (response.data.statusName == StatusType.NOT_VALID) {
+            state.passwordError = true;
+            state.emailError = false;
+            state.passwordErrorMessage = response.data.message;
+            return;
+        }
+        if (response.data.statusName == StatusType.SUCCESS) {
+            state.emailError = false;
+            state.passwordError = false;
+            state.isSuccess = true;
+            state.successMessage = response.data.message;
+            form.value.reset();
+            const { token, userId } = response.data.data;
+            await StoreUser(userId)
+            setToken(token);
+            setTimeout(() => {
+                router.push({ name: RouterEnum.PROJECT })
+            }, 1000);
+        }
     }
-    if (response.data.statusName == StatusType.NOT_VALID) {
-        state.passwordError = true;
-        state.emailError = false;
-        state.passwordErrorMessage = response.data.message;
-        return;
+    catch (e) {
+        state.serverError = true
+        state.showSnackbar = true;
+        state.SnackbarMessage = "Internal Server Error"
     }
-    if (response.data.statusName == StatusType.SUCCESS) {
-        state.emailError = false;
-        state.passwordError = false;
-        state.isSuccess = true;
-        state.successMessage = response.data.message;
-        form.value.reset();
-        const { token, userId } = response.data.data;
-        await StoreUser(userId)
-        setToken(token);
-        setTimeout(() => {
-            router.push({ name: RouterEnum.PROJECT })
-        }, 1000);
+    finally {
+        state.isDisable = false
     }
 }
-
 </script>
 <template>
     <v-app>
@@ -88,12 +102,14 @@ async function login(): Promise<void> {
                                     </div>
                                     <v-card-actions>
                                         <div class="d-flex flex-column justify-center mx-auto">
-                                            <v-snackbar :timeout="2000" color="#1B5E20" elevation="20"
-                                                location="bottom right" v-model="state.isSuccess">
-                                                {{ state.successMessage }}
-                                            </v-snackbar>
+                                            <Snackbar v-model="state.showSnackbar" :error="state.serverError">
+                                                <v-icon v-if="state.serverError">mdi-alert</v-icon>
+                                                <v-icon v-else>mdi-check</v-icon>
+                                                {{ state.SnackbarMessage }}
+                                            </Snackbar>
                                             <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large"
-                                                variant="flat" color="teal" class="mt-4">Login</v-btn>
+                                                variant="flat" color="teal" class="mt-4"
+                                                :disabled="state.isDisable">Login</v-btn>
                                             <div class="mt-5">
                                                 New User?
                                                 <router-link :to="{ name: RouterEnum.SIGNUP }">Create an
@@ -110,8 +126,3 @@ async function login(): Promise<void> {
         </v-main>
     </v-app>
 </template>
-<style>
-.v-messages__message {
-    margin-bottom: 20px;
-}
-</style>
