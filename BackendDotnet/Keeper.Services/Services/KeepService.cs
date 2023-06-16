@@ -61,7 +61,6 @@ namespace Keeper.Services.Services
         {
             KeepModel model = new KeepModel();
             {
-                model.Id=Guid.NewGuid();
                 model.Title=keep.Title;
                 model.CreatedOn = DateTime.Now;
                 model.CreatedBy= keep.CreatedBy;
@@ -81,11 +80,11 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(KeepVM keep)
         {
-            KeepModel existingModel = await _repo.GetByIdAsync(keep.Id);
-            existingModel.Id = keep.Id;
+            KeepModel existingModel = await _repo.GetByIdAsync((Guid)keep.Id!);
+            existingModel.Id = (Guid)keep.Id!;
             existingModel.Title = keep.Title;
             existingModel.UpdatedOn = DateTime.Now;
-            existingModel.UpdatedBy = keep.UpdatedBy;
+            existingModel.UpdatedBy = (Guid)keep.UpdatedBy!;
             await _repo.UpdatedAsync(existingModel);
             {
                 return new ResponseModel<string>()
