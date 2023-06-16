@@ -7,8 +7,12 @@ export const useTokenStore = defineStore('token', () => {
     function setToken(token: string): void {
         cookies.set('token', JSON.stringify(token), 60 * 60)
     }
-    const getToken = (): string | null => cookies.get('token');
-    
+    const getToken = (): string => { 
+        let token = cookies.get('token') 
+        if(token == null) return ""
+        return token.replace(/"/g,'')
+    };
+
     return {
         setToken,
         getToken

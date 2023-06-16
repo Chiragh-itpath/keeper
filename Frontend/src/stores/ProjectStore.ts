@@ -1,5 +1,5 @@
 import type { IProject } from '@/Models/ProjectModel';
-import type { IProjectUpdate } from '@/Models/ProjectUpdateModel';
+// import type { IProjectUpdate } from '@/Models/ProjectUpdateModel';
 import{Insert,GetById,Delete,Update,GetAll} from '@/Services/ProjectService'
 import{defineStore} from 'pinia';
 export const useProjectStore=defineStore('ProjectStore',()=>{
@@ -15,7 +15,7 @@ export const useProjectStore=defineStore('ProjectStore',()=>{
     async function DeleteProject(ProjectId:string):Promise<any>{
         return await Delete(ProjectId)
     }
-    async function UpdateProject(Project:IProjectUpdate):Promise<any>{
+    async function UpdateProject(Project:IProject):Promise<any>{
         return await Update(Project)
     }
     return{

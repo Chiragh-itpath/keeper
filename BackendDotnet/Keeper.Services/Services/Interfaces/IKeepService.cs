@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Keeper.Services.Services.Interfaces
 {
-    public interface IProjectService
+    public interface IKeepService
     {
-        Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM);
-        Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId);
-        Task<ResponseModel<ProjectModel>> GetByIdAsync(Guid Id);
+        Task<ResponseModel<string>> SaveAsync(KeepVM keep);
+        Task<ResponseModel<List<KeepModel>>> GetAllAsync(Guid ProjectId);
+        Task<ResponseModel<KeepModel>> GetByIdAsync(Guid Id);
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
-        Task<ResponseModel<string>> UpdatedAsync(ProjectVM project);
+        Task<ResponseModel<string>> UpdatedAsync(KeepVM keep);
     }
 }

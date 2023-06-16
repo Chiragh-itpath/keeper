@@ -1,8 +1,6 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
-using Keeper.Common.ViewModels;
-using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
@@ -21,11 +19,10 @@ namespace Keeper.Services.Services
         {
             ProjectModel model = new ProjectModel
             {
-                Id = Guid.NewGuid(),
                 Title = projectVM.Title,
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
-                CreatedBy = Guid.Empty,
+                CreatedBy = projectVM.CreatedBy,
             };
             await _repo.SaveAsync(model);
             {
@@ -61,13 +58,14 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<string>> UpdatedAsync(ProjectUpdateVM projectUpdate)
+        public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
-            ProjectModel existingModel = await _repo.GetByIdAsync(projectUpdate.Id);
-            existingModel.Title = projectUpdate.Title;
-            existingModel.Description = projectUpdate.Description;
+            ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
+            existingModel.Id = project.Id;
+            existingModel.Title = project.Title;
+            existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;
-            existingModel.UpdatedBy = Guid.Empty;
+            existingModel.UpdatedBy = project.UpdatedBy;
             await _repo.UpdatedAsync(existingModel);
             {
                 return new ResponseModel<string>()
