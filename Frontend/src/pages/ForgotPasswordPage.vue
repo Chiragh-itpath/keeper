@@ -27,8 +27,6 @@ async function SubmitForm() {
 </script>
 <template>
     <v-container>
-        <div class="text-h5 text-center text-primary">Forgot your password?</div>
-        <div class="text-h6 text-center text-grey">Please enter your email to recieve a verification code.</div>
         <v-sheet class="mx-auto v-col-12 v-col-lg-6 v-col-sm-12 v-col-md-6">
             <v-form ref="form">
                 <div v-if="state.show">
@@ -43,6 +41,8 @@ async function SubmitForm() {
                     </div>
                 </div>
                 <div v-else>
+                    <div class="text-h5 text-center text-primary">Forgot your password?</div>
+                    <div class="text-h6 text-center text-grey">Please enter your email to recieve a verification code.</div>
                     <TextFieldEmail label="Enter email" v-model="state.email" color="primary" />
                     <div class="text-right">
                         <Button class="mb-2" @click="validateEmail()">Send OTP</Button>
@@ -54,4 +54,5 @@ async function SubmitForm() {
                 </div>
             </v-form>
         </v-sheet>
-</v-container></template>
+    </v-container>
+</template>
