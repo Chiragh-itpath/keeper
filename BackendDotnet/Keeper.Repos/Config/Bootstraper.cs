@@ -2,11 +2,6 @@
 using Keeper.Repos.Repositories;
 using Keeper.Repos.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keeper.Repos.Config
 {
@@ -14,11 +9,12 @@ namespace Keeper.Repos.Config
     {
         public static void RegisterRepos(this IServiceCollection services)
         {
-            services.AddTransient<IUserRepo,UserRepo>();
+            services.AddTransient<IUserRepo, UserRepo>();
             services.AddTransient<ITagRepo, TagRepo>();
             services.AddTransient<IProjectRepo, ProjectRepo>();
             services.AddTransient<IAccountRepo, AccountRepo>();
             services.AddTransient<IKeepRepo, KeepRepo>();
+            services.AddTransient<IFileRepo, FileRepo>();
         }
     }
 }

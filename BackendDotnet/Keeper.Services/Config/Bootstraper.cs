@@ -3,11 +3,6 @@ using Keeper.Services.Services;
 using Keeper.Services.Services.Interfaces;
 using KeeperCore.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keeper.Services.Config
 {
@@ -20,6 +15,7 @@ namespace Keeper.Services.Config
             services.AddTransient<IProjectService, ProjectService>();
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IKeepService, KeepService>();
+            services.AddTransient<IFileService, FileService>();
         }
     }
 }

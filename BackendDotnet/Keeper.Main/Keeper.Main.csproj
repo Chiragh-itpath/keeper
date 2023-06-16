@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Keeper.Services\Keeper.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
