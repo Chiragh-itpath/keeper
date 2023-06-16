@@ -16,6 +16,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId);
         Task<ResponseModel<ProjectModel>> GetByIdAsync(Guid Id);
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
-        Task<ResponseModel<string>> UpdatedAsync(ProjectUpdateVM projectUpdate);
+        Task<ResponseModel<string>> UpdatedAsync(ProjectVM project);
     }
 }

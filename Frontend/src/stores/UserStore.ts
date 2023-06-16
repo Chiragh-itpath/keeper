@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', () => {
         User.value = await GetUser(id)
     }
     const isLoggedin = computed(
-        () => User.value != undefined && getToken() != null
+        () => User.value != undefined && getToken() != ""
     );
 
     return {

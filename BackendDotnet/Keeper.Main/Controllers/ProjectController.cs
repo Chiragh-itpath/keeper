@@ -27,7 +27,7 @@ namespace Keeper.Main.Controllers
             return await _projectService.SaveAsync(projectVM);
         }
         [HttpGet("")]
-        public async Task<ResponseModel<List<ProjectModel>>> Get(Guid UserId)
+        public async Task<ResponseModel<List<ProjectModel>>> GetAll(Guid UserId)
         {
             return await _projectService.GetAllAsync(UserId);
 
@@ -40,9 +40,9 @@ namespace Keeper.Main.Controllers
 
         }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update(ProjectUpdateVM projectUpdate)
+        public async Task<ResponseModel<string>> Update(ProjectVM project)
         {
-            return await _projectService.UpdatedAsync(projectUpdate);
+            return await _projectService.UpdatedAsync(project);
         }
         [HttpDelete("{id}")]
         public async Task<ResponseModel<string>> Delete(Guid id)

@@ -5,7 +5,6 @@ import ModalComponent from "@/components/ModalComponent.vue";
 import { ref } from 'vue';
 import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
-
 const state = reactive({
     folderName: '',
     tag: '',
@@ -55,9 +54,10 @@ async function SubmitForm() {
                 <v-row>
 
                     <v-col cols="12" sm="6" md="2" lg="2">
-                        <Button @click="state.dialog = false"><v-icon icon="mdi-menu-left" size="x-large"></v-icon> Back</Button>
+                        <Button @click="state.dialog = false"><v-icon icon="mdi-menu-left" size="x-large"></v-icon>
+                            Back</Button>
                     </v-col>
-                    
+
                     <v-col cols="12" sm="6" md="10" lg="10" class="text-center">
                         <h4 class="text-primary">Create New Project</h4>
                     </v-col>
@@ -99,7 +99,7 @@ async function SubmitForm() {
         </template>
 
         <template #actionBtn>
-            <Button variant="outlined" width="100" @click="()=>{form.reset()}">Clear</Button>
+            <Button variant="outlined" width="100" @click="() => { form.reset() }">Clear</Button>
             <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
         </template>
     </ModalComponent>
