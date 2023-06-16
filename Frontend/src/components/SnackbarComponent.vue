@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { Tvariant } from '@/type/variants';
-import type {Anchor} from '@/type/location';
 const props = withDefaults(defineProps<{
     variant?: Tvariant
-    location?:Anchor,
+    location?:any,
     error: boolean
 }>(), {
     variant: 'elevated',
