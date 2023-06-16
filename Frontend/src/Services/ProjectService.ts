@@ -1,7 +1,5 @@
 import type { IProject } from "@/Models/ProjectModel";
-// import type {IProjectUpdate} from "@/Models/ProjectUpdateModel";
 import { http } from "@/GlobalConfig/ApiClient";
-import axios from "axios";
 
 export async function Insert(Project: IProject): Promise<any> {
     try {
