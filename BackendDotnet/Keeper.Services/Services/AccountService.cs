@@ -172,7 +172,7 @@ namespace Keeper.Services.Services
             return new ResponseModel<OTPModel>
             {
                 StatusName = StatusType.NOT_VALID,
-                Message = "Invalid Email",
+                Message = "Incorrect Email Address",
                 IsSuccess = false
             };
         }

@@ -26,7 +26,22 @@ async function signin(user: ILogin): Promise<any> {
         return e;
     }
 }
+async function GenerateOTP(email:string): Promise<any> {
+    try {
+        const response = await http.post(
+            '/Account/GenerateOTP',
+            {
+                "email":email
+            }
+        )
+        return response;
+    }
+    catch (e) {
+        return e;
+    }
+}
 export {
     signup,
-    signin
+    signin,
+    GenerateOTP
 }
