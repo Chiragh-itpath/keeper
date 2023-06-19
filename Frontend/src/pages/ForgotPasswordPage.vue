@@ -28,8 +28,10 @@ const state = reactive({
     otpErrorMessage: "",
     actualOTP: 0,
     openSnkbar: false,
-    resMessage: ""
+    resMessage: "",
+    isError:false
 });
+
 async function validateEmail():Promise<void>  {
     const { valid } = await form.value.validate();
     if (!valid)
@@ -67,11 +69,17 @@ async function ResetPwd():Promise<void> {
     }
     const res = await ResetPassword(user);
     if (res.data.statusName == StatusType.SUCCESS) {
+        state.isError=false
         state.resMessage = res.data.message
         state.openSnkbar = true
         setTimeout(() => {
             router.push({ name: RouterEnum.LOGIN })
         }, 1000);
+    }
+    else{
+        state.resMessage = res.data.message
+        state.isError=true
+        state.openSnkbar = true
     }
 }
 function validatePassword() {
@@ -101,7 +109,7 @@ function validatePassword() {
                                         <TextFieldPassword label="Enter confirm password" v-model="state.confirmPassword"
                                             color="primary" class="mb-2" :rules="[validatePassword()?true:'Password not match!']"></TextFieldPassword>
                                         <div class="text-right">
-                                            <Button :disabled="state.isDisable" class="mb-3" type="submit"
+                                            <Button :disabled="state.isDisable" class="mb-3"
                                                 variant="elevated" @click="ResetPwd">Reset
                                                 password</Button>
                                         </div>
@@ -139,7 +147,7 @@ function validatePassword() {
             </v-container>
         </v-main>
     </v-app>
-    <SnackbarComponent v-model="state.openSnkbar">
+    <SnackbarComponent v-model="state.openSnkbar" :error="state.isError">
         {{ state.resMessage }}
     </SnackbarComponent>
 </template>
