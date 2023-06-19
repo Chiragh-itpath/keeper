@@ -31,5 +31,10 @@ namespace Keeper.Main.Controllers
         {
             return await _accountService.GenerateOTP(oTPModel.Email);
         }
+        [HttpPost("ChangePassword")]
+        public async Task<ResponseModel<string>> ChangePassword(LoginVM loginVM)
+        {
+            return await _accountService.UpdatePasswordAsync(loginVM);
+        }
     }
 }

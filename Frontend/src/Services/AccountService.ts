@@ -40,8 +40,21 @@ async function GenerateOTP(email:string): Promise<any> {
         return e;
     }
 }
+async function ChangePassword(user:ILogin): Promise<any> {
+    try {
+        const response = await http.post(
+            '/Account/ChangePassword',
+            user
+        )
+        return response;
+    }
+    catch (e) {
+        return e;
+    }
+}
 export {
     signup,
     signin,
-    GenerateOTP
+    GenerateOTP,
+    ChangePassword
 }
