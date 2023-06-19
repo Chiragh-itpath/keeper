@@ -8,5 +8,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<string>> RegisterAsync(RegisterVM register);
         Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM);
         Task<ResponseModel<OTPModel>> GenerateOTP(string email);
+        Task<ResponseModel<string>> UpdatePasswordAsync(LoginVM user);
     }
 }
