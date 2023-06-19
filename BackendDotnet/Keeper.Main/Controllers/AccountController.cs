@@ -26,5 +26,10 @@ namespace Keeper.Main.Controllers
         {
             return await _accountService.LoginAsync(loginVM);
         }
+        [HttpPost("GenerateOTP")]
+        public async Task<ResponseModel<OTPModel>> GenerateOTP(string email)
+        {
+            return await _accountService.GenerateOTP(email);
+        }
     }
 }
