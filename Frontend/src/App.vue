@@ -8,16 +8,18 @@ import { RouterEnum } from '@/enum/RouterEnum';
 const state = reactive({
     isHome: false,
     isLogin: false,
-    isSignup: false
+    isSignup: false,
+    isForgotPwd:false
 })
 const router = useRouter();
 watch(() => router.currentRoute.value.name, (name) => {
     state.isHome = name == RouterEnum.HOME
     state.isLogin = name == RouterEnum.LOGIN
     state.isSignup = name == RouterEnum.SIGNUP
+    state.isForgotPwd=name==RouterEnum.FORGOT_PASSWORD
 })
 const ToggleSideBarAndNavBar = (): boolean => {
-    return state.isHome || state.isLogin || state.isSignup
+    return state.isHome || state.isLogin || state.isSignup || state.isForgotPwd
 }
 </script>
 

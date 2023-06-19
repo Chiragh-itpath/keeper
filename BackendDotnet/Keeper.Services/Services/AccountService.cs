@@ -12,6 +12,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Win32;
 
 namespace Keeper.Services.Services
 {
@@ -141,6 +142,25 @@ namespace Keeper.Services.Services
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public async Task<ResponseModel<string>> UpdatePasswordAsync(LoginVM user)
+        {
+            user.Password= BCrypt.Net.BCrypt.HashPassword(user.Password);
+            if(await _accountRepo.UpdatePasswordAsync(user))
+            {
+                return new ResponseModel<string>()
+                {
+                    IsSuccess = true,
+                    Message = "Password changed successfully!",
+                    StatusName = StatusType.SUCCESS
+                };
+            }
+            return new ResponseModel<string>()
+            {
+                IsSuccess = false,
+                Message = "Password is not changed!",
+                StatusName = StatusType.NOT_VALID
+            };
+        }
         public async Task<ResponseModel<OTPModel>> GenerateOTP(string email)
         {
             var user = await _userRepo.GetByEmailAsync(email);
@@ -180,9 +200,9 @@ namespace Keeper.Services.Services
         {
             try
             {
-                var fromMail = "nikjohns100@outlook.com";
-                var userName = "nikjohns100@outlook.com";
-                var emailPassword = "Njohns100@@";
+                var fromMail = "keeper.vueproject@outlook.com";
+                var userName = "keeper.vueproject@outlook.com";
+                var emailPassword = "Keeper123@@";
                 int otp = Convert.ToInt32(new Random().Next(0, 1000000).ToString("D6"));
                 MailMessage message = new MailMessage();
                 message.To.Add(new MailAddress(email));
