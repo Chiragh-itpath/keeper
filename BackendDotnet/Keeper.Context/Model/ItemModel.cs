@@ -27,8 +27,7 @@ namespace Keeper.Context.Model
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
         public Guid TagId { get; set; }
-        public Guid? FileId { get; set; }
-
+        public virtual IEnumerable<FileModel>? Files { get; set; }
         public void Dispose()
         {
             GC.SuppressFinalize(this);
