@@ -26,12 +26,12 @@ async function addProject():Promise<void>{
     const{valid}=await form.value.validate();
     if(!valid)
     return
+
     const project:IProject={
         Title:state.projectName,
-        Description:state.description,
-        TagTitle:state.tagName
+        Description:state.description,     
     }
-    const response=await AddProject(project);
+    const response= await AddProject(project);
     try{
         if(response.data.statusName!=StatusType.SUCCESS){
             state.openSnackbar=true;
@@ -126,7 +126,7 @@ async function addProject():Promise<void>{
         </template>
     </ModalComponent>
 
-    <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnackbar">
+    <v-snackbar :timeout="2000" color="#" elevation="20" location="bottom right" v-model="state.openSnackbar">
         {{ state.snackbarMessage }}
     </v-snackbar>
 </template>

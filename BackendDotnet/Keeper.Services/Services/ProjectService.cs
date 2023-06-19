@@ -25,7 +25,7 @@ namespace Keeper.Services.Services
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
                 CreatedBy = projectVM.CreatedBy,
-                TagId = projectVM.TagId,
+                TagId = projectVM.TagId ?? Guid.Empty,
             };
             await _repo.SaveAsync(model);
             {
@@ -63,8 +63,8 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
-            ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
-            existingModel.Id = project.Id;
+            ProjectModel existingModel = await _repo.GetByIdAsync((Guid)project.Id!);
+            existingModel.Id = (Guid)project.Id!;
             existingModel.Title = project.Title;
             existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;
