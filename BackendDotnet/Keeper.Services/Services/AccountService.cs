@@ -8,6 +8,8 @@ using Keeper.Services.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -138,6 +140,73 @@ namespace Keeper.Services.Services
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public async Task<ResponseModel<OTPModel>> GenerateOTP(string email)
+        {
+            var user = await _userRepo.GetByEmailAsync(email);
+            if (user.Id == Guid.Empty)
+            {
+                return new ResponseModel<OTPModel>
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    Message = "Email is not registered",
+                    IsSuccess = false
+                };
+            }
+
+            var otp = SendOTP(email);
+            if(otp!=0)
+            {
+                return new ResponseModel<OTPModel>
+                {
+                    StatusName = StatusType.SUCCESS,
+                    Message = "OTP send",
+                    IsSuccess = true,
+                    Data=new OTPModel()
+                    {
+                        Email=email,
+                        OTP=otp
+                    }
+                };
+            }
+            return new ResponseModel<OTPModel>
+            {
+                StatusName = StatusType.NOT_VALID,
+                Message = "Incorrect Email Address",
+                IsSuccess = false
+            };
+        }
+        public int SendOTP(string email)
+        {
+            try
+            {
+                var fromMail = "nikjohns100@outlook.com";
+                var userName = "nikjohns100@outlook.com";
+                var emailPassword = "Njohns100@@";
+                int otp = Convert.ToInt32(new Random().Next(0, 1000000).ToString("D6"));
+                MailMessage message = new MailMessage();
+                message.To.Add(new MailAddress(email));
+                message.From = new MailAddress(fromMail);
+                message.Subject = "OTP Verification";
+                message.Body = $"<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">\r\n  <div style=\"margin:50px auto;width:70%;padding:20px 0\">\r\n    <div style=\"border-bottom:1px solid #eee\">\r\n      <a href=\"\" style=\"font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600\">Keeper</a>\r\n    </div>\r\n    <p style=\"font-size:1.1em\">Hi,</p>\r\n    <p>Thank you for choosing Keeper. Use the following OTP to complete your change the password procedures. OTP is valid for 5 minutes</p>\r\n    <h2 style=\"background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;\">{otp}</h2>\r\n    <p style=\"font-size:0.9em;\">Regards,<br />Keeper Team</p>\r\n    <hr style=\"border:none;border-top:1px solid #eee\" />\r\n    <div style=\"float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300\">\r\n      <p>SMS</p>\r\n      <p>Ahmedabad</p>\r\n      <p>India</p>\r\n    </div>\r\n  </div>\r\n</div>";
+                message.IsBodyHtml = true;
+
+                SmtpClient smtp = new SmtpClient();
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.UseDefaultCredentials = false;
+                smtp.Host = "smtp.office365.com";
+                smtp.Port = 587;
+                smtp.Credentials = new NetworkCredential(userName, emailPassword);
+                smtp.EnableSsl = true;
+
+                message.IsBodyHtml = true;
+                smtp.Send(message);
+                return otp;
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }

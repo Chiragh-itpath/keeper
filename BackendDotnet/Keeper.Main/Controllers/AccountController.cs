@@ -3,7 +3,7 @@ using Keeper.Common.ViewModels;
 using Keeper.Services.Interfaces;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Text.Json.Nodes;
 
 namespace Keeper.Main.Controllers
 {
@@ -25,6 +25,11 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<TokenModel>> Login(LoginVM loginVM)
         {
             return await _accountService.LoginAsync(loginVM);
+        }
+        [HttpPost("GenerateOTP")]
+        public async Task<ResponseModel<OTPModel>> GenerateOTP(OTPModel oTPModel)
+        {
+            return await _accountService.GenerateOTP(oTPModel.Email);
         }
     }
 }
