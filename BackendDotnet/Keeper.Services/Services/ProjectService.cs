@@ -11,9 +11,11 @@ namespace Keeper.Services.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepo _repo;
-        public ProjectService(IProjectRepo repo)
+        private readonly ITagService _tagService;
+        public ProjectService(IProjectRepo repo, ITagService tagService)
         {
             _repo = repo;
+            _tagService = tagService;
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
@@ -23,6 +25,7 @@ namespace Keeper.Services.Services
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
                 CreatedBy = projectVM.CreatedBy,
+                TagId = projectVM.TagId,
             };
             await _repo.SaveAsync(model);
             {

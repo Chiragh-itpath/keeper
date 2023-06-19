@@ -5,22 +5,48 @@ import ModalComponent from "@/components/ModalComponent.vue";
 import { ref } from 'vue';
 import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
+import { useProjectStore } from "@/stores/ProjectStore";
+import type { IProject } from '@/Models/ProjectModel';
+import { StatusType } from '@/enum/StatusType';
+
+
 const state = reactive({
     projectName: '',
-    tag: '',
+    tagName:'',
     description: '',
-    value: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
+    value: [''],
     dialog: false,
-    openSnkbar: false
+    openSnackbar: false,
+    snackbarMessage:''
 })
 const form = ref()
 
-async function SubmitForm() {
-    const { valid } = await form.value.validate();
-    if (!valid)
-        return
-    state.openSnkbar = true;
-    state.dialog = false
+const {AddProject}=useProjectStore();
+async function addProject():Promise<void>{
+    const{valid}=await form.value.validate();
+    if(!valid)
+    return
+    const project:IProject={
+        Title:state.projectName,
+        Description:state.description,
+        TagTitle:state.tagName
+    }
+    const response=await AddProject(project);
+    try{
+        if(response.data.statusName!=StatusType.SUCCESS){
+            state.openSnackbar=true;
+        }
+        else{
+            console.log(response);           
+            state.openSnackbar=true;
+            state.snackbarMessage=response.data.message;
+            form.value.reset()
+        }
+    }
+    catch(e){
+        state.openSnackbar=true;
+        state.snackbarMessage="Error"
+    }
 }
 </script>
 <template>
@@ -37,7 +63,7 @@ async function SubmitForm() {
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-for="item in 100" :key="item" cols="12" lg="3" md="4" sm="6">
+            <v-col v-for="item in 1" :key="item" cols="12" lg="3" md="4" sm="6">
                 <router-link to="/Projects" class="text-decoration-none">
                     <Card>
                         <template #title>
@@ -65,7 +91,7 @@ async function SubmitForm() {
                             <TextFieldText label="Project Name" v-model="state.projectName" />
                         </v-col>
                         <v-col cols="12" md="4" sm="3">
-                            <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
+                            <TextFieldText label="Tag" :is-required="false" v-model="state.tagName" />
                         </v-col>
                         <v-col cols="12">
                             <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
@@ -93,14 +119,14 @@ async function SubmitForm() {
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+                        <Button variant="elevated" width="100" @click="addProject">Create</Button>
                     </v-col>
                 </v-row>
             </div>
         </template>
     </ModalComponent>
 
-    <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnkbar">
-        Saved Successfully!
+    <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnackbar">
+        {{ state.snackbarMessage }}
     </v-snackbar>
 </template>
