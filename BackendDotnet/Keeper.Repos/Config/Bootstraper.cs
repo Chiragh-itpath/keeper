@@ -14,7 +14,7 @@ namespace Keeper.Repos.Config
             services.AddTransient<IProjectRepo, ProjectRepo>();
             services.AddTransient<IAccountRepo, AccountRepo>();
             services.AddTransient<IKeepRepo, KeepRepo>();
-            services.AddTransient<IFileRepo, FileRepo>();
+            services.AddTransient<IItemRepo, ItemRepo>();
         }
     }
 }

@@ -4,6 +4,7 @@ using Keeper.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Keeper.Context.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    partial class DbKeeperContextModelSnapshot : ModelSnapshot
+    [Migration("20230619044857_item-files-table")]
+    partial class itemfilestable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,6 +70,7 @@ namespace Keeper.Context.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DiscussedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -90,6 +93,7 @@ namespace Keeper.Context.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("To")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
