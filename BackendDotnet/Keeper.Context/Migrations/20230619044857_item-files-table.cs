@@ -14,7 +14,7 @@ namespace Keeper.Context.Migrations
                 table: "Items");
 
             migrationBuilder.CreateTable(
-                name: "ItemsFiles",
+                name: "FileModelItemModel",
                 columns: table => new
                 {
                     FilesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -22,15 +22,15 @@ namespace Keeper.Context.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemsFiles", x => new { x.FilesId, x.ItemsId });
+                    table.PrimaryKey("PK_FileModelItemModel", x => new { x.FilesId, x.ItemsId });
                     table.ForeignKey(
-                        name: "FK_ItemsFiles_Files_FilesId",
+                        name: "FK_FileModelItemModel_Files_FilesId",
                         column: x => x.FilesId,
                         principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemsFiles_Items_ItemsId",
+                        name: "FK_FileModelItemModel_Items_ItemsId",
                         column: x => x.ItemsId,
                         principalTable: "Items",
                         principalColumn: "Id",
@@ -38,15 +38,15 @@ namespace Keeper.Context.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemsFiles_ItemsId",
-                table: "ItemsFiles",
+                name: "IX_FileModelItemModel_ItemsId",
+                table: "FileModelItemModel",
                 column: "ItemsId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ItemsFiles");
+                name: "FileModelItemModel");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "FileId",
