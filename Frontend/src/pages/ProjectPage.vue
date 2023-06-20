@@ -19,7 +19,7 @@ const state = reactive({
     dialog: false,
     openSnackbar: false,
     snackbarMessage: '',
-    show: 0
+    show: -1
 })
 const form = ref()
 
@@ -77,18 +77,19 @@ function onEnter() {
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-for="(project, index) in Projects" :key="project.description" cols="12" lg="3" md="4" sm="6">
+            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
                 <router-link to="/Projects" class="text-decoration-none">
-                    <Card>
+                    <Card >
                         <template #title>
-                            {{ project.title }}
+                            <div class="position-relative text-grey-darken-4">
+                                {{ project.title }}
+                                <v-icon class="position-absolute" style="right: 0;">mdi-dots-vertical</v-icon>
+                            </div>
                         </template>
                         <template #actions>
                             <v-spacer></v-spacer>
-                            <!-- <v-btn :icon="state.show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-                                @click="state.show=index"></v-btn> -->
                             <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
-                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = 0"></v-btn>
+                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
                         </template>
                         <v-expand-transition>
                             <div v-if="state.show == index">
