@@ -2,19 +2,20 @@ import type { IProject } from "@/Models/ProjectModel";
 import { http } from "@/GlobalConfig/ApiClient";
 
 export async function Insert(Project: IProject): Promise<any> {
-    try {
+    try {       
         const response = await http.post('/Project', Project)
-        console.log(response);
-        return response;
+         return response;
     }
     catch (e) {
+        console.log(e);
+        
         return e;
     }
 }
 export async function GetById(ProjectId: string): Promise<any> {
     try {
         const response = await http.get(`/Project/${ProjectId}`)
-        return response;
+        return response.data;
     }
     catch (e) {
         return e;
@@ -22,8 +23,8 @@ export async function GetById(ProjectId: string): Promise<any> {
 }
 export async function GetAll(UserId: string): Promise<any> {
     try {
-        const response = await http.get(`/Project/${UserId}`)
-        return response;
+        const response = await http.get(`/Project?UserId=${UserId}`)
+        return response.data;
     }
     catch (e) {
         return e;
