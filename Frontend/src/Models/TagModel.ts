@@ -1,8 +1,6 @@
 import type { TagTypeEnum } from "@/enum/TagTypeEnum";
-import type { Guid } from "guid-typescript";
 
-export interface ITag {
-    Id?: Guid
+export interface ITag{
     Title:String
     Type:TagTypeEnum
 }

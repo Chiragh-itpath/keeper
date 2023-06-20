@@ -1,8 +1,8 @@
 import type { Guid } from 'guid-typescript';
 export interface IUser {
-    id: string,
-    userName: string,
-    email: string,
-    contact: string,
+    Id: Guid,
+    UserName: string,
+    Email: string,
+    Contact: string,
     Password: string
 }
