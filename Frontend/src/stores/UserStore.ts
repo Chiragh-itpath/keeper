@@ -6,9 +6,9 @@ import { computed, ref } from 'vue';
 import { useTokenStore } from '@/stores/TokenStore';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
-const router=useRouter()
 const {cookies}=useCookies()
 export const useUserStore = defineStore('user', () => {
+    const router=useRouter()
     let User = ref<IUser>();
     const { getToken } = useTokenStore();
     async function StoreUser(id: Guid): Promise<void> {
