@@ -11,18 +11,31 @@ namespace Keeper.Services.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepo _repo;
-        public ProjectService(IProjectRepo repo)
+        private readonly ITagService _tagService;
+        public ProjectService(IProjectRepo repo, ITagService tagService)
         {
             _repo = repo;
+            _tagService = tagService;
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
+            if (projectVM == null)
+            {
+             var response=  new ResponseModel<string>
+                {
+                    StatusName = StatusType.NOT_VALID,
+                    IsSuccess = false,
+                    Message = "Invalid project data",
+                };
+                return response;
+            }
             ProjectModel model = new ProjectModel
             {
                 Title = projectVM.Title,
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
                 CreatedBy = projectVM.CreatedBy,
+                TagId = projectVM.TagId ?? Guid.Empty,
             };
             await _repo.SaveAsync(model);
             {
@@ -60,8 +73,8 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
-            ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
-            existingModel.Id = project.Id;
+            ProjectModel existingModel = await _repo.GetByIdAsync((Guid)project.Id!);
+            existingModel.Id = (Guid)project.Id!;
             existingModel.Title = project.Title;
             existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;

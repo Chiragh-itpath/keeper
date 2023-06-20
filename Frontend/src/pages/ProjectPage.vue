@@ -5,29 +5,61 @@ import ModalComponent from "@/components/ModalComponent.vue";
 import { ref } from 'vue';
 import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
-import TextFieldEmail from '@/components/TextFieldEmail.vue';
+import { useProjectStore } from "@/stores/ProjectStore";
+import type { IProject } from '@/Models/ProjectModel';
+import { StatusType } from '@/enum/StatusType';
+import { onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+
 const state = reactive({
     projectName: '',
-    tag: '',
+    tagName: '',
     description: '',
-    inviteEmail: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
+    value: [''],
     dialog: false,
-    openSnkbar: false,
-    openInvite:false,
-    email:""
+    openSnackbar: false,
+    snackbarMessage: '',
+    show: -1
 })
 const form = ref()
 
-async function SubmitForm() {
+const { AddProject, GetProjects } = useProjectStore();
+
+const { Projects } = storeToRefs(useProjectStore());
+
+onMounted(async () => {
+    await GetProjects();
+
+});
+async function addProject(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid)
         return
-    state.openSnkbar = true;
-    state.dialog = false
+
+    const project: IProject = {
+        title: state.projectName,
+        description: state.description,
+    }
+    const response = await AddProject(project);
+    try {
+        if (response.data.statusName != StatusType.SUCCESS) {
+            state.openSnackbar = true;
+        }
+        else {
+            console.log(response);
+            state.openSnackbar = true;
+            state.snackbarMessage = response.data.message;
+            form.value.reset()
+        }
+    }
+    catch (e) {
+        state.openSnackbar = true;
+        state.snackbarMessage = "Error"
+    }
 }
- function onEnter(){
+function onEnter() {
     state.inviteEmail.push(state.email);
-     state.email=''
+    state.email = ''
 }
 
 </script>
@@ -45,12 +77,28 @@ async function SubmitForm() {
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-for="item in 100" :key="item" cols="12" lg="3" md="4" sm="6">
+            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
                 <router-link to="/Projects" class="text-decoration-none">
-                    <Card>
+                    <Card >
                         <template #title>
-                            project {{ item }}
+                            <div class="position-relative text-grey-darken-4">
+                                {{ project.title }}
+                                <v-icon class="position-absolute" style="right: 0;">mdi-dots-vertical</v-icon>
+                            </div>
                         </template>
+                        <template #actions>
+                            <v-spacer></v-spacer>
+                            <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
+                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
+                        </template>
+                        <v-expand-transition>
+                            <div v-if="state.show == index">
+                                <v-divider></v-divider>
+                                <v-card-text>
+                                    {{ project.description }}
+                                </v-card-text>
+                            </div>
+                        </v-expand-transition>
                     </Card>
                 </router-link>
             </v-col>
@@ -73,14 +121,15 @@ async function SubmitForm() {
                             <TextFieldText label="Project Name" v-model="state.projectName" />
                         </v-col>
                         <v-col cols="12" md="4" sm="3">
-                            <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
+                            <TextFieldText label="Tag" :is-required="false" v-model="state.tagName" />
                         </v-col>
                         <v-col cols="12">
                             <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
                                 clearable></v-textarea>
                         </v-col>
                         <v-col cols="12" sm="6" md="2" lg="2">
-                            <v-btn color="primary" variant="outlined" class="w-100" @click="state.openInvite=true">Invite</v-btn>
+                            <v-btn color="primary" variant="outlined" class="w-100"
+                                @click="state.openInvite = true">Invite</v-btn>
                         </v-col>
                         <v-col cols="12" sm="6" md="10" lg="10">
                             <span v-for="(selection, index) in state.inviteEmail" :key="selection">
@@ -101,7 +150,7 @@ async function SubmitForm() {
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+                        <Button variant="elevated" width="100" @click="addProject">Create</Button>
                     </v-col>
                 </v-row>
             </div>
@@ -115,53 +164,59 @@ async function SubmitForm() {
         </template>
         <template #formSlot>
             <v-form ref="form">
+                <v-row>
                     <v-row>
-                        <v-row>
-                            <v-col cols="10" md="10" sm="10">
-                                <TextFieldEmail label="Email" color="primary" v-model="state.email"/>
-                            </v-col>
-                            <v-col cols="2" md="2" sm="2">
-                                <v-avatar @click="onEnter" color="secondary" class="mt-2"><v-icon icon="mdi-plus-thick" color="white"></v-icon></v-avatar>
-                            </v-col>
-                        </v-row>
-                        <v-col cols="12"> 
-                                <v-sheet elevation="5" class="px-2" height="200px" width="auto">
+                        <v-col cols="10" md="10" sm="10">
+                            <TextFieldEmail label="Email" color="primary" v-model="state.email" />
+                        </v-col>
+                        <v-col cols="2" md="2" sm="2">
+                            <v-avatar @click="onEnter" color="secondary" class="mt-2"><v-icon icon="mdi-plus-thick"
+                                    color="white"></v-icon></v-avatar>
+                        </v-col>
+                    </v-row>
+                    <v-col cols="12">
+                        <v-sheet elevation="5" class="px-2" height="200px" width="auto">
                             <div class="scroll">
-                                <v-row v-for="(email,index) in state.inviteEmail" :key="email" class="mt-2">
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center" >
-                                        <v-avatar  color="secondary" >{{ email.charAt(0)}}</v-avatar>
+                                <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-avatar color="secondary">{{ email.charAt(0) }}</v-avatar>
                                     </v-col>
-                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center" >
-                                       {{ email }}
+                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center">
+                                        {{ email }}
                                     </v-col>
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">                                      
-                                        <v-icon @click="()=>{state.inviteEmail.splice(index,1)}" icon="mdi-minus-circle-outline" size="large"></v-icon>
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-icon @click="() => { state.inviteEmail.splice(index, 1) }"
+                                            icon="mdi-minus-circle-outline" size="large"></v-icon>
                                     </v-col>
                                 </v-row>
                             </div>
-                                </v-sheet> 
-                        </v-col>
-                    </v-row>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
             </v-form>
         </template>
         <template #actionBtn>
             <div class="mb-2">
                 <v-row>
                     <v-col>
-                        <Button width="100" @click="()=>{state.inviteEmail.splice(0,state.inviteEmail.length); state.openInvite=false}">Cancle</Button>
-                        <Button variant="elevated" width="100" @click="state.openInvite=false">Invite</Button>
+                        <Button width="100"
+                            @click="() => { state.inviteEmail.splice(0, state.inviteEmail.length); state.openInvite = false }">Cancle</Button>
+                        <Button variant="elevated" width="100" @click="state.openInvite = false">Invite</Button>
                     </v-col>
                 </v-row>
             </div>
         </template>
     </ModalComponent>
     <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnkbar">
-        Saved Successfully!
+        Saved Successfully!</v-snackbar>
+
+    <v-snackbar :timeout="2000" color="#" elevation="20" location="bottom right" v-model="state.openSnackbar">
+        {{ state.snackbarMessage }}
     </v-snackbar>
 </template>
 <style scoped>
 .scroll {
-  max-height: 200px;
-  overflow-y: scroll;
+    max-height: 200px;
+    overflow-y: scroll;
 }
 </style>

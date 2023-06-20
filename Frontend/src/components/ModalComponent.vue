@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
     dialog: boolean
-    width: number
+    width: string
 }>(), {
     dialog: false,
-    width: 800
+    width: "auto"
 },)
 </script>
 
