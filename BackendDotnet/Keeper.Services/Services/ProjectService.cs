@@ -19,6 +19,16 @@ namespace Keeper.Services.Services
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
+            if (projectVM == null)
+            {
+             var response=  new ResponseModel<string>
+                {
+                    StatusName = StatusType.NOT_VALID,
+                    IsSuccess = false,
+                    Message = "Invalid project data",
+                };
+                return response;
+            }
             ProjectModel model = new ProjectModel
             {
                 Title = projectVM.Title,

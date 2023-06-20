@@ -8,9 +8,6 @@ import { reactive } from 'vue';
 import { useProjectStore } from "@/stores/ProjectStore";
 import type { IProject } from '@/Models/ProjectModel';
 import { StatusType } from '@/enum/StatusType';
-import { useProjectStore } from "@/stores/ProjectStore";
-import type { IProject } from '@/Models/ProjectModel';
-import { StatusType } from '@/enum/StatusType';
 
 
 const state = reactive({
@@ -182,7 +179,7 @@ async function addProject():Promise<void>{
         </template>
     </ModalComponent>
     <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnkbar">
-        Saved Successfully!
+        Saved Successfully!</v-snackbar>
 
     <v-snackbar :timeout="2000" color="#" elevation="20" location="bottom right" v-model="state.openSnackbar">
         {{ state.snackbarMessage }}

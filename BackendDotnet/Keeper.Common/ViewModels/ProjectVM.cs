@@ -12,12 +12,12 @@ namespace Keeper.Common.View_Models
         public Guid? Id { get; set; }
         [Required]
         public string Title { get; set; }
-        public Guid? TagId{ get; set; }
-        public string? Description { get; set; }
+        public Guid? TagId { get; set; }
+        public string Description { get; set; } = default!;
         public Guid CreatedBy { get; set; }
-        public Guid? UpdatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? UpdatedOn { get; set; }
+        public Guid UpdatedBy { get; set; } = default!;
+        public DateTime CreatedOn { get; set; } = default!;
+        public DateTime UpdatedOn { get; set; } = default!;
     }
 
 }
