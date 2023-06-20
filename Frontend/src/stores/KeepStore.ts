@@ -2,6 +2,7 @@ import type { Ikeep } from "@/Models/KeepModel";
 import { defineStore } from "pinia";
 import{Insert,Update,Delete,GetAll,GetById} from "@/Services/KeepService"
 export const useKeepStore=defineStore('KeepStore',()=>{
+    
     async function AddKeep(keep:Ikeep):Promise<any>{
         return await Insert(keep)
     }
