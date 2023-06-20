@@ -2,7 +2,6 @@
 import homeimg from '@/assests/images/Home.jpg';
 import ButtonComponent from '@/components/ButtonComponent.vue';
 import { RouterEnum } from '@/enum/RouterEnum';
-
 </script>
 
 <template>
