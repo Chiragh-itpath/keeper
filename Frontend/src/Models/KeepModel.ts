@@ -1,11 +1,11 @@
 
 export interface Ikeep{
-    Id?:string;
-    Title:string;
-    CreatedOn?:Date;
-    UpdateOn?:Date;
-    CreatedBy?:string;
-    UpdatedBy?:string;
-    ProjectId?:string;
-    TagId?:string;
+    id?:string;
+    title:string;
+    createdOn?:Date;
+    updateOn?:Date;
+    createdBy?:string;
+    updatedBy?:string;
+    projectId?:string;
+    tagId?:string;
 }

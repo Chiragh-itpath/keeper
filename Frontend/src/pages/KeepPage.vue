@@ -10,7 +10,10 @@ import TextFieldEmail from '@/components/TextFieldEmail.vue';
 import {useKeepStore} from "@/stores/KeepStore"
 import type { Ikeep } from "@/Models/KeepModel";
 import { StatusType } from "@/enum/StatusType";
-const{AddKeep}=useKeepStore()
+import { onMounted } from "vue";
+import { storeToRefs } from "pinia";
+const{AddKeep,GetKeeps}=useKeepStore()
+const { Keeps } = storeToRefs(useKeepStore());
 const state = reactive({
     keepName: '',
     tag: '',
@@ -19,15 +22,20 @@ const state = reactive({
     openSnkbar: false,
     openInvite:false,
     email:"",
+    snackbarMessage: '',
    
 })
+
 const form=ref()
+onMounted(async()=>{
+    await GetKeeps();
+})
 async function CreateKeep(){
     const{valid}=await form.value.validate();
     if(!valid)
         return
     const keeps:Ikeep= {
-        Title:state.keepName
+        title:state.keepName
     };
  const response=await AddKeep(keeps)
  try{
@@ -47,14 +55,7 @@ async function CreateKeep(){
  }
 }
 
-async function SubmitForm() {
-    const { valid } = await form.value.validate();
-    if (!valid)
-        return
-    state.openSnkbar = true;
-    state.dialog = false
-    CreateKeep()
-}
+
 function onEnter(){
     state.inviteEmail.push(state.email);
      state.email=''
@@ -73,10 +74,10 @@ function onEnter(){
             </v-col>
         </v-row>
         <v-row >
-            <v-col v-for="item in 50" :key="item" cols="12" lg="3" md="12" sm="6">
+            <v-col v-for="(keep,index) in Keeps" :key="index" cols="12" lg="3" md="12" sm="6">
                 <Card>             
                     <template #title>
-                        Keep {{ item }}
+                        {{ keep.title  }}
                     </template>
                     <template #actions>
                         <Button variant="outlined"><router-link :to="{name:RouterEnum.ITEM}" class="link">Click</router-link></Button>
@@ -126,13 +127,13 @@ function onEnter(){
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+                        <Button variant="elevated" width="100" @click="CreateKeep">Create</Button>
                     </v-col>
                 </v-row>
             </div>
         </template>
     </ModalComponent>
-    <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" :width="600">
+    <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" width="600">
         <template #title>
             <div class="text-primary mt-2">
                 Invite People

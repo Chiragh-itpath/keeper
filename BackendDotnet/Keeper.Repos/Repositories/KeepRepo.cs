@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Repos.Repositories
 {
-    public class KeepRepo:IKeepRepo
+    public class KeepRepo : IKeepRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
         public KeepRepo(DbKeeperContext dbKeeperContext)
@@ -38,8 +38,8 @@ namespace Keeper.Repos.Repositories
 
         public async Task<bool> SaveAsync(KeepModel keep)
         {
-            await _dbKeeperContext.Keeps.AddAsync(keep);
-            return _dbKeeperContext.SaveChanges() == 1;
+                await _dbKeeperContext.Keeps.AddAsync(keep);
+                return await _dbKeeperContext.SaveChangesAsync() == 1;
         }
 
         public async Task<bool> UpdatedAsync(KeepModel keepModel)
