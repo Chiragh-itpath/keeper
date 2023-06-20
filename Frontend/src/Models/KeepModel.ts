@@ -1,11 +1,11 @@
-import type { Guid } from "guid-typescript";
 
 export interface Ikeep{
-    Id?:Guid;
+    Id?:string;
     Title:string;
     CreatedOn?:Date;
     UpdateOn?:Date;
-    CreatedBy?:Guid;
-    UpdatedBy?:Guid;
-    ProjectId:Guid;
+    CreatedBy?:string;
+    UpdatedBy?:string;
+    ProjectId?:string;
+    TagId?:string;
 }

@@ -3,8 +3,13 @@ import type { Ikeep } from "@/Models/KeepModel";
 
 export async function Insert(Keep:Ikeep):Promise<any>{
     try{
+        
+        console.log(Keep);
+        debugger
        const response= await http.post('/keep',Keep)
+      
        console.log(response);
+       
        return response;
     }
     catch(e){

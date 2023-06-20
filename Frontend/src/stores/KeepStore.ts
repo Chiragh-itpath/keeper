@@ -1,8 +1,13 @@
 import type { Ikeep } from "@/Models/KeepModel";
+import { Ref } from "vue";
 import { defineStore } from "pinia";
 import{Insert,Update,Delete,GetAll,GetById} from "@/Services/KeepService"
+import { useUserStore } from "./UserStore";
 export const useKeepStore=defineStore('KeepStore',()=>{
+    const { User } = storeToRefs(useUserStore());
+    const keeps: Ref<IKeep[]> = ref([])
     async function AddKeep(keep:Ikeep):Promise<any>{
+        keep.CreatedBy=User
         return await Insert(keep)
     }
     async function GetKeepById(KeepId:string):Promise<any>{

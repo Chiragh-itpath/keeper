@@ -15,5 +15,6 @@ namespace Keeper.Common.ViewModels
         public Guid CreatedBy { get; set; }
         public Guid? UpdatedBy { get; set; }
         public Guid ProjectId { get; set; }
+        public Guid? TagId { get; set; }
     }
 }

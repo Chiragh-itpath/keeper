@@ -7,7 +7,10 @@ import { ref } from "vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import TextFieldText from "@/components/TextFieldText.vue";
 import TextFieldEmail from '@/components/TextFieldEmail.vue';
-
+import {useKeepStore} from "@/stores/KeepStore"
+import type { Ikeep } from "@/Models/KeepModel";
+import { StatusType } from "@/enum/StatusType";
+const{AddKeep}=useKeepStore()
 const state = reactive({
     keepName: '',
     tag: '',
@@ -15,15 +18,42 @@ const state = reactive({
     dialog: false,
     openSnkbar: false,
     openInvite:false,
-    email:""
+    email:"",
+   
 })
 const form=ref()
+async function CreateKeep(){
+    const{valid}=await form.value.validate();
+    if(!valid)
+        return
+    const keeps:Ikeep= {
+        Title:state.keepName
+    };
+ const response=await AddKeep(keeps)
+ try{
+    if(response.data.statusName!=StatusType.SUCCESS){
+        state.openSnkbar=true;
+    }
+    else{
+        console.log(response);
+        state.openSnkbar=true;
+        state.snackbarMessage=response.data.message;
+        form.value.reset()
+    }
+ }
+ catch(e){
+    state.openSnkbar=true;
+    state.snackbarMessage="Error";
+ }
+}
+
 async function SubmitForm() {
     const { valid } = await form.value.validate();
     if (!valid)
         return
     state.openSnkbar = true;
     state.dialog = false
+    CreateKeep()
 }
 function onEnter(){
     state.inviteEmail.push(state.email);
