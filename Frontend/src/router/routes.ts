@@ -8,6 +8,7 @@ import ForgotPassword from "@/pages/ForgotPasswordPage.vue";
 import ProjectPage from '@/pages/ProjectPage.vue';
 import KeepPage from "@/pages/KeepPage.vue";
 import ItemPage from "@/pages/ItemPage.vue";
+import PageNotFound from "@/pages/PageNotFound.vue";
 export const routes = [
     {
         path: '/',
@@ -46,6 +47,11 @@ export const routes = [
         component: ItemPage,
         name: RouterEnum.ITEM,
         beforeEnter: routeGuard,
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: PageNotFound,
+        name:RouterEnum.PAGE_NOT_FOUND
     }
 ]
 
