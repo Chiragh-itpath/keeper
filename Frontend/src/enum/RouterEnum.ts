@@ -6,5 +6,6 @@ export const enum RouterEnum{
     PROJECT = "Projects",
     KEEP="Keeps",
     ITEM="Items",
+    EDITPROJECT="EditProject",
     PAGE_NOT_FOUND="PAGE_NOT_FOUND"
 }
