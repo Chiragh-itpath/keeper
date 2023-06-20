@@ -5,5 +5,7 @@ export const enum RouterEnum{
     FORGOT_PASSWORD="ForgotPassword",
     PROJECT = "Projects",
     KEEP="Keeps",
-    ITEM="Items"
+    ITEM="Items",
+    EDITPROJECT="EditProject",
+    PAGE_NOT_FOUND="PAGE_NOT_FOUND"
 }
