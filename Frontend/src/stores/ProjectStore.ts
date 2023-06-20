@@ -1,15 +1,23 @@
 import type { IProject } from '@/Models/ProjectModel';
-import{Insert,GetById,Delete,Update,GetAll} from '@/Services/ProjectService'
-import{defineStore} from 'pinia';
-export const useProjectStore=defineStore('ProjectStore',()=>{
-    async function AddProject(project:IProject):Promise<any>{
-        return await Insert(project)
+import { Insert, GetById, Delete, Update, GetAll } from '@/Services/ProjectService'
+import { defineStore, storeToRefs } from 'pinia';
+import { useUserStore } from "@/stores/UserStore";
+import { ref, type Ref } from 'vue';
+
+export const useProjectStore = defineStore('ProjectStore', () => {
+    const { User } = storeToRefs(useUserStore());
+    const Projects: Ref<IProject[]> = ref([])
+    async function AddProject(project: IProject): Promise<any> {
+        project.createdBy = User.value!.id
+        await Insert(project)
+        return await getProjects();
     }
     async function GetProjectById(ProjectId:string):Promise<any>{
         return await GetById(ProjectId)
     }
     async function GetProjects(UserId:string):Promise<any> {
-        return await GetAll(UserId)
+        const projects = await GetAll(User.value!.id)
+        Projects.value = projects.data
     }
     async function DeleteProject(ProjectId:string):Promise<any>{
         return await Delete(ProjectId)
@@ -22,6 +30,7 @@ export const useProjectStore=defineStore('ProjectStore',()=>{
         GetProjectById,
         GetProjects,
         DeleteProject,
-        UpdateProject  
+        UpdateProject,
+        Projects  
     }
 })
