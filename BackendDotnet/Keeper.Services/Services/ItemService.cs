@@ -63,9 +63,9 @@ namespace Keeper.Services.Services
                 To = itemVM.To,
                 DiscussedBy = itemVM.DiscussedBy,
                 KeepId = itemVM.KeepId,
-                CreatedBy = itemVM.CreatedBy,
+                CreatedBy = (Guid)itemVM.CreatedBy!,
                 CreatedOn = DateTime.Now,
-                TagId = itemVM.TagId,
+                TagId = itemVM.TagId ?? Guid.Empty,
                 Files = new List<FileModel>()
             };
             string wwwroot = _env.WebRootPath;
@@ -102,7 +102,7 @@ namespace Keeper.Services.Services
         }
         public async Task<ResponseModel<string>> UpdateAsync(ItemVM itemVM)
         {
-            ItemModel existingItem = await _itemRepo.GetByIdAsync(itemVM.Id);
+            ItemModel existingItem = await _itemRepo.GetByIdAsync((Guid)itemVM.Id!);
             if (existingItem.Id == Guid.Empty)
                 return new ResponseModel<string>
                 {
@@ -118,7 +118,7 @@ namespace Keeper.Services.Services
             existingItem.Number = itemVM.Number;
             existingItem.To = itemVM.To;
             existingItem.DiscussedBy = itemVM.DiscussedBy;
-            existingItem.UpdatedBy = itemVM.UpdatedBy;
+            existingItem.UpdatedBy = (Guid)itemVM.UpdatedBy!;
             existingItem.UpdatedOn = DateTime.Now;
             string wwwroot = _env.WebRootPath;
 
