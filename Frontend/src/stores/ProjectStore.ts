@@ -7,9 +7,8 @@ import { ref, type Ref } from 'vue';
 export const useProjectStore = defineStore('ProjectStore', () => {
     const { User } = storeToRefs(useUserStore());
     const Projects: Ref<IProject[]> = ref([])
-    const CurrentProject=ref();
     async function AddProject(project: IProject): Promise<any> {
-        project.CreatedBy = User.value!.id
+        project.createdBy = User.value!.id
         await Insert(project)
         await GetProjects();
     }
@@ -18,7 +17,7 @@ export const useProjectStore = defineStore('ProjectStore', () => {
     }
     async function GetProjects():Promise<any> {
         const projects = await GetAll(User.value!.id)
-        Projects.value = projects.data
+        Projects.value = projects.data.data
     }
     async function DeleteProject(ProjectId:string):Promise<any>{
         return await Delete(ProjectId)

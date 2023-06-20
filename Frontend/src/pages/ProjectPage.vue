@@ -7,7 +7,6 @@ import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
 import { useProjectStore } from "@/stores/ProjectStore";
 import type { IProject } from '@/Models/ProjectModel';
-import { StatusType } from '@/enum/StatusType';
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
@@ -16,7 +15,7 @@ const state = reactive({
     projectName: '',
     tag: '',
     description: '',
-    inviteEmail: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
+    inviteEmail: [],
     dialog: false,
     openSnackbar: false,
     snackbarMessage: '',
@@ -24,6 +23,7 @@ const state = reactive({
     error: false,
     show: -1,
     openInvite: false,
+    email:''
 })
 const items: { title: string,icon:string,to:{} }[] = [
     {
@@ -52,26 +52,12 @@ async function addProject(): Promise<void> {
     }
     await AddProject(project);
     form.value.reset();
-    const response = await AddProject(project);
-    try {
-        if (response.data.statusName != StatusType.SUCCESS) {
-            state.openSnackbar = true;
-        }
-        else {
-            console.log(response);
-            state.openSnackbar = true;
-            state.snackbarMessage = response.data.message;
-            form.value.reset()
-        }
-    }
-    catch (e) {
-        state.openSnackbar = true;
-        state.snackbarMessage = "Error"
-    }
+    state.dialog=false
 }
  function onEnter(){
-    state.inviteEmail.push(state.email);
-     state.email=''
+    if(state.email.trim()!="")
+        state.inviteEmail.push(state.email);
+    state.email=''
 }
 </script>
 <template>
@@ -88,13 +74,13 @@ async function addProject(): Promise<void> {
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-                
+
+            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">               
                     <Card>
                         <template #title>
-                            <div class="position-relative text-grey-darken-4">
-                                    {{ project.title }}
-                                <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
+                            <div class="position-relative text-grey-darken-4" >
+                                    {{project.title }}
+                                <v-btn  class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
                                     <v-icon>
                                         mdi-dots-vertical
                                     </v-icon>
@@ -108,12 +94,8 @@ async function addProject(): Promise<void> {
                                 </v-btn>
                             </div>
                         </template>
-                        <template #actions>
-                            <v-spacer></v-spacer>
-                            <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
-                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
-                        </template>
-                        <v-expand-transition>
+                        <template #text>
+                            <v-expand-transition>
                             <div v-if="state.show == index">
                                 <v-divider></v-divider>
                                 <v-card-text>
@@ -123,6 +105,13 @@ async function addProject(): Promise<void> {
                                 </v-card-text>
                             </div>
                         </v-expand-transition>
+                        </template>
+                        <template #actions>
+                            <v-spacer></v-spacer>
+                            <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
+                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
+                        </template>
+                        
                     </Card>
                 
             </v-col>
@@ -179,7 +168,7 @@ async function addProject(): Promise<void> {
             </div>
         </template>
     </ModalComponent>
-    <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" width="600">
+    <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" :width="600">
         <template #title>
             <div class="text-primary mt-2">
                 Invite People

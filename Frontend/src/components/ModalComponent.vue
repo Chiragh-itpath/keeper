@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
 
 <template>
     <v-row justify="center">
-        <v-dialog v-model="props.dialog" persistent width="800">
+        <v-dialog v-model="props.dialog" persistent :width="props.width">
             <v-card>
                 <v-card-title>
                     <slot name="title"></slot>
