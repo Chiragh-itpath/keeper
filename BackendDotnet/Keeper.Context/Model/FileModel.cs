@@ -11,5 +11,6 @@ namespace Keeper.Context.Model
         public Guid Id { get; set; }
         [Required]
         public string FilePath { get; set; } = default!; 
+        public virtual ICollection<ItemModel>? Items { get; set; }
     }
 }

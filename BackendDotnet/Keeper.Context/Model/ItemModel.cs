@@ -17,8 +17,8 @@ namespace Keeper.Context.Model
         public ItemType Type { get; set; }
         [StringLength(10)]
         public string Number { get; set; } = default!;
-        public string To { get; set; } = default!;
-        public string DiscussedBy { get; set; } = default!;
+        public string? To { get; set; }
+        public string? DiscussedBy { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Guid KeepId { get; set; }
         public virtual KeepModel? Keep { get; set; }
@@ -27,8 +27,7 @@ namespace Keeper.Context.Model
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
         public Guid TagId { get; set; }
-        public Guid? FileId { get; set; }
-
+        public virtual ICollection<FileModel>? Files { get; set; }
         public void Dispose()
         {
             GC.SuppressFinalize(this);
