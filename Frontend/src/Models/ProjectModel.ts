@@ -1,5 +1,3 @@
-import type { Guid } from "guid-typescript";
-
 export interface IProject {
     id?: string;
     title: string;

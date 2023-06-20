@@ -7,10 +7,11 @@ import { ref, type Ref } from 'vue';
 export const useProjectStore = defineStore('ProjectStore', () => {
     const { User } = storeToRefs(useUserStore());
     const Projects: Ref<IProject[]> = ref([])
+    const CurrentProject=ref();
     async function AddProject(project: IProject): Promise<any> {
-        project.CreatedBy = User.value!.id
+        project.createdBy = User.value!.id
         await Insert(project)
-        return await GetProjects();
+        await GetProjects();
     }
     async function GetProjectById(ProjectId: string): Promise<any> {
         return await GetById(ProjectId)

@@ -1,5 +1,5 @@
 import type { IUser } from '@/Models/UserModel';
-import { defineStore } from 'pinia';
+import { defineStore, } from 'pinia';
 import { GetUser } from '@/Services/UserService';
 import { computed, ref } from 'vue';
 import { useTokenStore } from '@/stores/TokenStore';

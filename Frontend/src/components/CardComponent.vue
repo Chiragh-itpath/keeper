@@ -8,8 +8,7 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-    <v-card :variant="props.variant" :rounded="true">
-        
+    <v-card :variant="props.variant" :rounded="true">    
             <v-card-title class="bg-lightenTeal text-white text-capitalize">
                 <slot name="title">
                 </slot>

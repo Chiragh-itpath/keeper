@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
     dialog: boolean
-    width: string
+    
 }>(), {
     dialog: false,
-    width: "auto"
+    
 },)
 </script>
 
 <template>
     <v-row justify="center">
-        <v-dialog v-model="props.dialog" persistent :width="props.width">
+        <v-dialog v-model="props.dialog" persistent width="800">
             <v-card>
                 <v-card-title>
                     <slot name="title"></slot>
