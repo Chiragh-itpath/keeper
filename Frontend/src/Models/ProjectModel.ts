@@ -1,10 +1,9 @@
 export interface IProject {
-    id?: string;
-    title: string;
-    description: string;
-    tagId?: string;
-    createdOn?: Date;
-    createdBy?: string;
-    updatedOn?: Date;
-    updatedBy?: string;
+    Id?: Guid;
+    Title: string;
+    Description: string;
+    CreatedOn?: Date;
+    CreatedBy?: Guid;
+    UpdatedOn?: Date;
+    UpdatedBy?: Guid;
 }

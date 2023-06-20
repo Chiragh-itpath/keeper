@@ -37,6 +37,7 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<ProjectModel>> GetById(Guid Id)
         {
             return await _projectService.GetByIdAsync(Id);
+
         }
         [HttpPut]
         public async Task<ResponseModel<string>> Update(ProjectVM project)

@@ -1,10 +1,17 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
     dialog: boolean
+<<<<<<< HEAD
     
 }>(), {
     dialog: false,
     
+=======
+    width: number
+}>(), {
+    dialog: false,
+    width: 800
+>>>>>>> b81059fdc8a5e13bca3ab9b09963365c3df96085
 },)
 </script>
 

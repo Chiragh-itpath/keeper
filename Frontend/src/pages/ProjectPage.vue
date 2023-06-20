@@ -7,18 +7,17 @@ import TextFieldText from "@/components/TextFieldText.vue";
 import { reactive } from 'vue';
 import { useProjectStore } from "@/stores/ProjectStore";
 import type { IProject } from '@/Models/ProjectModel';
+import { StatusType } from '@/enum/StatusType';
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import Snackbar from "@/components/SnackbarComponent.vue";
 const state = reactive({
     projectName: '',
-    tagName: '',
+    tag: '',
     description: '',
-    value: [''],
+    inviteEmail: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
     dialog: false,
-    inviteEmail: [''],
-    email: '',
     openSnackbar: false,
     snackbarMessage: '',
     success: false,
@@ -35,6 +34,7 @@ const items: { title: string,icon:string,to:{} }[] = [
 const form = ref()
 
 const { AddProject, GetProjects } = useProjectStore();
+
 const { Projects } = storeToRefs(useProjectStore());
 
 onMounted(async () => {
@@ -45,17 +45,33 @@ async function addProject(): Promise<void> {
     const { valid } = await form.value.validate();
     if (!valid)
         return
+
     const project: IProject = {
         title: state.projectName,
         description: state.description,
     }
     await AddProject(project);
     form.value.reset();
-
+    const response = await AddProject(project);
+    try {
+        if (response.data.statusName != StatusType.SUCCESS) {
+            state.openSnackbar = true;
+        }
+        else {
+            console.log(response);
+            state.openSnackbar = true;
+            state.snackbarMessage = response.data.message;
+            form.value.reset()
+        }
+    }
+    catch (e) {
+        state.openSnackbar = true;
+        state.snackbarMessage = "Error"
+    }
 }
-function onEnter() {
+ function onEnter(){
     state.inviteEmail.push(state.email);
-    state.email = ''
+     state.email=''
 }
 </script>
 <template>
@@ -129,7 +145,7 @@ function onEnter() {
                             <TextFieldText label="Project Name" v-model="state.projectName" />
                         </v-col>
                         <v-col cols="12" md="4" sm="3">
-                            <TextFieldText label="Tag" :is-required="false" v-model="state.tagName" />
+                            <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
                         </v-col>
                         <v-col cols="12">
                             <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
@@ -184,22 +200,21 @@ function onEnter() {
                     <v-col cols="12">
                         <v-sheet elevation="5" class="px-2" height="200px" width="auto">
                             <div class="scroll">
-                                <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
-                                        <v-avatar color="primary">{{ email.charAt(0) }}</v-avatar>
+                                <v-row v-for="(email,index) in state.inviteEmail" :key="email" class="mt-2">
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center" >
+                                        <v-avatar  color="primary" >{{ email.charAt(0)}}</v-avatar>
                                     </v-col>
-                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center">
-                                        {{ email }}
+                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center" >
+                                       {{ email }}
                                     </v-col>
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
-                                        <v-icon @click="() => { state.inviteEmail.splice(index, 1) }"
-                                            icon="mdi-minus-circle-outline" size="large"></v-icon>
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">                                      
+                                        <v-icon @click="()=>{state.inviteEmail.splice(index,1)}" icon="mdi-minus-circle-outline" size="large"></v-icon>
                                     </v-col>
                                 </v-row>
                             </div>
-                        </v-sheet>
-                    </v-col>
-                </v-row>
+                                </v-sheet> 
+                        </v-col>
+                    </v-row>
             </v-form>
         </template>
         <template #actionBtn>
@@ -222,7 +237,7 @@ function onEnter() {
 </template>
 <style scoped>
 .scroll {
-    max-height: 200px;
-    overflow-y: scroll;
+  max-height: 200px;
+  overflow-y: scroll;
 }
 </style>

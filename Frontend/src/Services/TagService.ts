@@ -1,18 +1,17 @@
 import type { ITag } from "@/Models/TagModel";
+import axios from "axios";
 import type { TagTypeEnum } from "@/enum/TagTypeEnum";
 import { http } from "@/GlobalConfig/ApiClient";
 export async function Get():Promise<any>{
     try {
-        const response = await http.get("Tag");
-        return await response.data;
+        return await http.get("Tag");
     } catch (error) {
         console.log(error);
     }
 }
 export async function GetByType(tagType:TagTypeEnum):Promise<any>{
     try {
-        const response = await http.get(`Tag/Type/${tagType}`);
-        return await response.data;
+        return await http.get(`Tag/Type/${tagType}`);
     } catch (error) {
         console.log(error);
     }
@@ -20,8 +19,7 @@ export async function GetByType(tagType:TagTypeEnum):Promise<any>{
 
 export async function GetByTitle(title:string):Promise<any>{
     try {
-        const response = await http.get(`Tag/Title/${title}`);
-        return await response.data;
+        return await http.get(`Tag/Title/${title}`);
     } catch (error) {
         console.log(error);
     }
@@ -29,8 +27,7 @@ export async function GetByTitle(title:string):Promise<any>{
 
 export async function Post(tag:ITag):Promise<any>{
     try {
-        const response = await http.post(`Tag`,tag);
-        return await response.data;
+        return await http.post(`Tag`,tag);
     } catch (error) {
         console.log(error);
     }
