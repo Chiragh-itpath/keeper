@@ -46,11 +46,13 @@ async function register(): Promise<void> {
             state.emailExists = true
             state.emailError = response.data.message
             state.showSnackbar = true
+            state.serverError=true
         }
         else {
             state.SnackbarMessage = response.data.message
             state.emailExists = false
             state.showSnackbar = true
+            state.serverError=false
             form.value.reset()
             setTimeout(() => {
                 router.push({ name: RouterEnum.LOGIN })

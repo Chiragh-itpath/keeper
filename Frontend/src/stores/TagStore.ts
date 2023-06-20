@@ -1,12 +1,16 @@
 import { defineStore } from "pinia";
 import { Get,GetByTitle,GetByType,Post } from "@/Services/TagService";
 import type { TagTypeEnum } from "@/enum/TagTypeEnum";
-import axios from "axios";
 import type { ITag } from "@/Models/TagModel";
-export const tagStore=defineStore("TagStore",()=>{
-    async function GetAll():Promise<any>{
+export const useTagStore=defineStore("TagStore",()=>{  
+    let TagList:ITag[]|undefined;
+
+    async function GetAllTags():Promise<ITag[] | undefined>{
         try{
-            return await Get();
+            const response = await Get();
+            console.log(response);
+             TagList = response.data;
+            return TagList;
         }
         catch(error){
             console.log(error);
@@ -28,15 +32,19 @@ export const tagStore=defineStore("TagStore",()=>{
         }
     }
     
-     async function Add(tag:ITag):Promise<any>{
+     async function Add(tag:ITag):Promise<void>{
         try {
-            return await Post(tag);
+            TagList = await GetAllTags();
+            const tags:any = TagList?.find( t =>t.Title ==tag.Title&& t.Type ==tag.Type)
+            if(tags!=undefined){
+                await Post(tag);
+            }
         } catch (error) {
             console.log(error);
         }
     }
     return{
-        GetAll,GetByTagTitle,GetByTagType,Add
+        GetAllTags,GetByTagTitle,GetByTagType,Add
     }
 })
 

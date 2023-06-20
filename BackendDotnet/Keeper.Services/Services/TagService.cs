@@ -59,7 +59,7 @@ namespace Keeper.Services.Services
             List<TagVM> list = new List<TagVM>();
             foreach (var item in data)
             {
-                list.Add(new TagVM() { Title = item.Title, Type = item.Type });
+                list.Add(new TagVM() { Id = item.Id , Title = item.Title, Type = item.Type });
             }
             return list;
         }
