@@ -8,9 +8,14 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
+<<<<<<< HEAD
+    <v-card :variant="props.variant" :rounded="true">    
+            <v-card-title class="bg-lightenTeal text-white text-capitalize">
+=======
     <v-card :variant="props.variant" :rounded="true">
         <div>
             <v-card-title>
+>>>>>>> b81059fdc8a5e13bca3ab9b09963365c3df96085
                 <slot name="title">
                 </slot>
             </v-card-title>
