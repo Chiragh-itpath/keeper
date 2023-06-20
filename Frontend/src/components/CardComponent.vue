@@ -9,8 +9,8 @@ const props = withDefaults(defineProps<{
 
 <template>
     <v-card :variant="props.variant" :rounded="true">
-        
-            <v-card-title class="bg-lightenTeal text-white text-capitalize">
+        <div>
+            <v-card-title>
                 <slot name="title">
                 </slot>
             </v-card-title>
@@ -18,11 +18,16 @@ const props = withDefaults(defineProps<{
                 <slot name="subtitle">
                 </slot>
             </v-card-subtitle>
-                <slot>
-                </slot>    
+            <v-card-text>
+                <slot name="text">
+                </slot>
+            </v-card-text>
             <v-card-actions>
                 <slot name="actions"></slot>
             </v-card-actions>
-        
+        </div>
+        <div>
+            <slot name="image"></slot>
+        </div>
     </v-card>
 </template>
