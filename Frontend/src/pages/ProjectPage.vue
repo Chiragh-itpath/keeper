@@ -12,6 +12,7 @@ import { storeToRefs } from 'pinia';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import Snackbar from "@/components/SnackbarComponent.vue";
 const state = reactive({
+    projectId: '',
     projectName: '',
     tag: '',
     description: '',
@@ -23,17 +24,17 @@ const state = reactive({
     error: false,
     show: -1,
     openInvite: false,
-    email:''
+    email: ''
 })
-const items: { title: string,icon:string,to:{} }[] = [
+const items: { title: string, icon: string, to: {} }[] = [
     {
-        title: 'Edit',icon:'mdi-edit',to:{path:'/EditProject'}
+        title: 'Edit', icon: 'mdi-edit', to: { path: '/EditProject' }
     }, {
-        title: 'Delete',icon:'mdi-delete',to:{path:'/Projects'}
+        title: 'Delete', icon: 'mdi-delete', to: { path: '/Projects' }
     }]
 const form = ref()
 
-const { AddProject, GetProjects } = useProjectStore();
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject } = useProjectStore();
 
 const { Projects } = storeToRefs(useProjectStore());
 
@@ -42,22 +43,48 @@ onMounted(async () => {
 
 });
 async function addProject(): Promise<void> {
-    const { valid } = await form.value.validate();
-    if (!valid)
-        return
+    if (state.projectId == '') {
+        const { valid } = await form.value.validate();
+        if (!valid)
+            return
 
-    const project: IProject = {
-        title: state.projectName,
-        description: state.description,
+        const project: IProject = {
+            title: state.projectName,
+            description: state.description,
+        }
+        await AddProject(project);
+        form.value.reset();
+        state.dialog = false
     }
-    await AddProject(project);
-    form.value.reset();
-    state.dialog=false
+    else {
+        const project: IProject = {
+            id: state.projectId,
+            title: state.projectName,
+            description: state.description,
+        }
+        await editProject(state.projectId)
+        await UpdateProject(project)
+        state.projectId = ''
+        form.value.reset();
+        state.dialog = false
+    }
 }
- function onEnter(){
-    if(state.email.trim()!="")
+function onEnter() {
+    if (state.email.trim() != "")
         state.inviteEmail.push(state.email);
-    state.email=''
+    state.email = ''
+}
+
+async function editProject(projectId: string) {
+    state.dialog = true;
+    const data = await GetProjectById(projectId)
+    console.log(data);
+    state.projectName = data.title
+    state.description = data.description
+    state.projectId=projectId
+}
+async function deleteProject(projectId: string) {
+    await DeleteProject(projectId)
 }
 </script>
 <template>
@@ -75,27 +102,28 @@ async function addProject(): Promise<void> {
         </v-row>
         <v-row>
 
-            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">               
-                    <Card>
-                        <template #title>
-                            <div class="position-relative text-grey-darken-4" >
-                                    {{project.title }}
-                                <v-btn  class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
-                                    <v-icon>
-                                        mdi-dots-vertical
-                                    </v-icon>
-                                    <v-menu activator="parent"> 
-                                        <v-list>
-                                            <v-list-item v-for="(i, index) in items" :key="index" :value="index">
-                                                <v-list-item-title >{{ i.title }}</v-list-item-title>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-menu>
-                                </v-btn>
-                            </div>
-                        </template>
-                        <template #text>
-                            <v-expand-transition>
+            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+                <Card>
+                    <template #title>
+                        <div class="position-relative text-grey-darken-4">
+                            {{ project.title }}
+                            <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
+                                <v-icon>
+                                    mdi-dots-vertical
+                                </v-icon>
+                                <v-menu activator="parent">
+                                    <v-list>
+                                        <v-list-item>
+                                            <v-list-item-title><Button variant="text" @click="editProject(project.id)">Edit</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text" @click="deleteProject(project.id)">Delete</Button></v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </v-btn>
+                        </div>
+                    </template>
+                    <template #text>
+                        <v-expand-transition>
                             <div v-if="state.show == index">
                                 <v-divider></v-divider>
                                 <v-card-text>
@@ -105,21 +133,21 @@ async function addProject(): Promise<void> {
                                 </v-card-text>
                             </div>
                         </v-expand-transition>
-                        </template>
-                        <template #actions>
-                            <v-spacer></v-spacer>
-                            <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
-                            <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
-                        </template>
-                        
-                    </Card>
-                
+                    </template>
+                    <template #actions>
+                        <v-spacer></v-spacer>
+                        <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
+                        <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
+                    </template>
+
+                </Card>
+
             </v-col>
         </v-row>
     </v-container>
     <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
         <template #title>
-            <div class="text-left ml-4 mt-3"><Button @click="state.dialog = false"
+            <div class="text-left ml-4 mt-3"><Button @click="()=>{state.dialog = false; form.reset(); state.projectId=''}"
                     prepend-icon="mdi-arrow-left-circle">Back</Button></div>
             <div class="text-center text-primary mt-2">
                 Create New Project
@@ -162,7 +190,7 @@ async function addProject(): Promise<void> {
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="addProject">Create</Button>
+                        <Button variant="elevated" width="100" @click="addProject">{{state.projectId!=''?'Update':'Create'}}</Button>
                     </v-col>
                 </v-row>
             </div>
@@ -189,21 +217,22 @@ async function addProject(): Promise<void> {
                     <v-col cols="12">
                         <v-sheet elevation="5" class="px-2" height="200px" width="auto">
                             <div class="scroll">
-                                <v-row v-for="(email,index) in state.inviteEmail" :key="email" class="mt-2">
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center" >
-                                        <v-avatar  color="primary" >{{ email.charAt(0)}}</v-avatar>
+                                <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-avatar color="primary">{{ email.charAt(0) }}</v-avatar>
                                     </v-col>
-                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center" >
-                                       {{ email }}
+                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center">
+                                        {{ email }}
                                     </v-col>
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">                                      
-                                        <v-icon @click="()=>{state.inviteEmail.splice(index,1)}" icon="mdi-minus-circle-outline" size="large"></v-icon>
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-icon @click="() => { state.inviteEmail.splice(index, 1) }"
+                                            icon="mdi-minus-circle-outline" size="large"></v-icon>
                                     </v-col>
                                 </v-row>
                             </div>
-                                </v-sheet> 
-                        </v-col>
-                    </v-row>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
             </v-form>
         </template>
         <template #actionBtn>
@@ -226,7 +255,7 @@ async function addProject(): Promise<void> {
 </template>
 <style scoped>
 .scroll {
-  max-height: 200px;
-  overflow-y: scroll;
+    max-height: 200px;
+    overflow-y: scroll;
 }
 </style>
