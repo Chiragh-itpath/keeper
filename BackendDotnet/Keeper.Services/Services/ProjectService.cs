@@ -61,7 +61,6 @@ namespace Keeper.Services.Services
         public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
             ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
-            existingModel.Id = project.Id;
             existingModel.Title = project.Title;
             existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;
