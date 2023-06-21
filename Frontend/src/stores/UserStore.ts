@@ -1,6 +1,5 @@
 import type { IUser } from '@/Models/UserModel';
 import { defineStore } from 'pinia';
-import { Guid } from 'guid-typescript';
 import { GetUser } from '@/Services/UserService';
 import { computed, ref } from 'vue';
 import { useTokenStore } from '@/stores/TokenStore';
@@ -11,7 +10,7 @@ export const useUserStore = defineStore('user', () => {
     const router=useRouter()
     let User = ref<IUser>();
     const { getToken } = useTokenStore();
-    async function StoreUser(id: Guid): Promise<void> {
+    async function StoreUser(id: string): Promise<void> {
         User.value = await GetUser(id)
     }
     const isLoggedin = computed(

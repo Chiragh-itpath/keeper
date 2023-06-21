@@ -25,8 +25,7 @@ export async function GetById(ProjectId: string): Promise<any> {
 }
 export async function GetAll(UserId: string): Promise<any> {
     try {
-        const response = await http.get(`/Project/${UserId}`)
-        console.log(response);
+        const response = await http.get(`/Project?UserId=${UserId}`)
         return response;
     }
     catch (e) {
