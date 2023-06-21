@@ -12,9 +12,10 @@ import type { Ikeep } from "@/Models/KeepModel";
 import { StatusType } from "@/enum/StatusType";
 import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
-const{AddKeep,GetKeeps}=useKeepStore()
+const{AddKeep,GetKeeps,DeleteKeep,Updatekeep,GetKeepById}=useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore());
 const state = reactive({
+    KeepId:'',
     keepName: '',
     tag: '',
     inviteEmail: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
@@ -31,30 +32,42 @@ onMounted(async()=>{
     await GetKeeps();
 })
 async function CreateKeep(){
+    if(state.KeepId==""){
     const{valid}=await form.value.validate();
     if(!valid)
         return
     const keeps:Ikeep= {
         title:state.keepName
     };
- const response=await AddKeep(keeps)
- try{
-    if(response.data.statusName!=StatusType.SUCCESS){
-        state.openSnkbar=true;
-    }
+    await AddKeep(keeps)
+    form.value.reset();
+    state.dialog = false
+    } 
     else{
-        console.log(response);
-        state.openSnkbar=true;
-        state.snackbarMessage=response.data.message;
-        form.value.reset()
+        const keep:Ikeep={
+            id:state.KeepId,
+            title:state.keepName
+        }
+        console.log(state.KeepId);
+        
+        await editkeep(state.KeepId)
+        await Updatekeep(keep)
+        state.KeepId = ''
+        form.value.reset();
+        state.dialog = false
     }
- }
- catch(e){
-    state.openSnkbar=true;
-    state.snackbarMessage="Error";
- }
 }
 
+async function deletekeep(keepId:string){
+    await DeleteKeep(keepId)
+}
+async function editkeep(keepId:string) {
+    state.dialog=true;
+    const data=await GetKeepById(keepId)
+    console.log(data);
+    state.keepName=data.title
+    state.KeepId=data.id
+}
 
 function onEnter(){
     state.inviteEmail.push(state.email);
@@ -74,10 +87,26 @@ function onEnter(){
             </v-col>
         </v-row>
         <v-row >
+            
             <v-col v-for="(keep,index) in Keeps" :key="index" cols="12" lg="3" md="12" sm="6">
                 <Card>             
                     <template #title>
-                        {{ keep.title  }}
+                        <div class="position-relative text-grey-darken-4">
+                            {{ keep.title }}
+                            <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
+                                <v-icon>
+                                    mdi-dots-vertical
+                                </v-icon>
+                                <v-menu activator="parent">
+                                    <v-list>
+                                        <v-list-item>
+                                            <v-list-item-title><Button variant="text" @click="editkeep(keep.id)">Edit</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text" @click="deletekeep(keep.id)">Delete</Button></v-list-item-title>
+                                        </v-list-item>
+                                    </v-list>
+                                </v-menu>
+                            </v-btn>
+                        </div>
                     </template>
                     <template #actions>
                         <Button variant="outlined"><router-link :to="{name:RouterEnum.ITEM}" class="link">Click</router-link></Button>
@@ -127,7 +156,7 @@ function onEnter(){
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="CreateKeep">Create</Button>
+                        <Button variant="elevated" width="100" @click="CreateKeep">{{state.KeepId!=''?'Update':'Create'}}</Button>
                     </v-col>
                 </v-row>
             </div>

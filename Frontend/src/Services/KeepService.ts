@@ -50,7 +50,7 @@ export async function GetById(KeepId:string):Promise<any> {
     try{
         const response=await http.get(`/Keep/${KeepId}`)
         console.log(response);
-        return response;
+        return response.data.data;
     }
     catch(e){
         console.log(e);
