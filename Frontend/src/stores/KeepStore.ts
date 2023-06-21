@@ -17,13 +17,15 @@ export const useKeepStore=defineStore('KeepStore',()=>{
     async function GetKeeps():Promise<any> {
          const keeps= await GetAll("55763296-d8ee-45eb-acae-319481fdf02e")
          Keeps.value=keeps.data.data
-         console.log(Keeps.value);
     }
     async function DeleteKeep(ProjectId:string):Promise<any>{
-        return await Delete(ProjectId)
+        await Delete(ProjectId)
+        await GetKeeps()
     }
     async function Updatekeep(Keep:Ikeep):Promise<any>{
-        return await Update(Keep)
+        Keep.updatedBy=User.value?.id
+         await Update(Keep)
+         await GetKeeps()
     }
     return{
         AddKeep,
