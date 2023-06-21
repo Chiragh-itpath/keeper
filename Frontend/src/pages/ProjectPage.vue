@@ -125,7 +125,6 @@ async function deleteProject(projectId: string) {
                     <template #text>
                         <v-expand-transition>
                             <div v-if="state.show == index">
-                                <v-divider></v-divider>
                                 <v-card-text>
                                     {{ project.description }}
                                     <span v-if="project.description == ''" class="text-grey font-italic ">No description
@@ -139,9 +138,7 @@ async function deleteProject(projectId: string) {
                         <v-btn v-if="state.show != index" icon="mdi-chevron-down" @click="state.show = index"></v-btn>
                         <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
                     </template>
-
                 </Card>
-
             </v-col>
         </v-row>
     </v-container>
