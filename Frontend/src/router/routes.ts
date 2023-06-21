@@ -38,7 +38,7 @@ export const routes = [
         beforeEnter: routeGuard,
     },
     {
-        path: '/Keeps',
+        path: '/Projects/:id',
         component: KeepPage,
         name: RouterEnum.KEEP,
         beforeEnter: routeGuard,

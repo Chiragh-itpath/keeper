@@ -7,89 +7,100 @@ import { ref } from "vue";
 import ModalComponent from "@/components/ModalComponent.vue";
 import TextFieldText from "@/components/TextFieldText.vue";
 import TextFieldEmail from '@/components/TextFieldEmail.vue';
-import {useKeepStore} from "@/stores/KeepStore"
+import { useKeepStore } from "@/stores/KeepStore"
 import type { Ikeep } from "@/Models/KeepModel";
-import { StatusType } from "@/enum/StatusType";
 import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
-const{AddKeep,GetKeeps,DeleteKeep,Updatekeep,GetKeepById}=useKeepStore()
+import { useRoute } from "vue-router";
+
+const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore());
+
+const proid = ref();
+
 const state = reactive({
-    KeepId:'',
+    KeepId: '',
     keepName: '',
     tag: '',
     inviteEmail: ['rucha@gmail.com', 'vishruti@gmail.com', 'chirag@gmail.com', 'nik@gmail.com', 'khoda@gmail.com'],
     dialog: false,
     openSnkbar: false,
-    openInvite:false,
-    email:"",
+    openInvite: false,
+    email: "",
     snackbarMessage: '',
-   
 })
 
-const form=ref()
-onMounted(async()=>{
-    await GetKeeps();
+const form = ref()
+const route = useRoute();
+
+onMounted(async () => {
+    proid.value = route.params.id.toString()
+    await GetKeeps(proid.value);
 })
-async function CreateKeep(){
-    if(state.KeepId==""){
-    const{valid}=await form.value.validate();
-    if(!valid)
-        return
-    const keeps:Ikeep= {
-        title:state.keepName
-    };
-    await AddKeep(keeps)
-    form.value.reset();
-    state.dialog = false
-    } 
-    else{
-        const keep:Ikeep={
-            id:state.KeepId,
-            title:state.keepName
+async function CreateKeep() {
+    if (state.KeepId == "") {
+        const { valid } = await form.value.validate();
+        if (!valid)
+            return
+        const keeps: Ikeep = {
+            title: state.keepName,
+            projectId: proid.value
+        };
+        debugger
+        await AddKeep(keeps)
+        form.value.reset();
+        state.dialog = false
+    }
+    else {
+        const keep: Ikeep = {
+            id: state.KeepId,
+            title: state.keepName
         }
         console.log(state.KeepId);
-        
+
         await editkeep(state.KeepId)
         await Updatekeep(keep)
         state.KeepId = ''
         form.value.reset();
         state.dialog = false
     }
+    await GetKeeps(proid.value)
 }
 
-async function deletekeep(keepId:string){
+async function deletekeep(keepId: string) {
     await DeleteKeep(keepId)
+    await GetKeeps(proid.value)
 }
-async function editkeep(keepId:string) {
-    state.dialog=true;
-    const data=await GetKeepById(keepId)
+async function editkeep(keepId: string) {
+    state.dialog = true;
+    const data = await GetKeepById(keepId)
     console.log(data);
-    state.keepName=data.title
-    state.KeepId=data.id
+    state.keepName = data.title
+    state.KeepId = data.id
 }
 
-function onEnter(){
+function onEnter() {
     state.inviteEmail.push(state.email);
-     state.email=''
+    state.email = ''
 }
 </script>
 <template>
-    <v-container>       
+    <v-container>
         <v-row>
             <v-col cols="12" md="10" sm="12">
                 <v-text-field color="primary" type="date"></v-text-field>
             </v-col>
             <v-col cols="12" md="2" sm="12" class="my-auto">
-                <Button class="w-100" :rounded="false" @click="state.dialog = true" variant="elevated" prepend-icon="mdi-plus">
+                <Button class="w-100" :rounded="false" @click="state.dialog = true" variant="elevated"
+                    prepend-icon="mdi-plus">
                     New Keep
                 </Button>
             </v-col>
         </v-row>
-        <v-row >
-            
-            <v-col v-for="(keep,index) in Keeps" :key="index" cols="12" lg="3" md="12" sm="6">
-                <Card>             
+        <v-row>
+
+            <v-col v-for="(keep, index) in Keeps" :key="index" cols="12" lg="3" md="12" sm="6">
+                <Card>
                     <template #title>
                         <div class="position-relative text-grey-darken-4">
                             {{ keep.title }}
@@ -100,8 +111,10 @@ function onEnter(){
                                 <v-menu activator="parent">
                                     <v-list>
                                         <v-list-item>
-                                            <v-list-item-title><Button variant="text" @click="editkeep(keep.id)">Edit</Button></v-list-item-title>
-                                            <v-list-item-title><Button variant="text" @click="deletekeep(keep.id)">Delete</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text"
+                                                    @click="editkeep(keep.id)">Edit</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text"
+                                                    @click="deletekeep(keep.id)">Delete</Button></v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
@@ -109,7 +122,8 @@ function onEnter(){
                         </div>
                     </template>
                     <template #actions>
-                        <Button variant="outlined"><router-link :to="{name:RouterEnum.ITEM}" class="link">Click</router-link></Button>
+                        <Button variant="outlined"><router-link :to="{ name: RouterEnum.ITEM }"
+                                class="link">Click</router-link></Button>
                     </template>
                 </Card>
             </v-col>
@@ -135,7 +149,8 @@ function onEnter(){
                             <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
                         </v-col>
                         <v-col cols="12" sm="6" md="2" lg="2">
-                            <v-btn color="primary" variant="outlined" class="w-100" @click="state.openInvite=true">Invite</v-btn>
+                            <v-btn color="primary" variant="outlined" class="w-100"
+                                @click="state.openInvite = true">Invite</v-btn>
                         </v-col>
                         <v-col cols="12" sm="6" md="10" lg="10">
                             <span v-for="(selection, index) in state.inviteEmail" :key="selection">
@@ -156,7 +171,8 @@ function onEnter(){
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="CreateKeep">{{state.KeepId!=''?'Update':'Create'}}</Button>
+                        <Button variant="elevated" width="100"
+                            @click="CreateKeep">{{ state.KeepId != '' ? 'Update' : 'Create' }}</Button>
                     </v-col>
                 </v-row>
             </div>
@@ -170,41 +186,44 @@ function onEnter(){
         </template>
         <template #formSlot>
             <v-form ref="form">
+                <v-row>
                     <v-row>
-                        <v-row>
-                            <v-col cols="10" md="10" sm="10">
-                                <TextFieldEmail label="Email" color="primary" v-model="state.email"/>
-                            </v-col>
-                            <v-col cols="2" md="2" sm="2">
-                                <v-avatar @click="onEnter" color="secondary" class="mt-2"><v-icon icon="mdi-plus-thick" color="white"></v-icon></v-avatar>
-                            </v-col>
-                        </v-row>
-                        <v-col cols="12"> 
-                                <v-sheet elevation="5" class="px-2" height="200px" width="auto">
+                        <v-col cols="10" md="10" sm="10">
+                            <TextFieldEmail label="Email" color="primary" v-model="state.email" />
+                        </v-col>
+                        <v-col cols="2" md="2" sm="2">
+                            <v-avatar @click="onEnter" color="secondary" class="mt-2"><v-icon icon="mdi-plus-thick"
+                                    color="white"></v-icon></v-avatar>
+                        </v-col>
+                    </v-row>
+                    <v-col cols="12">
+                        <v-sheet elevation="5" class="px-2" height="200px" width="auto">
                             <div class="scroll">
-                                <v-row v-for="(email,index) in state.inviteEmail" :key="email" class="mt-2">
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center" >
-                                        <v-avatar  color="secondary" >{{ email.charAt(0)}}</v-avatar>
+                                <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-avatar color="secondary">{{ email.charAt(0) }}</v-avatar>
                                     </v-col>
-                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center" >
-                                       {{ email }}
+                                    <v-col cols="6" sm="6" md="8" lg="8" class="d-flex align-center">
+                                        {{ email }}
                                     </v-col>
-                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">                                      
-                                        <v-icon @click="()=>{state.inviteEmail.splice(index,1)}" icon="mdi-minus-circle-outline" size="large"></v-icon>
+                                    <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
+                                        <v-icon @click="() => { state.inviteEmail.splice(index, 1) }"
+                                            icon="mdi-minus-circle-outline" size="large"></v-icon>
                                     </v-col>
                                 </v-row>
                             </div>
-                                </v-sheet> 
-                        </v-col>
-                    </v-row>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
             </v-form>
         </template>
         <template #actionBtn>
             <div class="mb-2">
                 <v-row>
                     <v-col>
-                        <Button width="100" @click="()=>{state.inviteEmail.splice(0,state.inviteEmail.length); state.openInvite=false}">Cancle</Button>
-                        <Button variant="elevated" width="100" @click="state.openInvite=false">Invite</Button>
+                        <Button width="100"
+                            @click="() => { state.inviteEmail.splice(0, state.inviteEmail.length); state.openInvite = false }">Cancle</Button>
+                        <Button variant="elevated" width="100" @click="state.openInvite = false">Invite</Button>
                     </v-col>
                 </v-row>
             </div>
@@ -213,16 +232,15 @@ function onEnter(){
     <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnkbar">
         Saved Successfully!
     </v-snackbar>
-    
 </template>
 
 <style scoped>
-.link{
+.link {
     text-decoration: none;
     color: black;
 }
+
 .scroll {
-  max-height: 200px;
-  overflow-y: scroll;
-}
-</style>
+    max-height: 200px;
+    overflow-y: scroll;
+}</style>

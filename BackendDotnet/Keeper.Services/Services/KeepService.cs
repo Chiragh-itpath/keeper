@@ -64,11 +64,8 @@ namespace Keeper.Services.Services
                 model.Title=keep.Title;
                 model.CreatedOn = DateTime.Now;
                 model.CreatedBy= keep.CreatedBy;
-               /* model.ProjectId = keep.ProjectId;*/
+                model.ProjectId = keep.ProjectId;
                 model.TagId = keep.TagId ?? Guid.Empty;
-               // model.ProjectId = Guid.Parse("55763296-d8ee-45eb-acae-319481fdf02e");
-
-
             };
             await _repo.SaveAsync(model);
             {

@@ -11,6 +11,7 @@ import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import Snackbar from "@/components/SnackbarComponent.vue";
+import { RouterEnum } from '@/enum/RouterEnum';
 const state = reactive({
     projectId: '',
     projectName: '',
@@ -81,7 +82,7 @@ async function editProject(projectId: string) {
     console.log(data);
     state.projectName = data.title
     state.description = data.description
-    state.projectId=projectId
+    state.projectId = projectId
 }
 async function deleteProject(projectId: string) {
     await DeleteProject(projectId)
@@ -101,21 +102,25 @@ async function deleteProject(projectId: string) {
             </v-col>
         </v-row>
         <v-row>
-
             <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
                 <Card>
                     <template #title>
                         <div class="position-relative text-grey-darken-4">
                             {{ project.title }}
-                            <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
+                                <Button variant="text" color="text-light" @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })"
+                                class="position-absolute" style="left:0;"><v-icon>mdi-note-multiple</v-icon>
+                                <v-tooltip activator="parent"  location="top">keep</v-tooltip></Button>
+                                <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
                                 <v-icon>
                                     mdi-dots-vertical
                                 </v-icon>
                                 <v-menu activator="parent">
                                     <v-list>
                                         <v-list-item>
-                                            <v-list-item-title><Button variant="text" @click="editProject(project.id)">Edit</Button></v-list-item-title>
-                                            <v-list-item-title><Button variant="text" @click="deleteProject(project.id)">Delete</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text"
+                                                    @click="editProject(project.id)">Edit</Button></v-list-item-title>
+                                            <v-list-item-title><Button variant="text"
+                                                    @click="deleteProject(project.id)">Delete</Button></v-list-item-title>
                                         </v-list-item>
                                     </v-list>
                                 </v-menu>
@@ -139,12 +144,13 @@ async function deleteProject(projectId: string) {
                         <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
                     </template>
                 </Card>
+
             </v-col>
         </v-row>
     </v-container>
     <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
         <template #title>
-            <div class="text-left ml-4 mt-3"><Button @click="()=>{state.dialog = false; form.reset(); state.projectId=''}"
+            <div class="text-left ml-4 mt-3"><Button @click="() => { state.dialog = false; form.reset(); state.projectId = '' }"
                     prepend-icon="mdi-arrow-left-circle">Back</Button></div>
             <div class="text-center text-primary mt-2">
                 Create New Project
@@ -187,7 +193,8 @@ async function deleteProject(projectId: string) {
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100" @click="addProject">{{state.projectId!=''?'Update':'Create'}}</Button>
+                        <Button variant="elevated" width="100"
+                            @click="addProject">{{ state.projectId != '' ? 'Update' : 'Create' }}</Button>
                     </v-col>
                 </v-row>
             </div>

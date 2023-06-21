@@ -4,9 +4,8 @@ import type { Ikeep } from "@/Models/KeepModel";
 export async function Insert(Keep:Ikeep):Promise<any>{
     try{
         console.log(Keep);
-        const response= await http.post('/keep',Keep)
-       console.log(response);
-       return response;
+        const response= await http.post('/Keep',Keep)
+        return response;
     }
     catch(e){
         console.log(e);
@@ -16,7 +15,6 @@ export async function Insert(Keep:Ikeep):Promise<any>{
 export async function Update(keep:Ikeep):Promise<any>{
     try{
         const response=await http.put('/Keep',keep)
-        console.log(response);
         return response;
     }
     catch(e){
@@ -27,7 +25,6 @@ export async function Update(keep:Ikeep):Promise<any>{
 export async function Delete(KeepId:string):Promise<any>{
     try{
         const response=await http.delete(`/Keep/${KeepId}`)
-        console.log(response);
         return response;
     }
     catch(e){
@@ -38,7 +35,6 @@ export async function Delete(KeepId:string):Promise<any>{
 export async function GetAll(ProjectId:string):Promise<any>{
     try{
         const response=await http.get(`/Keep?ProjectId=${ProjectId}`)
-        console.log(response);
         return response;
     }
     catch(e){
@@ -49,7 +45,6 @@ export async function GetAll(ProjectId:string):Promise<any>{
 export async function GetById(KeepId:string):Promise<any> {
     try{
         const response=await http.get(`/Keep/${KeepId}`)
-        console.log(response);
         return response.data.data;
     }
     catch(e){
