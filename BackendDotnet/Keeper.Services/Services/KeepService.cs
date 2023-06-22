@@ -16,9 +16,11 @@ namespace Keeper.Services.Services
     public class KeepService:IKeepService
     {
         private readonly IKeepRepo _repo;
-        public KeepService(IKeepRepo repo)
+        private readonly ITagService _tagService;
+        public KeepService(IKeepRepo repo, ITagService tagService)
         {
             _repo = repo;
+            _tagService = tagService;
         }
 
         public async Task<ResponseModel<string>> DeleteByIdAsync(Guid Id)
@@ -59,13 +61,36 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> SaveAsync(KeepVM keep)
         {
+            var tagId = Guid.NewGuid();
+            if (keep.TagTitle != null && keep.TagTitle!="") 
+            {
+                var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
+                if (tagdata.Data == null)
+                {
+                    TagModel tag = new TagModel()
+                    {
+                        Id = tagId,
+                        Title = keep.TagTitle,
+                        Type = TagType.KEEP
+                    };
+                    await _tagService.SaveAsync(tag);
+                }
+                else
+                {
+                    tagId = tagdata.Data.Id;
+                }
+            }
+            else
+            {
+                tagId=Guid.Empty;
+            }
             KeepModel model = new KeepModel();
             {
                 model.Title=keep.Title;
                 model.CreatedOn = DateTime.Now;
                 model.CreatedBy= keep.CreatedBy;
                 model.ProjectId = keep.ProjectId;
-                model.TagId = keep.TagId ?? Guid.Empty;
+                model.TagId = tagId;
             };
             await _repo.SaveAsync(model);
             {
