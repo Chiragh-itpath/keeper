@@ -6,4 +6,5 @@ export interface IProject {
     createdBy?: string;
     updatedOn?: Date;
     updatedBy?: string;
+    tagTitle?:string
 }

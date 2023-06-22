@@ -17,6 +17,8 @@ namespace Keeper.Common.View_Models
         public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public string? TagTitle { get; set; }
+
 
         public void Dispose()
         {

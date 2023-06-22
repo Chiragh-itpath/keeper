@@ -52,6 +52,7 @@ async function addProject(): Promise<void> {
         const project: IProject = {
             title: state.projectName,
             description: state.description,
+            tagTitle:state.tag
         }
         await AddProject(project);
         form.value.reset();

@@ -31,9 +31,9 @@ namespace Keeper.Repos.Repositories
         {
             return await _dbKeeperContext.Tags.Where(t=>t.Type==type).ToListAsync();
         }
-        public async Task<IEnumerable<TagModel>> GetByTitleAsync(string title)
+        public async Task<TagModel> GetByTitleAsync(string title)
         {
-            return await _dbKeeperContext.Tags.Where(t=>t.Title== title).ToListAsync();
+            return await _dbKeeperContext.Tags.FirstOrDefaultAsync(t=>t.Title== title);
         }
 
         public async Task<TagModel> SaveAsync(TagModel tag)

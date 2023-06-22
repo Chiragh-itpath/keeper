@@ -37,7 +37,7 @@ namespace Keeper.Main.Controllers
             return await _tagService.GetByTypeAsync(type);
         }
         [HttpGet("Title/{title}")]
-        public async Task<ResponseModel<List<TagVM>>> Get(string title)
+        public async Task<ResponseModel<TagModel>> Get(string title)
         {
             return await _tagService.GetByTitleAsync(title);
         }
