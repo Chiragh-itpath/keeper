@@ -29,10 +29,10 @@ namespace Keeper.Services.Services
             var data = await _tagRepo.GetByTypeAsync(type);
             return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
-        public async Task<ResponseModel<List<TagVM>>> GetByTitleAsync(string title)
+        public async Task<ResponseModel<TagModel>> GetByTitleAsync(string title)
         {
             var data = await _tagRepo.GetByTitleAsync(title);
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
+            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
         }
         public async Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel)
         {

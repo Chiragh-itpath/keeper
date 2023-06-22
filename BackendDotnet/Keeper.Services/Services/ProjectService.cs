@@ -11,19 +11,45 @@ namespace Keeper.Services.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepo _repo;
-        public ProjectService(IProjectRepo repo)
+        private readonly ITagService _tagService;
+        public ProjectService(IProjectRepo repo, ITagService tagService)
         {
             _repo = repo;
+            _tagService = tagService;
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
+            var tagId = Guid.NewGuid();
+            if (projectVM.TagTitle != null && projectVM.TagTitle != "")
+            {
+                var tag = await _tagService.GetByTitleAsync(projectVM.TagTitle);
+                if (tag.Data == null)
+                {
+                    TagModel tagModel = new TagModel()
+                    {
+                        Id = tagId,
+                        Title = projectVM.TagTitle,
+                        Type = TagType.PROJECT
+                    };
+                    await _tagService.SaveAsync(tagModel);
+                }
+                else
+                {
+                    tagId = tag.Data.Id;
+                }
+            }
+            else
+                tagId = Guid.Empty;
+
             ProjectModel model = new ProjectModel
             {
                 Title = projectVM.Title,
                 Description = projectVM.Description,
                 CreatedOn = DateTime.Now,
                 CreatedBy = projectVM.CreatedBy,
+                TagId = tagId
             };
+
             await _repo.SaveAsync(model);
             {
                 return new ResponseModel<string>
