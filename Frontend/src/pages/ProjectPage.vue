@@ -12,6 +12,8 @@ import { storeToRefs } from 'pinia';
 import TextFieldEmail from "@/components/TextFieldEmail.vue";
 import Snackbar from "@/components/SnackbarComponent.vue";
 import { RouterEnum } from '@/enum/RouterEnum';
+import { watch } from 'vue';
+import type { Ref } from 'vue';
 const state = reactive({
     projectId: '',
     projectName: '',
@@ -38,10 +40,13 @@ const form = ref()
 const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject } = useProjectStore();
 
 const { Projects } = storeToRefs(useProjectStore());
-
+let filterData = ref(Projects.value)
+let date = ref()
+watch(Projects, () => {
+    filterData.value = Projects.value
+});
 onMounted(async () => {
     await GetProjects();
-
 });
 async function addProject(): Promise<void> {
     if (state.projectId == '') {
@@ -52,7 +57,7 @@ async function addProject(): Promise<void> {
         const project: IProject = {
             title: state.projectName,
             description: state.description,
-            tagTitle:state.tag
+            tagTitle: state.tag
         }
         await AddProject(project);
         form.value.reset();
@@ -76,7 +81,6 @@ function onEnter() {
         state.inviteEmail.push(state.email);
     state.email = ''
 }
-
 async function editProject(projectId: string) {
     state.dialog = true;
     const data = await GetProjectById(projectId)
@@ -88,12 +92,26 @@ async function editProject(projectId: string) {
 async function deleteProject(projectId: string) {
     await DeleteProject(projectId)
 }
+function formatDate(datetime: Date) {
+    const date = new Date(datetime);
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
+watch(date, () => {
+    if (date.value != '' && date.value != null){
+            filterData.value = Projects.value.filter(p => formatDate(p.createdOn!) == date.value)
+    }
+    else
+        filterData.value = Projects.value
+})
 </script>
 <template>
     <v-container>
         <v-row>
             <v-col cols="12" md="10" sm="12">
-                <v-text-field color="primary" type="date"></v-text-field>
+                <v-text-field color="primary" type="date" v-model="date" />
             </v-col>
             <v-col cols="12" md="2" sm="12" class="my-auto">
                 <Button class="w-100" @click="state.dialog = true" :rounded="false" variant="elevated"
@@ -103,15 +121,16 @@ async function deleteProject(projectId: string) {
             </v-col>
         </v-row>
         <v-row>
-            <v-col v-for="(project, index) in Projects" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+            <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
                 <Card>
                     <template #title>
                         <div class="position-relative text-grey-darken-4">
                             {{ project.title }}
-                                <Button variant="text" color="text-light" @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })"
+                            <Button variant="text" color="text-light"
+                                @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })"
                                 class="position-absolute" style="left:0;"><v-icon>mdi-note-multiple</v-icon>
-                                <v-tooltip activator="parent"  location="top">keep</v-tooltip></Button>
-                                <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
+                                <v-tooltip activator="parent" location="top">keep</v-tooltip></Button>
+                            <v-btn class="position-absolute" style="right: 0;" id="parent" variant="text" rounded>
                                 <v-icon>
                                     mdi-dots-vertical
                                 </v-icon>
@@ -145,13 +164,13 @@ async function deleteProject(projectId: string) {
                         <v-btn v-if="state.show == index" icon="mdi-chevron-up" @click="state.show = -1"></v-btn>
                     </template>
                 </Card>
-
             </v-col>
         </v-row>
     </v-container>
     <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
         <template #title>
-            <div class="text-left ml-4 mt-3"><Button @click="() => { state.dialog = false; form.reset(); state.projectId = '' }"
+            <div class="text-left ml-4 mt-3"><Button
+                    @click="() => { state.dialog = false; form.reset(); state.projectId = '' }"
                     prepend-icon="mdi-arrow-left-circle">Back</Button></div>
             <div class="text-center text-primary mt-2">
                 Create New Project
@@ -194,8 +213,8 @@ async function deleteProject(projectId: string) {
                 <v-row>
                     <v-col>
                         <Button width="100" @click="() => { form.reset() }">Clear</Button>
-                        <Button variant="elevated" width="100"
-                            @click="addProject">{{ state.projectId != '' ? 'Update' : 'Create' }}</Button>
+                        <Button variant="elevated" width="100" @click="addProject">{{ state.projectId != '' ? 'Update' :
+                            'Create' }}</Button>
                     </v-col>
                 </v-row>
             </div>
