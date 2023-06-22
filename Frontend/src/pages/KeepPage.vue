@@ -12,6 +12,7 @@ import type { Ikeep } from "@/Models/KeepModel";
 import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
+import { watch } from "vue";
 
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore());
@@ -28,11 +29,31 @@ const state = reactive({
     openInvite: false,
     email: "",
     snackbarMessage: '',
+    date:''
 })
 
 const form = ref()
 const route = useRoute();
-
+var filteredkeeps=ref(Keeps)
+function formatDate(datetime: Date) {
+    const date = new Date(datetime);
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
+watch(Keeps,()=>{
+    filteredkeeps.value=Keeps.value
+})
+let date=ref();
+watch(date,()=>{
+    if(date.value!=""&&date.value!=null){
+        filteredkeeps.value=Keeps.value.filter(k=>k.createdOn==date.value)
+    }
+    else{
+        filteredkeeps.value=Keeps.value
+    }
+})
 onMounted(async () => {
     proid.value = route.params.id.toString()
     await GetKeeps(proid.value);
