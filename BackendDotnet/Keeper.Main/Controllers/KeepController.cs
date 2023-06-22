@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
- 
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class KeepController : ControllerBase

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Keeper.Main.Controllers
 {
-   /* [Authorize]*/
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TagController : ControllerBase
