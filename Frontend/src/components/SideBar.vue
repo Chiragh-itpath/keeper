@@ -9,7 +9,7 @@ eventBus.on('toggle-sidebar', () => {
 })
 </script>
 <template>
-  <v-navigation-drawer v-model="state.navigationBar" color="primary">
-    <slot></slot>
+  <v-navigation-drawer v-model="state.navigationBar" >
+    <slot name="data"></slot>
   </v-navigation-drawer>
 </template>
