@@ -55,7 +55,7 @@ async function login(): Promise<void> {
             state.emailError = false;
             state.passwordError = false;
             state.isSuccess = true;
-            state.showSnackbar=true;
+            state.showSnackbar = true;
             state.SnackbarMessage = response.data.message;
             form.value.reset();
             const { token, userId } = response.data.data;
@@ -87,9 +87,7 @@ async function login(): Promise<void> {
                                 <h2 class="text-teal">Keeper</h2>
                                 Login
                             </v-card-title>
-                            <v-card-subtitle class="text-center">
-                                to continue to Keeper
-                            </v-card-subtitle>
+                            <v-card-subtitle class="text-center"> to continue to Keeper </v-card-subtitle>
                             <v-card-text>
                                 <v-form ref="form" @submit.prevent="login">
                                     <TextFieldEmail v-model="state.email" label="Email" color="primary"
@@ -116,6 +114,7 @@ async function login(): Promise<void> {
                                                     account</router-link>
                                             </div>
                                         </div>
+
                                     </v-card-actions>
                                 </v-form>
                             </v-card-text>

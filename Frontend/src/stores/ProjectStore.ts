@@ -1,39 +1,39 @@
-import type { IProject } from '@/Models/ProjectModel';
+import type { IProject } from '@/Models/ProjectModel'
 import { Insert, GetById, Delete, Update, GetAll } from '@/Services/ProjectService'
-import { defineStore, storeToRefs } from 'pinia';
-import { useUserStore } from "@/stores/UserStore";
-import { ref, type Ref } from 'vue';
+import { defineStore, storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/UserStore'
+import { ref, type Ref } from 'vue'
 
 export const useProjectStore = defineStore('ProjectStore', () => {
-    const { User } = storeToRefs(useUserStore());
-    const Projects: Ref<IProject[]> = ref([])
-    async function AddProject(project: IProject): Promise<any> {
-        project.createdBy = User.value!.id
-        await Insert(project)
-        await GetProjects();
-    }
-    async function GetProjectById(ProjectId:string):Promise<any>{
-        return await GetById(ProjectId)
-    }
-    async function GetProjects():Promise<any> {
-        const projects = await GetAll(User.value!.id)
-        Projects.value = projects.data.data
-    }
-    async function DeleteProject(ProjectId:string):Promise<any>{
-        await Delete(ProjectId)
-        await GetProjects();
-    }
-    async function UpdateProject(Project:IProject):Promise<any>{
-        Project.updatedBy= User.value!.id
-        await Update(Project)
-        await GetProjects();
-    }
-    return{
-        AddProject,
-        GetProjectById,
-        GetProjects,
-        DeleteProject,
-        UpdateProject,
-        Projects  
-    }
+  const { User } = storeToRefs(useUserStore())
+  const Projects: Ref<IProject[]> = ref([])
+  async function AddProject(project: IProject): Promise<any> {
+    project.createdBy = User.value!.id
+    await Insert(project)
+    await GetProjects()
+  }
+  async function GetProjectById(ProjectId: string): Promise<any> {
+    return await GetById(ProjectId)
+  }
+  async function GetProjects(): Promise<any> {
+    const projects = await GetAll(User.value!.id)
+    Projects.value = projects.data.data
+  }
+  async function DeleteProject(ProjectId: string): Promise<any> {
+    await Delete(ProjectId)
+    await GetProjects()
+  }
+  async function UpdateProject(Project: IProject): Promise<any> {
+    Project.updatedBy = User.value!.id
+    await Update(Project)
+    await GetProjects()
+  }
+  return {
+    AddProject,
+    GetProjectById,
+    GetProjects,
+    DeleteProject,
+    UpdateProject,
+    Projects
+  }
 })

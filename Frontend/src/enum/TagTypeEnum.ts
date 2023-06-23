@@ -1,5 +1,5 @@
 export enum TagTypeEnum {
-    PROJECT,
-    ITEM,
-    KEEP
+  PROJECT,
+  ITEM,
+  KEEP
 }
