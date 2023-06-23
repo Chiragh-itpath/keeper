@@ -86,11 +86,36 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
+            var tagid= Guid.NewGuid();
+            if(project.TagTitle != null && project.TagTitle != "")
+            {
+                var tagdata= await _tagService.GetByTitleAsync(project.TagTitle);
+                if (tagdata.Data == null)
+                {
+                    TagModel tag = new TagModel()
+                    {
+                        Id = tagid,
+                        Title = project.TagTitle,
+                        Type = TagType.PROJECT
+                    };
+                   await _tagService.SaveAsync(tag);
+                }
+                else
+                {
+                    tagid = tagdata.Data.Id;
+
+                }
+            }
+            else
+            {
+                tagid = Guid.Empty;
+            }
             ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
             existingModel.Title = project.Title;
             existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;
             existingModel.UpdatedBy = project.UpdatedBy;
+            existingModel.TagId= tagid;
             await _repo.UpdatedAsync(existingModel);
             {
                 return new ResponseModel<string>()
