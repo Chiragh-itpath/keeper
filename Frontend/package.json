@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@aacassandra/vue3-progressbar": "^1.0.3",
     "@mdi/font": "^7.2.96",
     "axios": "^1.4.0",
     "mitt": "^3.0.0",

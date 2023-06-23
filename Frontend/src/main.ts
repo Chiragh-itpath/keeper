@@ -11,7 +11,6 @@ import { siteTheme } from '@/themes/theme';
 import piniaPluginPersistedState from "pinia-plugin-persistedstate"
 import App from './App.vue'
 
-
 const app = createApp(App)
 const vuetify = createVuetify({
     components,
