@@ -28,13 +28,12 @@ const state = reactive({
     openSnkbar: false,
     openInvite: false,
     email: "",
-    snackbarMessage: '',
-    date:''
+    snackbarMessage: ''
 })
 
 const form = ref()
 const route = useRoute();
-var filteredkeeps=ref(Keeps)
+var filteredkeeps=ref(Keeps.value)
 function formatDate(datetime: Date) {
     const date = new Date(datetime);
     const year = date.getFullYear();
@@ -48,7 +47,7 @@ watch(Keeps,()=>{
 let date=ref();
 watch(date,()=>{
     if(date.value!=""&&date.value!=null){
-        filteredkeeps.value=Keeps.value.filter(k=>k.createdOn==date.value)
+        filteredkeeps.value=Keeps.value.filter(k=>formatDate(k.createdOn!)==date.value)
     }
     else{
         filteredkeeps.value=Keeps.value
@@ -109,7 +108,7 @@ function onEnter() {
     <v-container>
         <v-row>
             <v-col cols="12" md="10" sm="12">
-                <v-text-field color="primary" type="date"></v-text-field>
+                <v-text-field color="primary" type="date" v-model="date"></v-text-field>
             </v-col>
             <v-col cols="12" md="2" sm="12" class="my-auto">
                 <Button class="w-100" :rounded="false" @click="state.dialog = true" variant="elevated"
@@ -120,7 +119,7 @@ function onEnter() {
         </v-row>
         <v-row>
 
-            <v-col v-for="(keep, index) in Keeps" :key="index" cols="12" lg="3" md="12" sm="6">
+            <v-col v-for="(keep, index) in filteredkeeps" :key="index" cols="12" lg="3" md="12" sm="6">
                 <Card>
                     <template #title>
                         <div class="position-relative text-grey-darken-4">
