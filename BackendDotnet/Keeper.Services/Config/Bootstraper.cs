@@ -1,7 +1,9 @@
-﻿using Keeper.Services.Interfaces;
+﻿using Keeper.Context.Model;
+using Keeper.Services.Interfaces;
 using Keeper.Services.Services;
 using Keeper.Services.Services.Interfaces;
 using KeeperCore.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Keeper.Services.Config
@@ -16,6 +18,7 @@ namespace Keeper.Services.Config
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IKeepService, KeepService>();
             services.AddTransient<IItemService, ItemService>();
+            services.AddTransient<IMailService, MailService>();
         }
     }
 }
