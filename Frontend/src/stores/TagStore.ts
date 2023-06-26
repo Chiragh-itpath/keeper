@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
-import { Get, GetByTitle, GetByType, Post } from '@/Services/TagService'
+import { Get, GetByTitle, GetByType, Post,GetById } from '@/Services/TagService'
 import type { TagTypeEnum } from '@/enum/TagTypeEnum'
 import type { ITag } from '@/Models/TagModel'
 import { ref, type Ref } from 'vue'
-import { GetById } from '@/Services/KeepService'
 export const tagStore = defineStore('TagStore', () => {
   const Tags: Ref<ITag[]> = ref([])
   async function GetAll(): Promise<any> {

@@ -78,7 +78,8 @@ async function addProject(): Promise<void> {
     const project: IProject = {
       id: state.projectId,
       title: state.projectName,
-      description: state.description
+      description: state.description,
+      tagTitle:state.tag
     }
     await editProject(state.projectId)
     await UpdateProject(project)
@@ -94,13 +95,11 @@ function onEnter() {
 async function editProject(projectId: string) {
   state.dialog = true
   const data = await GetProjectById(projectId)
-//   console.log(data)
-//   const tagdata=await GetByTagId(data.tagId)
-//   console.log(tagdata)
+  const tagdata=await GetByTagId(data.tagId)
   state.projectName = data.title
   state.description = data.description
   state.projectId = projectId
-//   state.tag=tagdata.data.id
+  state.tag=tagdata.data.data?.title
 }
 async function deleteProject(projectId: string) {
   await DeleteProject(projectId)
