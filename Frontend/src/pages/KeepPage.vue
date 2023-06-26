@@ -13,9 +13,10 @@ import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
-
+import { tagStore } from '@/stores/TagStore'
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
+const{GetByTagId}=tagStore()
 
 const proid = ref()
 
@@ -62,32 +63,31 @@ onMounted(async () => {
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
 })
-async function CreateKeep() {
+async function CreateKeep(): Promise<void>  {
   if (state.KeepId == '') {
     const { valid } = await form.value.validate()
     if (!valid) return
     const keeps: Ikeep = {
       title: state.keepName,
-      projectId: proid.value
+      projectId: proid.value,
+      tagTitle:state.tag
     }
-    debugger
     await AddKeep(keeps)
     form.value.reset()
     state.dialog = false
   } else {
     const keep: Ikeep = {
       id: state.KeepId,
-      title: state.keepName
+      title: state.keepName,
+      tagTitle:state.tag
     }
-    console.log(state.KeepId)
-
     await editkeep(state.KeepId)
     await Updatekeep(keep)
     state.KeepId = ''
     form.value.reset()
     state.dialog = false
   }
-  await GetKeeps(proid.value)
+   await GetKeeps(proid.value)
 }
 
 async function deletekeep(keepId: string) {
@@ -97,9 +97,10 @@ async function deletekeep(keepId: string) {
 async function editkeep(keepId: string) {
   state.dialog = true
   const data = await GetKeepById(keepId)
-  console.log(data)
+  const tagdata=await GetByTagId(data.tagId)
   state.keepName = data.title
   state.KeepId = data.id
+  state.tag=tagdata.data.data?.title
 }
 
 function onEnter() {
@@ -145,12 +146,12 @@ function onEnter() {
                   <v-list>
                     <v-list-item>
                       <v-list-item-title
-                        ><Button variant="text" @click="editkeep(keep.id)"
+                        ><Button variant="text" @click="editkeep(keep.id!)"
                           >Edit</Button
                         ></v-list-item-title
                       >
                       <v-list-item-title
-                        ><Button variant="text" @click="deletekeep(keep.id)"
+                        ><Button variant="text" @click="deletekeep(keep.id!)"
                           >Delete</Button
                         ></v-list-item-title
                       >
@@ -172,7 +173,14 @@ function onEnter() {
   <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
     <template #title>
       <div class="text-left ml-4 mt-3">
-        <Button @click="state.dialog = false" prepend-icon="mdi-arrow-left-circle">Back</Button>
+        <Button @click="
+          ()=>{
+            state.dialog = false 
+            form.reset() 
+            state.KeepId = ''
+            }
+            "
+           prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
       <div class="text-center text-primary mt-2">Add New Keep</div>
     </template>

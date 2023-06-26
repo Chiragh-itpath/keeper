@@ -6,5 +6,5 @@ export interface Ikeep {
   createdBy?: string
   updatedBy?: string
   projectId?: string
-  tagId?: string
+  tagTitle?: string
 }

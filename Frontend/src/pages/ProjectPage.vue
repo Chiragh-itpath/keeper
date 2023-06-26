@@ -177,7 +177,7 @@ function formatDate(datetime: Date) {
           <template #text>
             <v-card-text>
               {{ project.description }}
-              <span v-if="project.description == ''" class="text-grey font-italic"
+              <span v-if="project.description == ''||project.description == null" class="text-grey font-italic"
                 >No description provided
               </span>
             </v-card-text>

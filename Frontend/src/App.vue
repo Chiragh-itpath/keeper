@@ -2,14 +2,16 @@
 import Button from './components/ButtonComponent.vue'
 import SideBar from '@/components/SideBar.vue'
 import { watch, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from "@/stores/TagStore";
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
 import NavBar from './components/NavBar.vue'
+import { TagTypeEnum } from './enum/TagTypeEnum'
 
-const {GetAll} = tagStore()
+const route=useRoute()
+const {GetAll,GetByTagType} = tagStore()
 const state = reactive({
   isHome: false,
   isLogin: false,
@@ -17,10 +19,14 @@ const state = reactive({
   isForgotPwd: false,
   is404: false
 })
-const { Tags } = storeToRefs(tagStore())
+
+const { Tags,TagsByType } = storeToRefs(tagStore())
 const router = useRouter()
-onMounted(async () => {
-    await GetAll()
+watch(route,async () => {
+  if(route.name?.toString()==RouterEnum.PROJECT)
+    await GetByTagType(TagTypeEnum.PROJECT)
+  else
+    await GetByTagType(TagTypeEnum.KEEP)
 })
 watch(
   () => router.currentRoute.value.name,
@@ -43,7 +49,7 @@ const ToggleSideBarAndNavBar = (): boolean => {
     <side-bar v-if="!ToggleSideBarAndNavBar()">
         <template #data>
           <v-row class="mt-10">
-            <v-col col="12" sm="12" md="12" lg="12" class="ma-2 text-center" v-for="(tag, index) in Tags" :key="index">
+            <v-col col="12" sm="12" md="12" lg="12" class="ma-2 text-center" v-for="(tag, index) in TagsByType" :key="index">
             <Button variant="tonal" >
                     {{ tag.title }}
             </Button>
