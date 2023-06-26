@@ -13,8 +13,10 @@ import TextFieldEmail from '@/components/TextFieldEmail.vue'
 import Snackbar from '@/components/SnackbarComponent.vue'
 import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from '@/stores/TagStore'
+import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
 import type { Ref } from 'vue'
+import type { IMail } from '@/Models/MailModel'
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -45,11 +47,11 @@ const items: { title: string; icon: string; to: {} }[] = [
 const form = ref()
 const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject } = useProjectStore()
 const{GetByTagId}=tagStore()
+const{Mail}=useMailStore()
 const { Projects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let date = ref()
-
 watch(Projects, () => {
   filterData.value = Projects.value
 })
@@ -72,6 +74,10 @@ async function addProject(): Promise<void> {
       tagTitle: state.tag
     }
     await AddProject(project)
+    let mailObj:IMail={
+      Mails:state.inviteEmail
+    }
+    await Mail(mailObj)
     form.value.reset()
     state.dialog = false
   } else {

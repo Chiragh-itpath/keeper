@@ -24,8 +24,8 @@ namespace Keeper.Services.Services
         {
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-            string[] multi = mailRequest.ToEmail.Split(',');
-            foreach (string multiemailid in multi)
+            /*string[] multi = mailRequest.ToEmail.Split(',');*/
+            foreach (string multiemailid in mailRequest.ToEmail)
             {
                 email.To.Add(MailboxAddress.Parse(multiemailid));
             }
