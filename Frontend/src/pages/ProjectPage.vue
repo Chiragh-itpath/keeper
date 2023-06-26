@@ -12,6 +12,7 @@ import { storeToRefs } from 'pinia'
 import TextFieldEmail from '@/components/TextFieldEmail.vue'
 import Snackbar from '@/components/SnackbarComponent.vue'
 import { RouterEnum } from '@/enum/RouterEnum'
+import { tagStore } from '@/stores/TagStore'
 import { watch } from 'vue'
 import type { Ref } from 'vue'
 const state = reactive({
@@ -42,14 +43,20 @@ const items: { title: string; icon: string; to: {} }[] = [
   }
 ]
 const form = ref()
-
 const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject } = useProjectStore()
-
+const{GetByTagId}=tagStore()
 const { Projects } = storeToRefs(useProjectStore())
+const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let date = ref()
+
 watch(Projects, () => {
   filterData.value = Projects.value
+})
+watch(date, () => {
+  if (date.value != '' && date.value != null) {
+    filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
+  } else filterData.value = Projects.value
 })
 onMounted(async () => {
   await GetProjects()
@@ -71,7 +78,8 @@ async function addProject(): Promise<void> {
     const project: IProject = {
       id: state.projectId,
       title: state.projectName,
-      description: state.description
+      description: state.description,
+      tagTitle:state.tag
     }
     await editProject(state.projectId)
     await UpdateProject(project)
@@ -87,10 +95,11 @@ function onEnter() {
 async function editProject(projectId: string) {
   state.dialog = true
   const data = await GetProjectById(projectId)
-  console.log(data)
+  const tagdata=await GetByTagId(data.tagId)
   state.projectName = data.title
   state.description = data.description
   state.projectId = projectId
+  state.tag=tagdata.data.data?.title
 }
 async function deleteProject(projectId: string) {
   await DeleteProject(projectId)
@@ -102,11 +111,6 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
-watch(date, () => {
-  if (date.value != '' && date.value != null) {
-    filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
-  } else filterData.value = Projects.value
-})
 </script>
 <template>
   <v-container>
@@ -155,12 +159,12 @@ watch(date, () => {
                   <v-list>
                     <v-list-item>
                       <v-list-item-title
-                        ><Button variant="text" @click="editProject(project.id)"
+                        ><Button variant="text" @click="editProject(project.id!)"
                           >Edit</Button
                         ></v-list-item-title
                       >
                       <v-list-item-title
-                        ><Button variant="text" @click="deleteProject(project.id)"
+                        ><Button variant="text" @click="deleteProject(project.id!)"
                           >Delete</Button
                         ></v-list-item-title
                       >

@@ -9,6 +9,13 @@ export async function Get(): Promise<any> {
     console.log(error)
   }
 }
+export async function GetById(tagId:string): Promise<any> {
+  try {
+    return await http.get(`Tag/${tagId}`)
+  } catch (error) {
+    console.log(error)
+  }
+}
 export async function GetByType(tagType: TagTypeEnum): Promise<any> {
   try {
     return await http.get(`Tag/Type/${tagType}`)

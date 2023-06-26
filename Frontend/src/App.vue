@@ -7,6 +7,8 @@ import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from "@/stores/TagStore";
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
+import NavBar from './components/NavBar.vue'
+
 const {GetAll} = tagStore()
 const state = reactive({
   isHome: false,
@@ -37,12 +39,16 @@ const ToggleSideBarAndNavBar = (): boolean => {
 
 <template>
   <v-layout class="hide-scrollerbar">
-    <nav-bar v-if="!ToggleSideBarAndNavBar()"></nav-bar>
+    <NavBar v-if="!ToggleSideBarAndNavBar()"></NavBar>
     <side-bar v-if="!ToggleSideBarAndNavBar()">
         <template #data>
-          <Button variant="outlined" v-for="(tag, index) in Tags" :key="index">
-              {{ tag.title }}
-           </Button>
+          <v-row class="mt-10">
+            <v-col col="12" sm="12" md="12" lg="12" class="ma-2 text-center" v-for="(tag, index) in Tags" :key="index">
+            <Button variant="tonal" >
+                    {{ tag.title }}
+            </Button>
+            </v-col>
+          </v-row>   
         </template>
     </side-bar>
     <v-main>
