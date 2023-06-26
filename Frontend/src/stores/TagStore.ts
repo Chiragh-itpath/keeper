@@ -5,6 +5,7 @@ import type { ITag } from '@/Models/TagModel'
 import { ref, type Ref } from 'vue'
 export const tagStore = defineStore('TagStore', () => {
   const Tags: Ref<ITag[]> = ref([])
+  const TagsByType:Ref<ITag[]>=ref([])
   async function GetAll(): Promise<any> {
     try {
       var res=await Get()
@@ -24,7 +25,9 @@ export const tagStore = defineStore('TagStore', () => {
   }
   async function GetByTagType(tagType: TagTypeEnum): Promise<any> {
     try {
-      return await GetByType(tagType)
+      var res=await GetByType(tagType)
+      TagsByType.value=res.data.data
+      return res;
     } catch (error) {
       console.log(error)
     }
@@ -51,6 +54,7 @@ export const tagStore = defineStore('TagStore', () => {
     GetByTagTitle,
     GetByTagType,
     Add,
-    Tags
+    Tags,
+    TagsByType
   }
 })
