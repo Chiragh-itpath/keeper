@@ -17,6 +17,7 @@ import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
 import type { Ref } from 'vue'
 import type { IMail } from '@/Models/MailModel'
+import { useRoute } from 'vue-router'
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -45,13 +46,20 @@ const items: { title: string; icon: string; to: {} }[] = [
   }
 ]
 const form = ref()
-const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject } = useProjectStore()
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject,GetProjectByTag } = useProjectStore()
 const{GetByTagId}=tagStore()
 const{Mail}=useMailStore()
 const { Projects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let date = ref()
+
+const route = useRoute()
+watch(route,async()=>{
+  if(route.name==RouterEnum.PROJECT_BY_TAG){
+    filterData.value=await GetProjectByTag(route.params.id.toString())
+  }
+}) 
 watch(Projects, () => {
   filterData.value = Projects.value
 })

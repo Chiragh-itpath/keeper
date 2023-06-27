@@ -1,5 +1,5 @@
 import type { IProject } from '@/Models/ProjectModel'
-import { Insert, GetById, Delete, Update, GetAll } from '@/Services/ProjectService'
+import { Insert, GetById, Delete, Update, GetAll, GetByTag } from '@/Services/ProjectService'
 import { defineStore, storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/UserStore'
 import { ref, type Ref } from 'vue'
@@ -19,6 +19,12 @@ export const useProjectStore = defineStore('ProjectStore', () => {
     const projects = await GetAll(User.value!.id)
     Projects.value = projects.data.data
   }
+  async function GetProjectByTag(TagId:string): Promise<any> {
+    const UserId=User.value!.id
+    const projects = await GetByTag(UserId,TagId)
+    Projects.value = projects
+    return projects
+  }
   async function DeleteProject(ProjectId: string): Promise<any> {
     await Delete(ProjectId)
     await GetProjects()
@@ -32,6 +38,7 @@ export const useProjectStore = defineStore('ProjectStore', () => {
     AddProject,
     GetProjectById,
     GetProjects,
+    GetProjectByTag,
     DeleteProject,
     UpdateProject,
     Projects

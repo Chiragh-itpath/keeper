@@ -49,5 +49,10 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext.Entry(project).State = EntityState.Modified;
             return _dbKeeperContext.SaveChanges() == 1;
         }
+
+        public async Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId)
+        {
+            return await _dbKeeperContext.Projects.Where(x=>(x.CreatedBy==userId && x.TagId == tagId) && x.IsDeleted == false).ToListAsync();
+        }
     }
 }
