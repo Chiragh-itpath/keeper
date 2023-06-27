@@ -59,6 +59,17 @@ namespace Keeper.Services.Services
             };
         }
 
+        public async Task<ResponseModel<List<KeepModel>>> GetByTagAsync(Guid userId, Guid tagId)
+        {
+            var result = await _repo.GetByTagAsync(userId, tagId);
+            return new ResponseModel<List<KeepModel>>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Data = result
+            };
+        }
+
         public async Task<ResponseModel<string>> SaveAsync(KeepVM keep)
         {
             var tagId = Guid.NewGuid();
