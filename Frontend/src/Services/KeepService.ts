@@ -47,3 +47,12 @@ export async function GetById(KeepId: string): Promise<any> {
     return e
   }
 }
+export async function GetByTag(UserId:string,TagId:string): Promise<any> {
+  try {
+    const response = await http.get(`/Keep/Tag/${UserId}/${TagId}`)
+    return response.data.data
+  } catch (e) {
+    console.log(e)
+    return e
+  }
+}

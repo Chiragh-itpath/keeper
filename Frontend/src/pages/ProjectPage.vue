@@ -17,7 +17,8 @@ import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
 import type { Ref } from 'vue'
 import type { IMail } from '@/Models/MailModel'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { kMaxLength } from 'buffer'
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -63,6 +64,7 @@ watch(route,async()=>{
 watch(Projects, () => {
   filterData.value = Projects.value
 })
+
 watch(date, () => {
   if (date.value != '' && date.value != null) {
     filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
