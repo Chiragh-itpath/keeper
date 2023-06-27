@@ -26,7 +26,8 @@ export async function GetByType(tagType: TagTypeEnum): Promise<any> {
 
 export async function GetByTitle(title: string): Promise<any> {
   try {
-    return await http.get(`Tag/Title/${title}`)
+    let res=await http.get(`Tag/Title/${title}`)
+    return res.data.data;
   } catch (error) {
     console.log(error)
   }

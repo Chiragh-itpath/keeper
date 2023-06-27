@@ -239,7 +239,7 @@ function onEnter() {
       </div>
     </template>
   </ModalComponent>
-  <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" width="600">
+  <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" :width="600">
     <template #title>
       <div class="text-primary mt-2">Invite People</div>
     </template>

@@ -44,6 +44,18 @@ export const routes = [
     beforeEnter: routeGuard
   },
   {
+    path: '/Projects/Tag/:id',
+    component: ProjectPage,
+    name: RouterEnum.PROJECT_BY_TAG,
+    beforeEnter: routeGuard
+  },
+  {
+    path: '/Projects/Keep/Tag/:id',
+    component: ProjectPage,
+    name: RouterEnum.KEEP_BY_TAG,
+    beforeEnter: routeGuard
+  },
+  {
     path: '/Items',
     component: ItemPage,
     name: RouterEnum.ITEM,
