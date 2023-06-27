@@ -15,10 +15,9 @@ import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from '@/stores/TagStore'
 import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
-import type { Ref } from 'vue'
 import type { IMail } from '@/Models/MailModel'
 import { useRoute, useRouter } from 'vue-router'
-import { kMaxLength } from 'buffer'
+import RecordNotFoundComponent from "@/components/RecordNotFoundComponent.vue";
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -64,7 +63,6 @@ watch(route,async()=>{
 watch(Projects, () => {
   filterData.value = Projects.value
 })
-
 watch(date, () => {
   if (date.value != '' && date.value != null) {
     filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
@@ -146,7 +144,10 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
     </v-row>
-    <v-row>
+    <div v-if="filterData.length==0" >
+    <RecordNotFoundComponent/>
+  </div>
+    <v-row v-else>
       <v-col
         v-for="(project, index) in filterData"
         :key="index"
