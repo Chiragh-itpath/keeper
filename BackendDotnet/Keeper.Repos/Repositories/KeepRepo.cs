@@ -36,6 +36,11 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Keeps.FindAsync(Id);
         }
 
+        public async Task<List<KeepModel>> GetByTagAsync(Guid userId, Guid tagId)
+        {
+            return await _dbKeeperContext.Keeps.Where(x => (x.CreatedBy == userId && x.TagId == tagId) && x.IsDeleted == false).ToListAsync();
+        }
+
         public async Task<bool> SaveAsync(KeepModel keep)
         {
                 await _dbKeeperContext.Keeps.AddAsync(keep);

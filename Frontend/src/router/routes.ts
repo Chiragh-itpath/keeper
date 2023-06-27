@@ -51,7 +51,7 @@ export const routes = [
   },
   {
     path: '/Projects/Keep/Tag/:id',
-    component: ProjectPage,
+    component: KeepPage,
     name: RouterEnum.KEEP_BY_TAG,
     beforeEnter: routeGuard
   },

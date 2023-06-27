@@ -158,15 +158,6 @@ function formatDate(datetime: Date) {
           <template #title>
             <div class="position-relative text-grey-darken-4">
               {{ project.title }}
-              <Button
-                variant="text"
-                color="text-light"
-                @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })"
-                class="position-absolute"
-                style="left: 0"
-                ><v-icon>mdi-note-multiple</v-icon>
-                <v-tooltip activator="parent" location="top">keep</v-tooltip></Button
-              >
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
                 <v-icon> mdi-dots-vertical </v-icon>
                 <v-menu activator="parent">
@@ -189,7 +180,7 @@ function formatDate(datetime: Date) {
             </div>
           </template>
           <template #text>
-            <v-card-text>
+            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
               {{ project.description }}
               <span v-if="project.description == ''||project.description == null" class="text-grey font-italic"
                 >No description provided

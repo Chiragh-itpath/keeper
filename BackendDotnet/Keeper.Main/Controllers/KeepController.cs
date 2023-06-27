@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
-    [Authorize]
+    /*[Authorize]*/
     [Route("api/[controller]")]
     [ApiController]
     public class KeepController : ControllerBase
@@ -37,6 +37,12 @@ namespace Keeper.Main.Controllers
         {
             return await _keepService.GetByIdAsync(Id);
 
+        }
+        [HttpGet]
+        [Route("Tag/{userId}/{tagId}")]
+        public async Task<ResponseModel<List<KeepModel>>> GetByTag(Guid userId, Guid tagId)
+        {
+            return await _keepService.GetByTagAsync(userId, tagId);
         }
         [HttpPut]
         public async Task<ResponseModel<string>> Update(KeepVM keep)
