@@ -39,6 +39,13 @@ namespace Keeper.Main.Controllers
             return await _projectService.GetByIdAsync(Id);
 
         }
+        [HttpGet]
+        [Route("Tag/{userId}/{tagId}")]
+        public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId,Guid tagId)
+        {
+            return await _projectService.GetByTagAsync(userId,tagId);
+
+        }
         [HttpPut]
         public async Task<ResponseModel<string>> Update(ProjectVM project)
         {

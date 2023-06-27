@@ -16,6 +16,7 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<bool> SaveAsync(ProjectModel project);
         Task<bool> DeleteByIdAsync(Guid projectid);
         Task<bool> UpdatedAsync(ProjectModel project);
+        Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId);
 
     }
 }

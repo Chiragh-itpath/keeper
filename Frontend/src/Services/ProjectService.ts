@@ -28,6 +28,16 @@ export async function GetAll(UserId: string): Promise<any> {
     return e
   }
 }
+export async function GetByTag(UserId:string,TagId:string): Promise<any> {
+  try {
+    const response = await http.get(`/Project/Tag/${UserId}/${TagId}`)
+    return response.data.data
+  } catch (e) {
+    console.log(e)
+    return e
+  }
+}
+
 export async function Delete(ProjectId: string): Promise<any> {
   try {
     const response = await http.delete(`/Project/${ProjectId}`)

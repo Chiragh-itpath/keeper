@@ -140,5 +140,16 @@ namespace Keeper.Services.Services
             };
 
         }
+
+        public async Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId,Guid tagId)
+        {
+            var result=await _repo.GetByTagAsync(userId,tagId);
+            return new ResponseModel<List<ProjectModel>>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Data = result
+            };
+        }
     }
 }
