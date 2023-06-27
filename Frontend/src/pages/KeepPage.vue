@@ -14,7 +14,8 @@ import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 import { tagStore } from '@/stores/TagStore'
-const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById } = useKeepStore()
+import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
+const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById,GetKeepByTag} = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
 const{GetByTagId}=tagStore()
 
@@ -48,6 +49,11 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
+watch(route,async()=>{
+  if(route.name==RouterEnum.KEEP_BY_TAG){
+    filteredkeeps.value=await GetKeepByTag(route.params.id.toString())
+  }
+}) 
 watch(Keeps, () => {
   filteredkeeps.value = Keeps.value
 })
@@ -126,7 +132,10 @@ function onEnter() {
         </Button>
       </v-col>
     </v-row>
-    <v-row>
+      <div v-if="filteredkeeps.length==0">
+        <RecordNotFoundComponent/>
+      </div>
+    <v-row v-else>
       <v-col
         v-for="(keep, index) in filteredkeeps"
         :key="index"
