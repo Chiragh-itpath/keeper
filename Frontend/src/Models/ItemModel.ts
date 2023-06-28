@@ -1,17 +1,15 @@
 import type { ItemType } from '@/enum/ItemType'
 
 export interface IItem {
-  Id?: string
-  Title: string
-  Description?: string
-  URL?: string
-  Type: ItemType
-  Number: string
-  To?: string
-  DiscussedBy?: string
-  KeepId: string
-  CreatedBy?: string
-  UpdatedBy?: string
-  TagId?: string
-  ProjectId: string
+  id?: string
+  title: string
+  description?: string
+  uRL?: string
+  type: ItemType
+  number: string
+  to?: string
+  discussedBy?: string
+  keepId?: string
+  createdBy?: string
+  updatedBy?: string
 }

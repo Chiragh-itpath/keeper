@@ -81,12 +81,14 @@ async function addProject(): Promise<void> {
       description: state.description,
       tagTitle: state.tag
     }
+    form.value.reset()
     await AddProject(project)
-    let mailObj:IMail={
-      Mails:state.inviteEmail
+    if(state.inviteEmail.length>0){
+      let mailObj:IMail={
+      ToEmail:state.inviteEmail
     }
     await Mail(mailObj)
-    form.value.reset()
+    }
     state.dialog = false
   } else {
     const project: IProject = {
@@ -276,7 +278,7 @@ function formatDate(datetime: Date) {
       <div class="text-primary mt-2">Invite People</div>
     </template>
     <template #formSlot>
-      <v-form ref="form">
+      <v-form>
         <v-row>
           <v-row>
             <v-col cols="10" md="10" sm="10">

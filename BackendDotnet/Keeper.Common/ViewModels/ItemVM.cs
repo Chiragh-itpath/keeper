@@ -17,8 +17,6 @@ namespace Keeper.Common.ViewModels
         public Guid KeepId { get; set; }
         public Guid? CreatedBy { get; set; }
         public Guid? UpdatedBy { get; set; }
-        public Guid? TagId { get; set; }
-        public Guid ProjectId { get; set; }
         public List<IFormFile>? Files { get; set; }
     }
 }

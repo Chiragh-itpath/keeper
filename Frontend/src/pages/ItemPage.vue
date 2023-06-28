@@ -5,6 +5,22 @@ import ModalComponent from '@/components/ModalComponent.vue'
 import TextFieldText from '@/components/TextFieldText.vue'
 import TextFieldNumber from '@/components/TextFieldNumber.vue'
 import { reactive, ref } from 'vue'
+import type { IItem } from '@/Models/ItemModel'
+import { ItemType } from '@/enum/ItemType'
+import { useRoute } from 'vue-router'
+import{useItemStore} from '@/stores/ItemStore'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { GetAll } from '@/Services/ProjectService'
+import { watch } from 'vue'
+import Navbar from "@/components/NavBar.vue";
+const{AddItem,GetItem,GetAllItems,DeleteItem}=useItemStore()
+const{Items}=storeToRefs(useItemStore())
+let filteredkeeps = ref(Items.value)
+watch(Items,async ()=>{
+  filteredkeeps.value=Items.value
+})
+
 var items: { title: string }[] = [
   {
     title: 'Edit'
@@ -21,22 +37,42 @@ var list: { name: string }[] = [
     name: 'PR'
   }
 ]
+const route=useRoute()
+
 const state = reactive({
   dialog: false,
   title: '',
   itemUrl: '',
   openSnackbar: false,
-  description: ''
+  description: '',
+  number:'',
+  ItemType:'Ticket'
 })
-async function SubmitForm() {
+async function addItem():Promise<void>{
   const { valid } = await form.value.validate()
-  if (!valid) return
-  state.openSnackbar = true
-  state.dialog = false
+    if (!valid) return
+  const Items:IItem={
+  title: state.title,
+  description: state.description,
+  number: state.number,
+  type:state.ItemType=="Ticket"?ItemType.TICKET:ItemType.PR,
+  keepId:route.params.id.toString()
+ }
+ form.value.reset()
+ await AddItem(Items)
+ state.dialog = false
+ await GetAllItems(route.params.id.toString())
+}
+onMounted(async ()=>{
+  await GetAllItems(route.params.id.toString())
+})
+async function deleteItem(ItemId:string){
+  await DeleteItem(ItemId)
 }
 const form = ref()
 </script>
 <template>
+  <Navbar/>
   <v-container>
     <v-row>
       <v-col cols="12" lg="10" md="9" sm="12">
@@ -54,15 +90,15 @@ const form = ref()
       </v-col>
     </v-row>
     <v-row>
-      <v-col col="12" sm="6" lg="6" v-for="item in 10" :key="item" class="mb-10">
+      <v-col col="12" sm="6" lg="6" v-for="item in filteredkeeps" :key="item.id" class="mb-10">
         <Card>
           <template #title>
             <v-row>
               <v-col cols="4" md="2">
-                <v-chip color="secondary">#{{ item }}</v-chip>
+                <v-chip class="bg-primary text-white">{{ item.type==ItemType.TICKET?'#':'!' }} {{ item.number }}</v-chip>
               </v-col>
               <v-col cols="5" md="7">
-                <p class="text-center">Item {{ item }}</p>
+                <p class="text-center">{{ item.title }}</p>
               </v-col>
               <v-col cols="3">
                 <div class="d-flex justify-space-between float-end">
@@ -74,16 +110,37 @@ const form = ref()
                       </Button>
                     </template>
                     <v-list>
+                    <v-list-item>
+                      <v-list-item-title
+                        ><Button variant="text" @click="editItem(item.id!)"
+                          >Edit</Button
+                        ></v-list-item-title
+                      >
+                      <v-list-item-title
+                        ><Button variant="text" @click="deleteItem(item.id!)"
+                          >Delete</Button
+                        ></v-list-item-title
+                      >
+                    </v-list-item>
+                  </v-list>
+                    <!-- <v-list>
                       <v-list-item v-for="(i, index) in items" :key="index" :value="index">
                         <v-list-item-title>{{ i.title }}</v-list-item-title>
                       </v-list-item>
-                    </v-list>
+                    </v-list> -->
                   </v-menu>
                 </div>
               </v-col>
             </v-row>
           </template>
-          <template #text> description{{ item }} </template>
+          <template #text>
+            <v-card-text>
+              <span v-if="item.description == ''||item.description == null" class="text-grey font-italic"
+                >No description provided
+              </span>
+              <span v-else>{{ item.description }}</span>
+            </v-card-text>
+          </template>
         </Card>
       </v-col>
     </v-row>
@@ -104,9 +161,8 @@ const form = ref()
             <v-col cols="2">
               <v-menu transition="scale-transition">
                 <template v-slot:activator="{ props }">
-                  <Button color="primary" v-bind="props" width="10" :rounded="false"> # </Button>
+                  <v-select label="Type" :items="['Ticket','PR']" variant="outlined" v-model="state.ItemType"></v-select>
                 </template>
-
                 <v-list>
                   <v-list-item v-for="(item, i) in list" :key="i">
                     <v-list-item-title>{{ item.name }}</v-list-item-title>
@@ -115,7 +171,7 @@ const form = ref()
               </v-menu>
             </v-col>
             <v-col cols="12" md="4" sm="4">
-              <TextFieldNumber label="Number" color="primary"></TextFieldNumber>
+              <TextFieldNumber label="Number" color="primary" v-model="state.number"></TextFieldNumber>
             </v-col>
             <v-col cols="12" md="6" sm="9">
               <TextFieldText label="Item name" v-model="state.title" />
@@ -155,7 +211,7 @@ const form = ref()
               "
               >Clear</Button
             >
-            <Button variant="elevated" width="100" @click="SubmitForm">Create</Button>
+            <Button variant="elevated" width="100" @click="addItem">Create</Button>
           </v-col>
         </v-row>
       </div>

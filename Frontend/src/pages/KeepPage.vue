@@ -171,9 +171,7 @@ function onEnter() {
             </div>
           </template>
           <template #actions>
-            <Button variant="outlined"
-              ><router-link :to="{ name: RouterEnum.ITEM }" class="link">Click</router-link></Button
-            >
+            <Button variant="outlined"  @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id} })"> Click</Button>
           </template>
         </Card>
       </v-col>

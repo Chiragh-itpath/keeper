@@ -17,7 +17,8 @@ const state = reactive({
   isLogin: false,
   isSignup: false,
   isForgotPwd: false,
-  is404: false
+  is404: false,
+  isItempage:false
 })
 
 const { Tags, TagsByType } = storeToRefs(tagStore())
@@ -37,10 +38,11 @@ watch(
     state.isSignup = name == RouterEnum.SIGNUP
     state.isForgotPwd = name == RouterEnum.FORGOT_PASSWORD
     state.is404 = name == RouterEnum.PAGE_NOT_FOUND
+    state.isItempage = name == RouterEnum.ITEM
   }
 )
 const ToggleSideBarAndNavBar = (): boolean => {
-  return state.isHome || state.isLogin || state.isSignup || state.isForgotPwd || state.is404
+  return state.isHome || state.isLogin || state.isSignup || state.isForgotPwd || state.is404 ||state.isItempage
 }
 
 async function FindTag(title: string) {
