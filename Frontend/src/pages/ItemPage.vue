@@ -11,24 +11,15 @@ import { useRoute } from 'vue-router'
 import{useItemStore} from '@/stores/ItemStore'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { GetAll } from '@/Services/ProjectService'
 import { watch } from 'vue'
 import Navbar from "@/components/NavBar.vue";
-const{AddItem,GetItem,GetAllItems,DeleteItem}=useItemStore()
+import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
+const{AddItem,GetItem,GetAllItems,DeleteItem,UpdateItem}=useItemStore()
 const{Items}=storeToRefs(useItemStore())
-let filteredkeeps = ref(Items.value)
+let filtereditems = ref(Items.value)
 watch(Items,async ()=>{
-  filteredkeeps.value=Items.value
+  filtereditems.value=Items.value
 })
-
-var items: { title: string }[] = [
-  {
-    title: 'Edit'
-  },
-  {
-    title: 'Delete'
-  }
-]
 var list: { name: string }[] = [
   {
     name: 'Ticket'
@@ -40,6 +31,7 @@ var list: { name: string }[] = [
 const route=useRoute()
 
 const state = reactive({
+  itemId:'',
   dialog: false,
   title: '',
   itemUrl: '',
@@ -48,19 +40,40 @@ const state = reactive({
   number:'',
   ItemType:'Ticket'
 })
+let attachment=ref()
 async function addItem():Promise<void>{
-  const { valid } = await form.value.validate()
+  if(state.itemId==''){
+    const { valid } = await form.value.validate()
     if (!valid) return
   const Items:IItem={
   title: state.title,
   description: state.description,
   number: state.number,
+  url:state.itemUrl,
   type:state.ItemType=="Ticket"?ItemType.TICKET:ItemType.PR,
-  keepId:route.params.id.toString()
+  keepId:route.params.id.toString(),
+  files:attachment.value
  }
  form.value.reset()
  await AddItem(Items)
  state.dialog = false
+}
+else{
+  const Item:IItem={
+    id:state.itemId,
+    title:state.title,
+    description:state.description,
+    number:state.number,
+    type:state.ItemType=="Ticket"?ItemType.TICKET:ItemType.PR,
+    url:state.itemUrl,
+    files:attachment.value
+  }
+  await editItem(state.itemId)
+  await UpdateItem(Item)
+  state.itemId=''
+  form.value.reset()
+  state.dialog=false
+}
  await GetAllItems(route.params.id.toString())
 }
 onMounted(async ()=>{
@@ -68,15 +81,41 @@ onMounted(async ()=>{
 })
 async function deleteItem(ItemId:string){
   await DeleteItem(ItemId)
+  await GetAllItems(route.params.id.toString())
+}
+async function editItem(ItemId:string){
+  state.dialog = true
+  const Itemdata=await GetItem(ItemId)
+  console.log(Itemdata);
+  state.itemId=Itemdata.id!,
+  state.title=Itemdata.title,
+  state.description=Itemdata.description!,
+  state.ItemType=Itemdata.type==ItemType.TICKET?"Ticket":"PR",
+  state.itemUrl=Itemdata.url!,
+  state.number=Itemdata.number
 }
 const form = ref()
+function formatDate(datetime: Date) {
+  const date = new Date(datetime)
+  const year = date.getFullYear()
+  const month = ('0' + (date.getMonth() + 1)).slice(-2)
+  const day = ('0' + date.getDate()).slice(-2)
+  return `${year}-${month}-${day}`
+}
+const date=ref()
+watch(date,()=>{
+if(date.value!=''&&date.value!=null){
+  filtereditems.value=Items.value.filter(x=>formatDate(x.createdOn!)== date.value)
+}else filtereditems.value = Items.value
+})
+
 </script>
 <template>
   <Navbar/>
   <v-container>
     <v-row>
       <v-col cols="12" lg="10" md="9" sm="12">
-        <v-text-field type="date" color="primary"></v-text-field>
+        <v-text-field type="date" color="primary" v-model="date"></v-text-field>
       </v-col>
       <v-col cols="12" lg="2" md="3" sm="12">
         <Button
@@ -89,8 +128,11 @@ const form = ref()
         >
       </v-col>
     </v-row>
-    <v-row>
-      <v-col col="12" sm="6" lg="6" v-for="item in filteredkeeps" :key="item.id" class="mb-10">
+    <div v-if="filtereditems.length==0" >
+    <RecordNotFoundComponent/>
+  </div>
+    <v-row v-else>
+      <v-col col="12" sm="6" lg="6" v-for="item in filtereditems" :key="item.id" class="mb-10">
         <Card>
           <template #title>
             <v-row>
@@ -123,11 +165,6 @@ const form = ref()
                       >
                     </v-list-item>
                   </v-list>
-                    <!-- <v-list>
-                      <v-list-item v-for="(i, index) in items" :key="index" :value="index">
-                        <v-list-item-title>{{ i.title }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list> -->
                   </v-menu>
                 </div>
               </v-col>
@@ -135,6 +172,7 @@ const form = ref()
           </template>
           <template #text>
             <v-card-text>
+              <span v-if="item.url !== '' || item.url !== null" class="d-flex mb-4"><a target="_blank" :href="item.url">{{item.url}}</a> </span>
               <span v-if="item.description == ''||item.description == null" class="text-grey font-italic"
                 >No description provided
               </span>
@@ -151,11 +189,11 @@ const form = ref()
       <div class="text-left ml-4 mt-3">
         <Button @click="state.dialog = false" prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
-      <div class="text-center text-primary mt-2">Create New Item</div>
+      <div class="text-center text-primary mt-2">{{state.itemId!=''?'Edit Item':'Create New Item'}}</div>
     </template>
 
     <template #formSlot>
-      <v-form ref="form">
+      <v-form ref="form" >
         <v-container>
           <v-row>
             <v-col cols="2">
@@ -188,7 +226,10 @@ const form = ref()
                 clearable
               ></v-textarea>
             </v-col>
-            <v-col cols="12" sm="6" md="2" lg="2">
+            <v-col cols="12" sm="12" md="12" lg="12">
+              <v-file-input v-model="attachment" multiple label="File input" variant="outlined"></v-file-input>
+            </v-col>
+            <v-col cols="12" sm="6" md="2" lg="2" >
               <Button>To</Button>
             </v-col>
             <v-col cols="12" sm="6" md="4" lg="4">
@@ -211,7 +252,7 @@ const form = ref()
               "
               >Clear</Button
             >
-            <Button variant="elevated" width="100" @click="addItem">Create</Button>
+            <Button variant="elevated" width="100" @click="addItem">{{state.itemId!=''?'Update':'Create'}}</Button>
           </v-col>
         </v-row>
       </div>

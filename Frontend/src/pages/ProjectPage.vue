@@ -211,7 +211,7 @@ function formatDate(datetime: Date) {
           >Back</Button
         >
       </div>
-      <div class="text-center text-primary mt-2">Create New Project</div>
+      <div class="text-center text-primary mt-2">{{state.projectId!=''?'Edit Project':'Create New Project'}}</div>
     </template>
 
     <template #formSlot>

@@ -4,7 +4,7 @@ export interface IItem {
   id?: string
   title: string
   description?: string
-  uRL?: string
+  url?: string
   type: ItemType
   number: string
   to?: string
@@ -12,4 +12,6 @@ export interface IItem {
   keepId?: string
   createdBy?: string
   updatedBy?: string
+  files?:undefined
+  createdOn?: Date
 }

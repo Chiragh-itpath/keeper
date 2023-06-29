@@ -22,7 +22,7 @@ namespace Keeper.Services.Services
         public async Task<ResponseModel<ItemModel>> GetByIdAsync(Guid id)
         {
             var item = await _itemRepo.GetByIdAsync(id);
-            if(item.Id == Guid.Empty)
+            if (item.Id == Guid.Empty)
                 return new ResponseModel<ItemModel>
                 {
                     IsSuccess = true,
@@ -55,7 +55,6 @@ namespace Keeper.Services.Services
         {
             try
             {
-                if (itemVM.Type == ItemType.TICKET) { }
                 ItemModel item = new()
                 {
                     Title = itemVM.Title,
@@ -70,8 +69,8 @@ namespace Keeper.Services.Services
                     CreatedOn = DateTime.Now,
                     Files = new List<FileModel>()
                 };
-                
-                string UserDirecotry = Path.Combine(Directory.GetCurrentDirectory(), itemVM.CreatedBy.ToString());
+                string wwwroot = _env.WebRootPath;
+                string UserDirecotry = Path.Combine(wwwroot, itemVM.CreatedBy.ToString());
                 if (!Directory.Exists(UserDirecotry))
                     Directory.CreateDirectory(UserDirecotry);
                 string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
@@ -82,7 +81,7 @@ namespace Keeper.Services.Services
                 itemVM.Files?.ForEach(file =>
                 {
                     string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
-                    string FilePath = Path.Combine(UserDirecotry, FileName);
+                    string FilePath = Path.Combine(ProjectDirecotry, FileName);
                     using var stream = new FileStream(FilePath, FileMode.Create);
                     file.CopyTo(stream);
                     FileModel filemodel = new()
@@ -114,53 +113,66 @@ namespace Keeper.Services.Services
         }
         public async Task<ResponseModel<string>> UpdateAsync(ItemVM itemVM)
         {
-            ItemModel existingItem = await _itemRepo.GetByIdAsync((Guid)itemVM.Id!);
-            if (existingItem.Id == Guid.Empty)
+            try
+            {
+                ItemModel existingItem = await _itemRepo.GetByIdAsync((Guid)itemVM.Id!);
+                if (existingItem.Id == Guid.Empty)
+                    return new ResponseModel<string>
+                    {
+                        IsSuccess = true,
+                        StatusName = StatusType.NOT_FOUND,
+                        Message = "Not Found"
+                    };
+                existingItem.Title = itemVM.Title;
+                existingItem.Description = itemVM.Description;
+                existingItem.URL = itemVM.URL;
+                existingItem.Type = itemVM.Type;
+                existingItem.Number = itemVM.Number;
+                existingItem.To = itemVM.To;
+                existingItem.DiscussedBy = itemVM.DiscussedBy;
+                existingItem.UpdatedBy = (Guid)itemVM.UpdatedBy!;
+                existingItem.UpdatedOn = DateTime.Now;
+                string wwwroot = _env.WebRootPath;
+                string UserDirecotry = Path.Combine(wwwroot, existingItem.CreatedBy.ToString());
+                if (!Directory.Exists(UserDirecotry))
+                    Directory.CreateDirectory(UserDirecotry);
+                string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
+                if (!Directory.Exists(ProjectDirecotry))
+                    Directory.CreateDirectory(ProjectDirecotry);
+                List<FileModel> files = new();
+
+                itemVM.Files?.ForEach(file =>
+                {
+                    string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
+                    string FilePath = Path.Combine(ProjectDirecotry, FileName);
+                    using var stream = new FileStream(FilePath, FileMode.Create);
+                    file.CopyTo(stream);
+                    FileModel filemodel = new()
+                    {
+                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
+                        Items = new List<ItemModel>() { existingItem }
+                    };
+                    files.Add(filemodel);
+                });
+                await _itemRepo.UpdateAsync(existingItem, files);
                 return new ResponseModel<string>
                 {
                     IsSuccess = true,
-                    StatusName = StatusType.NOT_FOUND,
-                    Message = "Not Found"
-
+                    StatusName = StatusType.SUCCESS,
+                    Message = "Updated"
                 };
-            existingItem.Title = itemVM.Title;
-            existingItem.Description = itemVM.Description;
-            existingItem.URL = itemVM.URL;
-            existingItem.Type = itemVM.Type;
-            existingItem.Number = itemVM.Number;
-            existingItem.To = itemVM.To;
-            existingItem.DiscussedBy = itemVM.DiscussedBy;
-            existingItem.UpdatedBy = (Guid)itemVM.UpdatedBy!;
-            existingItem.UpdatedOn = DateTime.Now;
-
-            string UserDirecotry = Path.Combine(Directory.GetCurrentDirectory(), existingItem.CreatedBy.ToString());
-            if (!Directory.Exists(UserDirecotry))
-                Directory.CreateDirectory(UserDirecotry);
-            string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
-            if (!Directory.Exists(ProjectDirecotry))
-                Directory.CreateDirectory(ProjectDirecotry);
-            List<FileModel> files = new();
-
-            itemVM.Files?.ForEach(file =>
+            }
+            catch (Exception ex)
             {
-                string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
-                string FilePath = Path.Combine(ProjectDirecotry, FileName);
-                using var stream = new FileStream(FilePath, FileMode.Create);
-                file.CopyTo(stream);
-                FileModel filemodel = new()
+                return new ResponseModel<string>
                 {
-                    FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
-                    Items = new List<ItemModel>() { existingItem }
+                    IsSuccess = false,
+                    StatusName = StatusType.NOT_FOUND,
+                    Message = " Not Updated"
+
                 };
-                files.Add(filemodel);
-            });
-            await _itemRepo.UpdateAsync(existingItem, files);
-            return new ResponseModel<string>
-            {
-                IsSuccess = true,
-                StatusName = StatusType.SUCCESS,
-                Message = "Updated"
-            };
+            }
+
         }
 
         public async Task<ResponseModel<IEnumerable<ItemModel>>> GetAllAsync(Guid KeepId)

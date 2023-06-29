@@ -189,7 +189,7 @@ function onEnter() {
             "
            prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
-      <div class="text-center text-primary mt-2">Add New Keep</div>
+      <div class="text-center text-primary mt-2">{{state.KeepId!=''?'Edit Keep':'Add New Keep'}}</div>
     </template>
 
     <template #formSlot>
