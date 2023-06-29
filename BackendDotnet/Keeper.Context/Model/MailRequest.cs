@@ -9,8 +9,9 @@ namespace Keeper.Context.Model
 {
     public class MailRequest
     {
+        public string Name  { get; set; }
+        public string FromUser { get; set; }
         public string[] ToEmail { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
+       
     }
 }

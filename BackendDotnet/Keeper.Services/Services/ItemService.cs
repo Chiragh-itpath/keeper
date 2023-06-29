@@ -53,52 +53,64 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> SaveAsync(ItemVM itemVM)
         {
-            ItemModel item = new()
+            try
             {
-                Title = itemVM.Title,
-                Description = itemVM.Description,
-                URL = itemVM.URL,
-                Type = itemVM.Type,
-                Number = itemVM.Number,
-                To = itemVM.To,
-                DiscussedBy = itemVM.DiscussedBy,
-                KeepId = itemVM.KeepId,
-                CreatedBy = (Guid)itemVM.CreatedBy!,
-                CreatedOn = DateTime.Now,
-                TagId = itemVM.TagId ?? Guid.Empty,
-                Files = new List<FileModel>()
-            };
-            string wwwroot = _env.WebRootPath;
-            string UserDirecotry = Path.Combine(wwwroot, itemVM.CreatedBy.ToString());
-            if (!Directory.Exists(UserDirecotry))
-                Directory.CreateDirectory(UserDirecotry);
-            string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.ProjectId.ToString());
-            if (!Directory.Exists(ProjectDirecotry))
-                Directory.CreateDirectory(ProjectDirecotry);
-            List<FileModel> files = new();
-
-            itemVM.Files?.ForEach(file =>
-            {
-                string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
-                string FilePath = Path.Combine(UserDirecotry, FileName);
-                using var stream = new FileStream(FilePath, FileMode.Create);
-                file.CopyTo(stream);
-                FileModel filemodel = new()
+                if (itemVM.Type == ItemType.TICKET) { }
+                ItemModel item = new()
                 {
-                    FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.ProjectId.ToString(), FileName),
-                    Items = new List<ItemModel>()
+                    Title = itemVM.Title,
+                    Description = itemVM.Description,
+                    URL = itemVM.URL,
+                    Type = itemVM.Type,
+                    Number = itemVM.Number,
+                    To = itemVM.To,
+                    DiscussedBy = itemVM.DiscussedBy,
+                    KeepId = itemVM.KeepId,
+                    CreatedBy = (Guid)itemVM.CreatedBy!,
+                    CreatedOn = DateTime.Now,
+                    Files = new List<FileModel>()
                 };
-                files.Add(filemodel);
-            });
+                
+                string UserDirecotry = Path.Combine(Directory.GetCurrentDirectory(), itemVM.CreatedBy.ToString());
+                if (!Directory.Exists(UserDirecotry))
+                    Directory.CreateDirectory(UserDirecotry);
+                string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
+                if (!Directory.Exists(ProjectDirecotry))
+                    Directory.CreateDirectory(ProjectDirecotry);
+                List<FileModel> files = new();
+
+                itemVM.Files?.ForEach(file =>
+                {
+                    string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
+                    string FilePath = Path.Combine(UserDirecotry, FileName);
+                    using var stream = new FileStream(FilePath, FileMode.Create);
+                    file.CopyTo(stream);
+                    FileModel filemodel = new()
+                    {
+                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
+                        Items = new List<ItemModel>()
+                    };
+                    files.Add(filemodel);
+                });
 
 
-            await _itemRepo.SaveAsync(item, files);
-            return new ResponseModel<string>
+                await _itemRepo.SaveAsync(item, files);
+                return new ResponseModel<string>
+                {
+                    IsSuccess = true,
+                    StatusName = StatusType.SUCCESS,
+                    Message = "inserted"
+                };
+            }
+            catch (Exception ex)
             {
-                IsSuccess = true,
-                StatusName = StatusType.SUCCESS,
-                Message = "inserted"
-            };
+                return new ResponseModel<string>
+                {
+                    IsSuccess = false,
+                    StatusName = StatusType.NOT_VALID,
+                    Message = "not inserted"
+                };
+            }
         }
         public async Task<ResponseModel<string>> UpdateAsync(ItemVM itemVM)
         {
@@ -120,12 +132,11 @@ namespace Keeper.Services.Services
             existingItem.DiscussedBy = itemVM.DiscussedBy;
             existingItem.UpdatedBy = (Guid)itemVM.UpdatedBy!;
             existingItem.UpdatedOn = DateTime.Now;
-            string wwwroot = _env.WebRootPath;
 
-            string UserDirecotry = Path.Combine(wwwroot, existingItem.CreatedBy.ToString());
+            string UserDirecotry = Path.Combine(Directory.GetCurrentDirectory(), existingItem.CreatedBy.ToString());
             if (!Directory.Exists(UserDirecotry))
                 Directory.CreateDirectory(UserDirecotry);
-            string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.ProjectId.ToString());
+            string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
             if (!Directory.Exists(ProjectDirecotry))
                 Directory.CreateDirectory(ProjectDirecotry);
             List<FileModel> files = new();
@@ -138,7 +149,7 @@ namespace Keeper.Services.Services
                 file.CopyTo(stream);
                 FileModel filemodel = new()
                 {
-                    FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.ProjectId.ToString(), FileName),
+                    FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
                     Items = new List<ItemModel>() { existingItem }
                 };
                 files.Add(filemodel);

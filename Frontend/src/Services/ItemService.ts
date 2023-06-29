@@ -1,19 +1,14 @@
 import { http } from '@/GlobalConfig/ApiClient'
 import type { IItem } from '@/Models/ItemModel'
 async function GetAll(KeepId: string): Promise<any> {
-  const response = await http.get(`/Item?KeepId=${KeepId}`)
-  console.log(response)
+  const response = await http.get(`/Item/Keep/${KeepId}`)
+  return response.data.data;
 }
 async function Insert(item: IItem) {
   try {
-    const form = new FormData()
-    form.append('Title', item.Title)
-    form.append('Type', item.Type)
-    form.append('Number', item.Number)
-    form.append('KeepId', item.KeepId)
-    form.append('CreatedBy', item.CreatedBy!)
-    form.append('ProjectId', item.ProjectId!)
-    const response = await http.post('/Item', form)
+    console.log(item);
+    
+    const response = await http.post('/Item', item)
     console.log(response)
   } catch (e) {
     console.log(e)

@@ -17,12 +17,12 @@ namespace Keeper.Main.Controllers
             _itemService = itemService;
         }
         
-        [HttpPost("")]
-        public async Task<ResponseModel<string>> Post([FromForm] ItemVM itemVM)
+        [HttpPost]
+        public async Task<ResponseModel<string>> Post(ItemVM itemVM)
         {
             return await _itemService.SaveAsync(itemVM);
         }
-        [HttpPut("")]
+        [HttpPut]
         public async Task<ResponseModel<string>> Update([FromForm] ItemVM itemVM)
         {
             return await _itemService.UpdateAsync(itemVM);
@@ -37,7 +37,7 @@ namespace Keeper.Main.Controllers
         {
             return await _itemService.DeleteAsync(id);
         }
-        [HttpGet("{KeepId}")]
+        [HttpGet("Keep/{KeepId}")]
         public async Task<ResponseModel<IEnumerable<ItemModel>>> GetAll(Guid KeepId)
         {
             return await _itemService.GetAllAsync(KeepId);

@@ -15,7 +15,7 @@ namespace Keeper.Main.Controllers
             this.mailService = mailService;
         }
 
-        [HttpPost("Send")]
+        [HttpPost]
         public async Task<IActionResult> Send(MailRequest request)
         {
             try

@@ -1,3 +1,3 @@
 export interface IMail{
-    Mails:string[];
+    ToEmail:string[];
 }

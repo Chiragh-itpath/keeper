@@ -26,7 +26,6 @@ namespace Keeper.Context.Model
         public DateTime UpdatedOn { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
-        public Guid TagId { get; set; }
         public virtual ICollection<FileModel>? Files { get; set; }
         public void Dispose()
         {
