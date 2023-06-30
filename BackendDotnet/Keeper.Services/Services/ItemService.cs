@@ -136,7 +136,7 @@ namespace Keeper.Services.Services
                 string UserDirecotry = Path.Combine(wwwroot, existingItem.CreatedBy.ToString());
                 if (!Directory.Exists(UserDirecotry))
                     Directory.CreateDirectory(UserDirecotry);
-                string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
+                string ProjectDirecotry = Path.Combine(UserDirecotry, existingItem.KeepId.ToString());
                 if (!Directory.Exists(ProjectDirecotry))
                     Directory.CreateDirectory(ProjectDirecotry);
                 List<FileModel> files = new();
@@ -149,7 +149,7 @@ namespace Keeper.Services.Services
                     file.CopyTo(stream);
                     FileModel filemodel = new()
                     {
-                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
+                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), existingItem.KeepId.ToString(), FileName),
                         Items = new List<ItemModel>() { existingItem }
                     };
                     files.Add(filemodel);

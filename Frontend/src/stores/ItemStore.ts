@@ -12,6 +12,7 @@ export const useItemStore = defineStore('ItemStore', () => {
     await Insert(Items)
   }
   async function UpdateItem(Item:IItem): Promise<void> {
+    Item.createdBy=User?.id
     Item.updatedBy= User?.id
     await Update(Item)
   }

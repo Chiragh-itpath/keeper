@@ -27,12 +27,14 @@ async function Insert(item: IItem) {
 async function Update(item: IItem) {
   try{
     let form=new FormData()
+    form.append('id',item.id!)
     form.append('title',item.title!)
     form.append('number',item.number!)
     form.append('url',item.url!)
     form.append('description',item.description!)
     form.append('type',item.type.toString())
     form.append('keepid',item.keepId!)
+    form.append('createdby',item.createdBy!)
     form.append('updatedby',item.updatedBy!)
     if(item.files!=undefined){
       for (let file of item.files) {
