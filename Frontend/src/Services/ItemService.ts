@@ -6,31 +6,54 @@ async function GetAll(KeepId: string): Promise<any> {
 }
 async function Insert(item: IItem) {
   try {
-    console.log(item);
-    
-    const response = await http.post('/Item', item)
-    console.log(response)
+    let form=new FormData()
+    form.append('title',item.title!)
+    form.append('number',item.number!)
+    form.append('url',item.url!)
+    form.append('description',item.description!)
+    form.append('type',item.type.toString())
+    form.append('keepid',item.keepId!)
+    form.append('createdby',item.createdBy!)
+    if(item.files!=undefined){
+      for (let file of item.files) {
+        form.append('files', file);
+      }
+    }
+    const response = await http.post('/Item', form)
   } catch (e) {
     console.log(e)
   }
 }
 async function Update(item: IItem) {
-  const form = new FormData()
-  form.append('Title', item.Title)
-  form.append('Type', item.Type)
-  form.append('Number', item.Number)
-  form.append('KeepId', item.KeepId)
-  form.append('UpdatedBy', item.UpdatedBy!)
-  form.append('ProjectId', item.ProjectId!)
-  const response = await http.put('/Item', item)
-  console.log(response)
+  try{
+    let form=new FormData()
+    form.append('id',item.id!)
+    form.append('title',item.title!)
+    form.append('number',item.number!)
+    form.append('url',item.url!)
+    form.append('description',item.description!)
+    form.append('type',item.type.toString())
+    form.append('keepid',item.keepId!)
+    form.append('createdby',item.createdBy!)
+    form.append('updatedby',item.updatedBy!)
+    if(item.files!=undefined){
+      for (let file of item.files) {
+        form.append('files', file);
+      }
+    }
+    debugger
+    const response = await http.put('/Item', form)
+    return response.data.data
+  }
+  catch (e) {
+    console.log(e)
+  }
 }
 async function Delete(ItemId: string) {
-  const response = await http.delete(`/Item/${ItemId}`)
-  console.log(response)
+   await http.delete(`/Item/${ItemId}`)
 }
-async function Get(ItemId: string) {
+async function Get(ItemId: string):Promise<IItem> {
   const response = await http.get(`/Item/${ItemId}`)
-  console.log(response)
+  return response.data.data
 }
 export { GetAll, Insert, Update, Delete, Get }

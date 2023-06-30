@@ -18,12 +18,12 @@ namespace Keeper.Main.Controllers
         }
         
         [HttpPost]
-        public async Task<ResponseModel<string>> Post(ItemVM itemVM)
+        public async Task<ResponseModel<string>> Post([FromForm] ItemVM itemVM)
         {
             return await _itemService.SaveAsync(itemVM);
         }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update([FromForm] ItemVM itemVM)
+        public async Task<ResponseModel<string>> Update([FromForm]ItemVM itemVM)
         {
             return await _itemService.UpdateAsync(itemVM);
         }

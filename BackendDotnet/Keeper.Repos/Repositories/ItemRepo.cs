@@ -50,7 +50,7 @@ namespace Keeper.Repos.Repositories
 
         public async Task<IEnumerable<ItemModel>> GetAllAsync(Guid KeepId)
         {
-            return await _dbKeeperContext.Items.Where(x => x.KeepId == KeepId).ToListAsync();
+            return await _dbKeeperContext.Items.Where(x => x.KeepId == KeepId && x.IsDeleted == false).ToListAsync();
         }
     }
 }

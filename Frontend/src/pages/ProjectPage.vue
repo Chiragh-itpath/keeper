@@ -16,7 +16,7 @@ import { tagStore } from '@/stores/TagStore'
 import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
 import type { IMail } from '@/Models/MailModel'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import RecordNotFoundComponent from "@/components/RecordNotFoundComponent.vue";
 const state = reactive({
   projectId: '',
@@ -33,33 +33,22 @@ const state = reactive({
   openInvite: false,
   email: ''
 })
-const items: { title: string; icon: string; to: {} }[] = [
-  {
-    title: 'Edit',
-    icon: 'mdi-edit',
-    to: { path: '/EditProject' }
-  },
-  {
-    title: 'Delete',
-    icon: 'mdi-delete',
-    to: { path: '/Projects' }
-  }
-]
+
 const form = ref()
-const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject,GetProjectByTag } = useProjectStore()
-const{GetByTagId}=tagStore()
-const{Mail}=useMailStore()
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag } = useProjectStore()
+const { GetByTagId } = tagStore()
+const { Mail } = useMailStore()
 const { Projects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let date = ref()
 
 const route = useRoute()
-watch(route,async()=>{
-  if(route.name==RouterEnum.PROJECT_BY_TAG){
-    filterData.value=await GetProjectByTag(route.params.id.toString())
+watch(route, async () => {
+  if (route.name == RouterEnum.PROJECT_BY_TAG) {
+    filterData.value = await GetProjectByTag(route.params.id.toString())
   }
-}) 
+})
 watch(Projects, () => {
   filterData.value = Projects.value
 })
@@ -83,11 +72,11 @@ async function addProject(): Promise<void> {
     }
     form.value.reset()
     await AddProject(project)
-    if(state.inviteEmail.length>0){
-      let mailObj:IMail={
-      ToEmail:state.inviteEmail
-    }
-    await Mail(mailObj)
+    if (state.inviteEmail.length > 0) {
+      let mailObj: IMail = {
+        ToEmail: state.inviteEmail,
+      }
+      await Mail(mailObj)
     }
     state.dialog = false
   } else {
@@ -95,14 +84,14 @@ async function addProject(): Promise<void> {
       id: state.projectId,
       title: state.projectName,
       description: state.description,
-      tagTitle:state.tag
+      tagTitle: state.tag
     }
     await editProject(state.projectId)
     await UpdateProject(project)
     state.projectId = ''
     form.value.reset()
     state.dialog = false
-  }
+  }  
 }
 function onEnter() {
   if (state.email.trim() != '') state.inviteEmail.push(state.email)
@@ -111,11 +100,11 @@ function onEnter() {
 async function editProject(projectId: string) {
   state.dialog = true
   const data = await GetProjectById(projectId)
-  const tagdata=await GetByTagId(data.tagId)
+  const tagdata = await GetByTagId(data.tagId)
   state.projectName = data.title
   state.description = data.description
   state.projectId = projectId
-  state.tag=tagdata.data.data?.title
+  state.tag = tagdata.data.data?.title
 }
 async function deleteProject(projectId: string) {
   await DeleteProject(projectId)
@@ -135,30 +124,16 @@ function formatDate(datetime: Date) {
         <v-text-field color="primary" type="date" v-model="date" />
       </v-col>
       <v-col cols="12" md="2" sm="12" class="my-auto">
-        <Button
-          class="w-100"
-          @click="state.dialog = true"
-          :rounded="false"
-          variant="elevated"
-          prepend-icon="mdi-plus"
-        >
+        <Button class="w-100" @click="state.dialog = true" :rounded="false" variant="elevated" prepend-icon="mdi-plus">
           new folder
         </Button>
       </v-col>
     </v-row>
-    <div v-if="filterData.length==0" >
-    <RecordNotFoundComponent/>
-  </div>
+    <div v-if="filterData.length == 0">
+      <RecordNotFoundComponent />
+    </div>
     <v-row v-else>
-      <v-col
-        v-for="(project, index) in filterData"
-        :key="index"
-        cols="12"
-        lg="3"
-        md="4"
-        sm="6"
-        class="mb-3"
-      >
+      <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
         <Card>
           <template #title>
             <div class="position-relative text-grey-darken-4">
@@ -168,16 +143,10 @@ function formatDate(datetime: Date) {
                 <v-menu activator="parent">
                   <v-list>
                     <v-list-item>
-                      <v-list-item-title
-                        ><Button variant="text" @click="editProject(project.id!)"
-                          >Edit</Button
-                        ></v-list-item-title
-                      >
-                      <v-list-item-title
-                        ><Button variant="text" @click="deleteProject(project.id!)"
-                          >Delete</Button
-                        ></v-list-item-title
-                      >
+                      <v-list-item-title><Button variant="text"
+                          @click="editProject(project.id!)">Edit</Button></v-list-item-title>
+                      <v-list-item-title><Button variant="text"
+                          @click="deleteProject(project.id!)">Delete</Button></v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -187,8 +156,8 @@ function formatDate(datetime: Date) {
           <template #text>
             <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
               {{ project.description }}
-              <span v-if="project.description == ''||project.description == null" class="text-grey font-italic"
-                >No description provided
+              <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
+                description provided
               </span>
             </v-card-text>
           </template>
@@ -199,19 +168,14 @@ function formatDate(datetime: Date) {
   <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
     <template #title>
       <div class="text-left ml-4 mt-3">
-        <Button
-          @click="
-            () => {
-              state.dialog = false
-              form.reset()
-              state.projectId = ''
-            }
-          "
-          prepend-icon="mdi-arrow-left-circle"
-          >Back</Button
-        >
+        <Button @click="() => {
+            state.dialog = false
+            form.reset()
+            state.projectId = ''
+          }
+          " prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
-      <div class="text-center text-primary mt-2">Create New Project</div>
+      <div class="text-center text-primary mt-2">{{ state.projectId != '' ? 'Edit Project' : 'Create New Project' }}</div>
     </template>
 
     <template #formSlot>
@@ -225,18 +189,11 @@ function formatDate(datetime: Date) {
               <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
             </v-col>
             <v-col cols="12">
-              <v-textarea
-                label="Description"
-                color="primary"
-                variant="outlined"
-                v-model="state.description"
-                clearable
-              ></v-textarea>
+              <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
+                clearable></v-textarea>
             </v-col>
             <v-col cols="12" sm="6" md="2" lg="2">
-              <v-btn color="primary" variant="outlined" @click="state.openInvite = true"
-                >Invite</v-btn
-              >
+              <v-btn color="primary" variant="outlined" @click="state.openInvite = true">Invite</v-btn>
             </v-col>
             <v-col cols="12" sm="6" md="10" lg="10">
               <span v-for="(selection, index) in state.inviteEmail" :key="selection">
@@ -256,15 +213,10 @@ function formatDate(datetime: Date) {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button
-              width="100"
-              @click="
-                () => {
-                  form.reset()
-                }
-              "
-              >Clear</Button
-            >
+            <Button width="100" @click="() => {
+                form.reset()
+              }
+              ">Clear</Button>
             <Button variant="elevated" width="100" @click="addProject">{{
               state.projectId != '' ? 'Update' : 'Create'
             }}</Button>
@@ -285,9 +237,8 @@ function formatDate(datetime: Date) {
               <TextFieldEmail label="Email" color="primary" v-model="state.email" />
             </v-col>
             <v-col cols="2" md="2" sm="2">
-              <v-avatar @click="onEnter" color="primary" class="mt-2"
-                ><v-icon icon="mdi-plus-thick" color="white"></v-icon
-              ></v-avatar>
+              <v-avatar @click="onEnter" color="primary" class="mt-2"><v-icon icon="mdi-plus-thick"
+                  color="white"></v-icon></v-avatar>
             </v-col>
           </v-row>
           <v-col cols="12">
@@ -301,15 +252,10 @@ function formatDate(datetime: Date) {
                     {{ email }}
                   </v-col>
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
-                    <v-icon
-                      @click="
-                        () => {
-                          state.inviteEmail.splice(index, 1)
-                        }
-                      "
-                      icon="mdi-minus-circle-outline"
-                      size="large"
-                    ></v-icon>
+                    <v-icon @click="() => {
+                        state.inviteEmail.splice(index, 1)
+                      }
+                      " icon="mdi-minus-circle-outline" size="large"></v-icon>
                   </v-col>
                 </v-row>
               </div>
@@ -322,19 +268,12 @@ function formatDate(datetime: Date) {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button
-              width="100"
-              @click="
-                () => {
-                  state.inviteEmail.splice(0, state.inviteEmail.length)
-                  state.openInvite = false
-                }
-              "
-              >Cancle</Button
-            >
-            <Button variant="elevated" :width="100" @click="state.openInvite = false"
-              >Invite</Button
-            >
+            <Button width="100" @click="() => {
+                state.inviteEmail.splice(0, state.inviteEmail.length)
+                state.openInvite = false
+              }
+              ">Cancle</Button>
+            <Button variant="elevated" :width="100" @click="state.openInvite = false">Invite</Button>
           </v-col>
         </v-row>
       </div>
