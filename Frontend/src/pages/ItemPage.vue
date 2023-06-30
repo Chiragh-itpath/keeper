@@ -144,7 +144,6 @@ if(date.value!=''&&date.value!=null){
               </v-col>
               <v-col cols="3">
                 <div class="d-flex justify-space-between float-end">
-                  <v-checkbox color="primary"></v-checkbox>
                   <v-menu>
                     <template v-slot:activator="{ props }">
                       <Button variant="text" color="" v-bind="props">

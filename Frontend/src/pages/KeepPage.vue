@@ -138,7 +138,7 @@ function onEnter() {
         <Card>
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              {{ keep.title }}
+              <span @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">{{ keep.title }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
                 <v-icon> mdi-dots-vertical </v-icon>
                 <v-menu activator="parent">

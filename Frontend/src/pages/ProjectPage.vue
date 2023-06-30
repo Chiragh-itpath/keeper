@@ -137,7 +137,7 @@ function formatDate(datetime: Date) {
         <Card>
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              {{ project.title }}
+              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{ project.title }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
                 <v-icon> mdi-dots-vertical </v-icon>
                 <v-menu activator="parent">
