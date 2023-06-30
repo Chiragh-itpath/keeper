@@ -11,7 +11,6 @@ namespace Keeper.Context.Model
     {
        
         public string[] ToEmail { get; set; }
-        public Guid? ParentId { get; set;}
         public Guid UserId { get; set; }
        
     }
