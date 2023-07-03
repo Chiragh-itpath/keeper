@@ -52,5 +52,10 @@ namespace Keeper.Main.Controllers
         {
             return await _tagService.DeleteByIdAsync(id);
         }
+        [HttpGet("User/{userid}/{tagType}")]
+        public async Task<ResponseModel<List<TagVM>>> GetByUserAsync(Guid userid, TagType tagType)
+        {
+            return await _tagService.GetByUserAsync(userid, tagType);
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace Keeper.Services.Services
                     {
                         Id = tagId,
                         Title = projectVM.TagTitle,
-                        Type = TagType.PROJECT
+                        Type = TagType.PROJECT,
                     };
                     await _tagService.SaveAsync(tagModel);
                 }

@@ -19,7 +19,7 @@ import type { IMail } from '@/Models/MailModel'
 import { useRoute } from 'vue-router'
 import RecordNotFoundComponent from "@/components/RecordNotFoundComponent.vue";
 import { TagTypeEnum } from '@/enum/TagTypeEnum'
-const { GetAll, GetByTagType, GetByTagTitle } = tagStore()
+const { GetAll, GetByTagType, GetByTagTitle,GetTagByUser } = tagStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -61,7 +61,7 @@ watch(date, () => {
 })
 onMounted(async () => {
   if (route.name?.toString() == RouterEnum.PROJECT||route.name?.toString() == RouterEnum.PROJECT_BY_TAG)
-    await GetByTagType(TagTypeEnum.PROJECT)
+    await GetTagByUser(TagTypeEnum.PROJECT)
   await GetProjects()
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
@@ -93,7 +93,7 @@ async function addProject(): Promise<void> {
     await UpdateProject(project)
     state.projectId = ''
     form.value.reset()
-    state.dialog = false
+    
   }  
   if (state.inviteEmail.length > 0) {
       let mailObj: IMail = {
@@ -102,6 +102,7 @@ async function addProject(): Promise<void> {
       await Mail(mailObj)
     }
   state.inviteEmail=[]
+  await GetTagByUser(TagTypeEnum.PROJECT)
 }
 function onEnter() {
   if (state.email.trim() != '') state.inviteEmail.push(state.email)

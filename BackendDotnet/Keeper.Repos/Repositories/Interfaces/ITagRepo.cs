@@ -17,5 +17,6 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<IEnumerable<TagModel>> GetByTypeAsync(TagType type);
         Task<TagModel> GetByTitleAsync(string title);
         Task<TagModel> SaveAsync(TagModel tag);
+        Task<IEnumerable<TagModel>> GetByUserAsync(Guid userid, TagType tagType);
     }
 }

@@ -25,7 +25,6 @@ const { Tags, TagsByType } = storeToRefs(tagStore())
 const router = useRouter()
 
 
-
 watch(
   () => router.currentRoute.value.name,
   (name) => {
@@ -52,8 +51,8 @@ async function FindTag(title: string) {
 
 <template>
   <v-layout class="hide-scrollerbar">
-    <NavBar v-if="!ToggleSideBarAndNavBar()"></NavBar>
-    <side-bar v-if="!ToggleSideBarAndNavBar()">
+    <NavBar v-if="!ToggleSideBarAndNavBar()" :disableToggle="TagsByType.length>0"></NavBar>
+    <side-bar v-if="!ToggleSideBarAndNavBar() && TagsByType.length>0">
       <template #data>
         <v-list color="transparent" class="mt-6">
           <v-list-item v-for="(tag, index) in TagsByType" :key="index" @click="FindTag(tag.title)">

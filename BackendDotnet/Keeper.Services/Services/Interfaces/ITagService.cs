@@ -18,5 +18,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<TagModel>> GetByTitleAsync(string title);
         Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel);
         Task<bool> DeleteByIdAsync(Guid id);
+        Task<ResponseModel<List<TagVM>>> GetByUserAsync(Guid userid, TagType tagType);
     }
 }
