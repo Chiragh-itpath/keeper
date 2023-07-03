@@ -17,9 +17,10 @@ import { tagStore } from '@/stores/TagStore'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import type { IMail } from '@/Models/MailModel'
 import { useMailStore } from '@/stores/MailStore'
+import { TagTypeEnum } from "@/enum/TagTypeEnum";
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
-const { GetByTagId } = tagStore()
+const { GetByTagId,GetByTagType } = tagStore()
 const { Mail } = useMailStore()
 
 const proid = ref()
@@ -62,25 +63,27 @@ watch(date, () => {
   }
 })
 onMounted(async () => {
+
+  if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
+    await GetByTagType(TagTypeEnum.KEEP)
+    
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
+  if (route.name == RouterEnum.KEEP_BY_TAG) {
+    filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
+  }
 })
 async function CreateKeep(): Promise<void> {
   if (state.KeepId == '') {
     const { valid } = await form.value.validate()
     if (!valid) return
+    state.dialog = false
     const keeps: Ikeep = {
       title: state.keepName,
       projectId: proid.value,
       tagTitle: state.tag
     }
     await AddKeep(keeps)
-    if (state.inviteEmail.length > 0) {
-      let mailObj: IMail= {
-        ToEmail: state.inviteEmail
-      }
-      await Mail(mailObj)
-    }
     form.value.reset()
     state.dialog = false
   } else {
@@ -95,8 +98,15 @@ async function CreateKeep(): Promise<void> {
     form.value.reset()
     state.dialog = false
   }
+  if (state.inviteEmail.length > 0) {
+      let mailObj: IMail= {
+        ToEmail: state.inviteEmail
+      }
+      await Mail(mailObj)
+    }
   state.inviteEmail=[]
   await GetKeeps(proid.value)
+
 }
 
 async function deletekeep(keepId: string) {

@@ -18,6 +18,8 @@ import { watch } from 'vue'
 import type { IMail } from '@/Models/MailModel'
 import { useRoute } from 'vue-router'
 import RecordNotFoundComponent from "@/components/RecordNotFoundComponent.vue";
+import { TagTypeEnum } from '@/enum/TagTypeEnum'
+const { GetAll, GetByTagType, GetByTagTitle } = tagStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -58,13 +60,19 @@ watch(date, () => {
   } else filterData.value = Projects.value
 })
 onMounted(async () => {
+  if (route.name?.toString() == RouterEnum.PROJECT||route.name?.toString() == RouterEnum.PROJECT_BY_TAG)
+    await GetByTagType(TagTypeEnum.PROJECT)
   await GetProjects()
+  if (route.name == RouterEnum.PROJECT_BY_TAG) {
+    filterData.value = await GetProjectByTag(route.params.id.toString())
+  }
 })
 async function addProject(): Promise<void> {
   if (state.projectId == '') {
     const { valid } = await form.value.validate()
-    if (!valid) return
 
+    if (!valid) return
+    state.dialog = false
     const project: IProject = {
       title: state.projectName,
       description: state.description,
@@ -72,13 +80,8 @@ async function addProject(): Promise<void> {
     }
     form.value.reset()
     await AddProject(project)
-    if (state.inviteEmail.length > 0) {
-      let mailObj: IMail = {
-        ToEmail: state.inviteEmail,
-      }
-      await Mail(mailObj)
-    }
-    state.dialog = false
+    
+    
   } else {
     const project: IProject = {
       id: state.projectId,
@@ -92,6 +95,13 @@ async function addProject(): Promise<void> {
     form.value.reset()
     state.dialog = false
   }  
+  if (state.inviteEmail.length > 0) {
+      let mailObj: IMail = {
+        ToEmail: state.inviteEmail,
+      }
+      await Mail(mailObj)
+    }
+  state.inviteEmail=[]
 }
 function onEnter() {
   if (state.email.trim() != '') state.inviteEmail.push(state.email)
@@ -116,6 +126,7 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
+
 </script>
 <template>
   <v-container>
