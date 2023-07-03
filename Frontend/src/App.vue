@@ -24,12 +24,8 @@ const state = reactive({
 const { Tags, TagsByType } = storeToRefs(tagStore())
 const router = useRouter()
 
-watch(route, async () => {
-  if (route.name?.toString() == RouterEnum.PROJECT)
-    await GetByTagType(TagTypeEnum.PROJECT)
-  else if (route.name?.toString() == RouterEnum.KEEP)
-    await GetByTagType(TagTypeEnum.KEEP)
-})
+
+
 watch(
   () => router.currentRoute.value.name,
   (name) => {

@@ -183,7 +183,7 @@ if(date.value!=''&&date.value!=null){
     </v-row>
   </v-container>
 
-  <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
+  <ModalComponent :dialog="state.dialog" @close="state.dialog = false" :width="830">
     <template #title>
       <div class="text-left ml-4 mt-3">
         <Button @click="state.dialog = false" prepend-icon="mdi-arrow-left-circle">Back</Button>
@@ -195,7 +195,7 @@ if(date.value!=''&&date.value!=null){
       <v-form ref="form" >
         <v-container>
           <v-row>
-            <v-col cols="2">
+            <v-col cols="12" md="2" sm="6">
               <v-menu transition="scale-transition">
                 <template v-slot:activator="{ props }">
                   <v-select label="Type" :items="['Ticket','PR']" variant="outlined" v-model="state.ItemType"></v-select>
@@ -207,7 +207,7 @@ if(date.value!=''&&date.value!=null){
                 </v-list>
               </v-menu>
             </v-col>
-            <v-col cols="12" md="4" sm="4">
+            <v-col cols="12" md="4" sm="6">
               <TextFieldNumber label="Number" color="primary" v-model="state.number"></TextFieldNumber>
             </v-col>
             <v-col cols="12" md="6" sm="9">
