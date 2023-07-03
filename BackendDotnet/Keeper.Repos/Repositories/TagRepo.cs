@@ -1,22 +1,27 @@
-﻿using Keeper.Common.Enums;
+﻿using Dapper;
+using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
+using Microsoft.Extensions.Configuration;
 
 namespace Keeper.Repos.Repositories
 {
     public class TagRepo : ITagRepo
     {
         private readonly DbKeeperContext _dbKeeperContext;
-        public TagRepo(DbKeeperContext dbKeeperContext)
+        private readonly IConfiguration _configuration;
+        public TagRepo(DbKeeperContext dbKeeperContext, IConfiguration configuration)
         {
             _dbKeeperContext = dbKeeperContext;
+            _configuration = configuration;
         }
 
-       
+
         public async Task<IEnumerable<TagModel>> GetAllAsync()
         {
             return await _dbKeeperContext.Tags.ToListAsync();
@@ -26,14 +31,14 @@ namespace Keeper.Repos.Repositories
         {
             return await _dbKeeperContext.Tags.FindAsync(Id);
         }
-        
+
         public async Task<IEnumerable<TagModel>> GetByTypeAsync(TagType type)
         {
-            return await _dbKeeperContext.Tags.Where(t=>t.Type==type).ToListAsync();
+            return await _dbKeeperContext.Tags.Where(t => t.Type == type).ToListAsync();
         }
         public async Task<TagModel> GetByTitleAsync(string title)
         {
-            return await _dbKeeperContext.Tags.FirstOrDefaultAsync(t=>t.Title== title);
+            return await _dbKeeperContext.Tags.FirstOrDefaultAsync(t => t.Title == title);
         }
 
         public async Task<TagModel> SaveAsync(TagModel tag)
@@ -41,11 +46,11 @@ namespace Keeper.Repos.Repositories
             await _dbKeeperContext.Tags.AddAsync(tag);
             if (await _dbKeeperContext.SaveChangesAsync() > 0)
                 return tag;
-            return null; 
+            return null;
         }
         public async Task<bool> DeleteByIdAsync(Guid id)
         {
-            var res=await _dbKeeperContext.Tags.FindAsync(id);
+            var res = await _dbKeeperContext.Tags.FindAsync(id);
             if (res != null)
             {
                 _dbKeeperContext.Tags.Remove(res);
@@ -53,6 +58,26 @@ namespace Keeper.Repos.Repositories
                 return true;
             }
             return false;
+        }
+        public async Task<IEnumerable<TagModel>> GetByUserAsync(Guid userid, TagType tagType)
+        {
+            using (var con = new SqlConnection(_configuration.GetConnectionString("DbConnection")))
+            {
+
+                try
+                {
+                    string table = "projects";
+                    if (tagType == TagType.KEEP)
+                        table = "Keeps";
+                    string qry = $"select t.* from Tags as t inner join {table} as p on t.Id=p.TagId where p.CreatedBy=@uid and p.IsDeleted='False'";
+                    var res = await con.QueryAsync<TagModel>(qry, new { uid = userid });
+                    return res;
+                }
+                catch
+                {
+                    throw new Exception();
+                }
+            }
         }
     }
 }

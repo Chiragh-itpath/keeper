@@ -20,7 +20,7 @@ import { useMailStore } from '@/stores/MailStore'
 import { TagTypeEnum } from "@/enum/TagTypeEnum";
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
-const { GetByTagId,GetByTagType } = tagStore()
+const { GetByTagId,GetByTagType,GetTagByUser } = tagStore()
 const { Mail } = useMailStore()
 
 const proid = ref()
@@ -65,8 +65,7 @@ watch(date, () => {
 onMounted(async () => {
 
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
-    await GetByTagType(TagTypeEnum.KEEP)
-    
+    await GetTagByUser(TagTypeEnum.KEEP)  
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
   if (route.name == RouterEnum.KEEP_BY_TAG) {
@@ -106,7 +105,7 @@ async function CreateKeep(): Promise<void> {
     }
   state.inviteEmail=[]
   await GetKeeps(proid.value)
-
+  await GetTagByUser(TagTypeEnum.KEEP)  
 }
 
 async function deletekeep(keepId: string) {

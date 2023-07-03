@@ -63,5 +63,11 @@ namespace Keeper.Services.Services
             }
             return list;
         }
+
+        public async Task<ResponseModel<List<TagVM>>> GetByUserAsync(Guid userid, TagType tagType)
+        {
+            var data=await _tagRepo.GetByUserAsync(userid, tagType);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
+        }
     }
 }
