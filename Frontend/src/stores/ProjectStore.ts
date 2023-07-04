@@ -9,8 +9,7 @@ export const useProjectStore = defineStore('ProjectStore', () => {
   const Projects: Ref<IProject[]> = ref([])
   async function AddProject(project: IProject): Promise<any> {
     project.createdBy = User.value!.id
-    await Insert(project)
-    await GetProjects()
+    return await Insert(project)
   }
   async function GetProjectById(ProjectId: string): Promise<any> {
     return await GetById(ProjectId)
@@ -19,9 +18,9 @@ export const useProjectStore = defineStore('ProjectStore', () => {
     const projects = await GetAll(User.value!.id)
     Projects.value = projects.data.data
   }
-  async function GetProjectByTag(TagId:string): Promise<any> {
-    const UserId=User.value!.id
-    const projects = await GetByTag(UserId,TagId)
+  async function GetProjectByTag(TagId: string): Promise<any> {
+    const UserId = User.value!.id
+    const projects = await GetByTag(UserId, TagId)
     Projects.value = projects
     return projects
   }

@@ -12,6 +12,6 @@ export interface IItem {
   keepId?: string
   createdBy?: string
   updatedBy?: string
-  files?:undefined
+  files?: undefined
   createdOn?: Date
 }

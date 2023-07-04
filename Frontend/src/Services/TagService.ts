@@ -1,15 +1,16 @@
 import type { ITag } from '@/Models/TagModel'
-import axios from 'axios'
+import axios, { AxiosError, type AxiosResponse } from 'axios'
 import type { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { http } from '@/GlobalConfig/ApiClient'
-export async function Get(): Promise<any> {
+export async function Get(): Promise<[AxiosResponse| null,AxiosError | null ]> {
   try {
-    return await http.get('Tag')
-  } catch (error) {
-    console.log(error)
+    const response = await http.get('Tag')
+    return [response,null]
+  } catch (error: any) {
+    return [null,error]
   }
 }
-export async function GetById(tagId:string): Promise<any> {
+export async function GetById(tagId: string): Promise<any> {
   try {
     return await http.get(`Tag/${tagId}`)
   } catch (error) {
@@ -26,16 +27,16 @@ export async function GetByType(tagType: TagTypeEnum): Promise<any> {
 
 export async function GetByTitle(title: string): Promise<any> {
   try {
-    let res=await http.get(`Tag/Title/${title}`)
-    return res.data.data;
+    let res = await http.get(`Tag/Title/${title}`)
+    return res.data.data
   } catch (error) {
     console.log(error)
   }
 }
-export async function GetByUser(userid: string,tagType:TagTypeEnum): Promise<any> {
+export async function GetByUser(userid: string, tagType: TagTypeEnum): Promise<any> {
   try {
-    let res=await http.get(`Tag/User/${userid}/${tagType}`)
-    return res.data.data;
+    let res = await http.get(`Tag/User/${userid}/${tagType}`)
+    return res.data.data
   } catch (error) {
     console.log(error)
   }

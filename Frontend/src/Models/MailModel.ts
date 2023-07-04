@@ -1,5 +1,5 @@
-export interface IMail{
-    ToEmail:string[];
-    ParentId?:string;
-    UserId?:string;
+export interface IMail {
+  ToEmail: string[]
+  ParentId?: string
+  UserId?: string
 }

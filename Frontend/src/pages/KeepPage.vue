@@ -11,16 +11,18 @@ import { useKeepStore } from '@/stores/KeepStore'
 import type { Ikeep } from '@/Models/KeepModel'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute} from 'vue-router'
+import { useRoute } from 'vue-router'
 import { watch } from 'vue'
 import { tagStore } from '@/stores/TagStore'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import type { IMail } from '@/Models/MailModel'
 import { useMailStore } from '@/stores/MailStore'
-import { TagTypeEnum } from "@/enum/TagTypeEnum";
+import { TagTypeEnum } from '@/enum/TagTypeEnum'
+import { StatusType } from '@/enum/StatusType'
+import SnackbarComponent from '@/components/SnackbarComponent.vue'
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
-const { GetByTagId,GetByTagType,GetTagByUser } = tagStore()
+const { GetByTagId, GetByTagType, GetTagByUser } = tagStore()
 const { Mail } = useMailStore()
 
 const proid = ref()
@@ -49,6 +51,8 @@ function formatDate(datetime: Date) {
 watch(route, async () => {
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
+  } else {
+    filteredkeeps.value = await GetKeeps(route.params.id.toString())
   }
 })
 watch(Keeps, () => {
@@ -63,9 +67,8 @@ watch(date, () => {
   }
 })
 onMounted(async () => {
-
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
-    await GetTagByUser(TagTypeEnum.KEEP)  
+    await GetTagByUser(TagTypeEnum.KEEP)
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
   if (route.name == RouterEnum.KEEP_BY_TAG) {
@@ -82,7 +85,13 @@ async function CreateKeep(): Promise<void> {
       projectId: proid.value,
       tagTitle: state.tag
     }
-    await AddKeep(keeps)
+    const response = await AddKeep(keeps)
+    console.log(response);
+    
+    if (response.data.statusName == StatusType.SUCCESS) {
+      state.openSnkbar = true
+      state.snackbarMessage = response.data.message
+    }
     form.value.reset()
     state.dialog = false
   } else {
@@ -98,19 +107,20 @@ async function CreateKeep(): Promise<void> {
     state.dialog = false
   }
   if (state.inviteEmail.length > 0) {
-      let mailObj: IMail= {
-        ToEmail: state.inviteEmail
-      }
-      await Mail(mailObj)
+    let mailObj: IMail = {
+      ToEmail: state.inviteEmail
     }
-  state.inviteEmail=[]
+    await Mail(mailObj)
+  }
+  state.inviteEmail = []
   await GetKeeps(proid.value)
-  await GetTagByUser(TagTypeEnum.KEEP)  
+  await GetTagByUser(TagTypeEnum.KEEP)
 }
 
 async function deletekeep(keepId: string) {
   await DeleteKeep(keepId)
   await GetKeeps(proid.value)
+  await GetTagByUser(TagTypeEnum.KEEP)
 }
 async function editkeep(keepId: string) {
   state.dialog = true
@@ -134,7 +144,13 @@ function onEnter() {
         <!-- <v-date-picker :landscape="true" :reactive="true"></v-date-picker> -->
       </v-col>
       <v-col cols="12" md="2" sm="12" class="my-auto">
-        <Button class="w-100" :rounded="false" @click="state.dialog = true" variant="elevated" prepend-icon="mdi-plus">
+        <Button
+          class="w-100"
+          :rounded="false"
+          @click="state.dialog = true"
+          variant="elevated"
+          prepend-icon="mdi-plus"
+        >
           New Keep
         </Button>
       </v-col>
@@ -143,20 +159,36 @@ function onEnter() {
       <RecordNotFoundComponent />
     </div>
     <v-row v-else>
-      <v-col v-for="(keep, index) in filteredkeeps" :key="index" cols="12" lg="3" md="12" sm="6" class="mb-3">
+      <v-col
+        v-for="(keep, index) in filteredkeeps"
+        :key="index"
+        cols="12"
+        lg="3"
+        md="12"
+        sm="6"
+        class="mb-3"
+      >
         <Card>
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">{{ keep.title }}</span>
+              <span @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">{{
+                keep.title
+              }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
                 <v-icon> mdi-dots-vertical </v-icon>
                 <v-menu activator="parent">
                   <v-list>
                     <v-list-item>
-                      <v-list-item-title><Button variant="text"
-                          @click="editkeep(keep.id!)">Edit</Button></v-list-item-title>
-                      <v-list-item-title><Button variant="text"
-                          @click="deletekeep(keep.id!)">Delete</Button></v-list-item-title>
+                      <v-list-item-title
+                        ><Button variant="text" @click="editkeep(keep.id!)"
+                          >Edit</Button
+                        ></v-list-item-title
+                      >
+                      <v-list-item-title
+                        ><Button variant="text" @click="deletekeep(keep.id!)"
+                          >Delete</Button
+                        ></v-list-item-title
+                      >
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -164,8 +196,12 @@ function onEnter() {
             </div>
           </template>
           <template #actions>
-            <Button variant="outlined" @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">
-              Click</Button>
+            <Button
+              variant="outlined"
+              @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })"
+            >
+              Click</Button
+            >
           </template>
         </Card>
       </v-col>
@@ -174,15 +210,22 @@ function onEnter() {
   <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
     <template #title>
       <div class="text-left ml-4 mt-3">
-        <Button @click="() => {
-            state.dialog = false
-            form.reset()
-            state.KeepId = ''
-            state.inviteEmail=[]
-          }
-          " prepend-icon="mdi-arrow-left-circle">Back</Button>
+        <Button
+          @click="
+            () => {
+              state.dialog = false
+              form.reset()
+              state.KeepId = ''
+              state.inviteEmail = []
+            }
+          "
+          prepend-icon="mdi-arrow-left-circle"
+          >Back</Button
+        >
       </div>
-      <div class="text-center text-primary mt-2">{{ state.KeepId != '' ? 'Edit Keep' : 'Add New Keep' }}</div>
+      <div class="text-center text-primary mt-2">
+        {{ state.KeepId != '' ? 'Edit Keep' : 'Add New Keep' }}
+      </div>
     </template>
 
     <template #formSlot>
@@ -196,7 +239,13 @@ function onEnter() {
               <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
             </v-col>
             <v-col cols="12" sm="6" md="2" lg="2">
-              <v-btn color="primary" variant="outlined" class="w-100" @click="state.openInvite = true">Invite</v-btn>
+              <v-btn
+                color="primary"
+                variant="outlined"
+                class="w-100"
+                @click="state.openInvite = true"
+                >Invite</v-btn
+              >
             </v-col>
             <v-col cols="12" sm="6" md="10" lg="10">
               <span v-for="(selection, index) in state.inviteEmail" :key="selection">
@@ -216,11 +265,16 @@ function onEnter() {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button width="100" @click="() => {
-                form.reset()
-                state.inviteEmail=[]
-              }
-              ">Clear</Button>
+            <Button
+              width="100"
+              @click="
+                () => {
+                  form.reset()
+                  state.inviteEmail = []
+                }
+              "
+              >Clear</Button
+            >
             <Button variant="elevated" width="100" @click="CreateKeep">{{
               state.KeepId != '' ? 'Update' : 'Create'
             }}</Button>
@@ -241,8 +295,9 @@ function onEnter() {
               <TextFieldEmail label="Email" color="primary" v-model="state.email" />
             </v-col>
             <v-col cols="2" md="2" sm="2">
-              <v-avatar @click="onEnter" color="secondary" class="mt-2"><v-icon icon="mdi-plus-thick"
-                  color="white"></v-icon></v-avatar>
+              <v-avatar @click="onEnter" color="secondary" class="mt-2"
+                ><v-icon icon="mdi-plus-thick" color="white"></v-icon
+              ></v-avatar>
             </v-col>
           </v-row>
           <v-col cols="12">
@@ -256,10 +311,15 @@ function onEnter() {
                     {{ email }}
                   </v-col>
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
-                    <v-icon @click="() => {
-                        state.inviteEmail.splice(index, 1)
-                      }
-                      " icon="mdi-minus-circle-outline" size="large"></v-icon>
+                    <v-icon
+                      @click="
+                        () => {
+                          state.inviteEmail.splice(index, 1)
+                        }
+                      "
+                      icon="mdi-minus-circle-outline"
+                      size="large"
+                    ></v-icon>
                   </v-col>
                 </v-row>
               </div>
@@ -272,20 +332,25 @@ function onEnter() {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button width="100" @click="() => {
-                state.inviteEmail.splice(0, state.inviteEmail.length)
-                state.openInvite = false
-              }
-              ">Cancle</Button>
+            <Button
+              width="100"
+              @click="
+                () => {
+                  state.inviteEmail.splice(0, state.inviteEmail.length)
+                  state.openInvite = false
+                }
+              "
+              >Cancle</Button
+            >
             <Button variant="elevated" width="100" @click="state.openInvite = false">Invite</Button>
           </v-col>
         </v-row>
       </div>
     </template>
   </ModalComponent>
-  <v-snackbar :timeout="2000" color="#1B5E20" elevation="20" location="bottom right" v-model="state.openSnkbar">
-    Saved Successfully!
-  </v-snackbar>
+  <SnackbarComponent v-model="state.openSnkbar" color="primary">
+    {{ state.snackbarMessage }}
+  </SnackbarComponent>
 </template>
 
 <style scoped>

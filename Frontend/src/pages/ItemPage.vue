@@ -8,17 +8,17 @@ import { reactive, ref } from 'vue'
 import type { IItem } from '@/Models/ItemModel'
 import { ItemType } from '@/enum/ItemType'
 import { useRoute } from 'vue-router'
-import{useItemStore} from '@/stores/ItemStore'
+import { useItemStore } from '@/stores/ItemStore'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { watch } from 'vue'
-import Navbar from "@/components/NavBar.vue";
+import Navbar from '@/components/NavBar.vue'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
-const{AddItem,GetItem,GetAllItems,DeleteItem,UpdateItem}=useItemStore()
-const{Items}=storeToRefs(useItemStore())
+const { AddItem, GetItem, GetAllItems, DeleteItem, UpdateItem } = useItemStore()
+const { Items } = storeToRefs(useItemStore())
 let filtereditems = ref(Items.value)
-watch(Items,async ()=>{
-  filtereditems.value=Items.value
+watch(Items, async () => {
+  filtereditems.value = Items.value
 })
 var list: { name: string }[] = [
   {
@@ -28,71 +28,70 @@ var list: { name: string }[] = [
     name: 'PR'
   }
 ]
-const route=useRoute()
+const route = useRoute()
 
 const state = reactive({
-  itemId:'',
+  itemId: '',
   dialog: false,
   title: '',
   itemUrl: '',
   openSnackbar: false,
   description: '',
-  number:'',
-  ItemType:'Ticket'
+  number: '',
+  ItemType: 'Ticket'
 })
-let attachment=ref()
-async function addItem():Promise<void>{
-  if(state.itemId==''){
+let attachment = ref()
+async function addItem(): Promise<void> {
+  if (state.itemId == '') {
     const { valid } = await form.value.validate()
     if (!valid) return
-  const Items:IItem={
-  title: state.title,
-  description: state.description,
-  number: state.number,
-  url:state.itemUrl,
-  type:state.ItemType=="Ticket"?ItemType.TICKET:ItemType.PR,
-  keepId:route.params.id.toString(),
-  files:attachment.value
- }
- form.value.reset()
- await AddItem(Items)
- state.dialog = false
-}
-else{
-  const Item:IItem={
-    id:state.itemId,
-    title:state.title,
-    description:state.description,
-    number:state.number,
-    type:state.ItemType=="Ticket"?ItemType.TICKET:ItemType.PR,
-    url:state.itemUrl,
-    files:attachment.value
+    const Items: IItem = {
+      title: state.title,
+      description: state.description,
+      number: state.number,
+      url: state.itemUrl,
+      type: state.ItemType == 'Ticket' ? ItemType.TICKET : ItemType.PR,
+      keepId: route.params.id.toString(),
+      files: attachment.value
+    }
+    form.value.reset()
+    await AddItem(Items)
+    state.dialog = false
+  } else {
+    const Item: IItem = {
+      id: state.itemId,
+      title: state.title,
+      description: state.description,
+      number: state.number,
+      type: state.ItemType == 'Ticket' ? ItemType.TICKET : ItemType.PR,
+      url: state.itemUrl,
+      files: attachment.value
+    }
+    await editItem(state.itemId)
+    await UpdateItem(Item)
+    state.itemId = ''
+    form.value.reset()
+    state.dialog = false
   }
-  await editItem(state.itemId)
-  await UpdateItem(Item)
-  state.itemId=''
-  form.value.reset()
-  state.dialog=false
+  await GetAllItems(route.params.id.toString())
 }
- await GetAllItems(route.params.id.toString())
-}
-onMounted(async ()=>{
+onMounted(async () => {
   await GetAllItems(route.params.id.toString())
 })
-async function deleteItem(ItemId:string){
+async function deleteItem(ItemId: string) {
   await DeleteItem(ItemId)
   await GetAllItems(route.params.id.toString())
 }
-async function editItem(ItemId:string){
+async function editItem(ItemId: string) {
   state.dialog = true
-  const Itemdata=await GetItem(ItemId)
-  console.log(Itemdata);
-  state.itemId=Itemdata.id!,
-  state.title=Itemdata.title,
-  state.description=Itemdata.description!,
-  state.ItemType=Itemdata.type==ItemType.TICKET?"Ticket":"PR",
-  state.itemUrl=Itemdata.url!,
-  state.number=Itemdata.number
+  const Itemdata = await GetItem(ItemId)
+  console.log(Itemdata)
+  ;(state.itemId = Itemdata.id!),
+    (state.title = Itemdata.title),
+    (state.description = Itemdata.description!),
+    (state.ItemType = Itemdata.type == ItemType.TICKET ? 'Ticket' : 'PR'),
+    (state.itemUrl = Itemdata.url!),
+    (state.number = Itemdata.number)
 }
 const form = ref()
 function formatDate(datetime: Date) {
@@ -102,16 +101,15 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
-const date=ref()
-watch(date,()=>{
-if(date.value!=''&&date.value!=null){
-  filtereditems.value=Items.value.filter(x=>formatDate(x.createdOn!)== date.value)
-}else filtereditems.value = Items.value
+const date = ref()
+watch(date, () => {
+  if (date.value != '' && date.value != null) {
+    filtereditems.value = Items.value.filter((x) => formatDate(x.createdOn!) == date.value)
+  } else filtereditems.value = Items.value
 })
-
 </script>
 <template>
-  <Navbar/>
+  <Navbar />
   <v-container>
     <v-row>
       <v-col cols="12" lg="10" md="9" sm="12">
@@ -128,16 +126,18 @@ if(date.value!=''&&date.value!=null){
         >
       </v-col>
     </v-row>
-    <div v-if="filtereditems.length==0" >
-    <RecordNotFoundComponent/>
-  </div>
+    <div v-if="filtereditems.length == 0">
+      <RecordNotFoundComponent />
+    </div>
     <v-row v-else>
       <v-col col="12" sm="6" lg="6" v-for="item in filtereditems" :key="item.id" class="mb-10">
         <Card>
           <template #title>
             <v-row>
               <v-col cols="4" md="2">
-                <v-chip class="bg-primary text-white">{{ item.type==ItemType.TICKET?'#':'!' }} {{ item.number }}</v-chip>
+                <v-chip class="bg-primary text-white"
+                  >{{ item.type == ItemType.TICKET ? '#' : '!' }} {{ item.number }}</v-chip
+                >
               </v-col>
               <v-col cols="5" md="7">
                 <p class="text-center">{{ item.title }}</p>
@@ -151,19 +151,19 @@ if(date.value!=''&&date.value!=null){
                       </Button>
                     </template>
                     <v-list>
-                    <v-list-item>
-                      <v-list-item-title
-                        ><Button variant="text" @click="editItem(item.id!)"
-                          >Edit</Button
-                        ></v-list-item-title
-                      >
-                      <v-list-item-title
-                        ><Button variant="text" @click="deleteItem(item.id!)"
-                          >Delete</Button
-                        ></v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
+                      <v-list-item>
+                        <v-list-item-title
+                          ><Button variant="text" @click="editItem(item.id!)"
+                            >Edit</Button
+                          ></v-list-item-title
+                        >
+                        <v-list-item-title
+                          ><Button variant="text" @click="deleteItem(item.id!)"
+                            >Delete</Button
+                          ></v-list-item-title
+                        >
+                      </v-list-item>
+                    </v-list>
                   </v-menu>
                 </div>
               </v-col>
@@ -171,8 +171,12 @@ if(date.value!=''&&date.value!=null){
           </template>
           <template #text>
             <v-card-text>
-              <span v-if="item.url !== '' || item.url !== null" class="d-flex mb-4"><a target="_blank" :href="item.url">{{item.url}}</a> </span>
-              <span v-if="item.description == ''||item.description == null" class="text-grey font-italic"
+              <span v-if="item.url !== '' || item.url !== null" class="d-flex mb-4"
+                ><a target="_blank" :href="item.url">{{ item.url }}</a>
+              </span>
+              <span
+                v-if="item.description == '' || item.description == null"
+                class="text-grey font-italic"
                 >No description provided
               </span>
               <span v-else>{{ item.description }}</span>
@@ -188,17 +192,24 @@ if(date.value!=''&&date.value!=null){
       <div class="text-left ml-4 mt-3">
         <Button @click="state.dialog = false" prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
-      <div class="text-center text-primary mt-2">{{state.itemId!=''?'Edit Item':'Create New Item'}}</div>
+      <div class="text-center text-primary mt-2">
+        {{ state.itemId != '' ? 'Edit Item' : 'Create New Item' }}
+      </div>
     </template>
 
     <template #formSlot>
-      <v-form ref="form" >
+      <v-form ref="form">
         <v-container>
           <v-row>
             <v-col cols="12" md="2" sm="6">
               <v-menu transition="scale-transition">
                 <template v-slot:activator="{ props }">
-                  <v-select label="Type" :items="['Ticket','PR']" variant="outlined" v-model="state.ItemType"></v-select>
+                  <v-select
+                    label="Type"
+                    :items="['Ticket', 'PR']"
+                    variant="outlined"
+                    v-model="state.ItemType"
+                  ></v-select>
                 </template>
                 <v-list>
                   <v-list-item v-for="(item, i) in list" :key="i">
@@ -208,7 +219,11 @@ if(date.value!=''&&date.value!=null){
               </v-menu>
             </v-col>
             <v-col cols="12" md="4" sm="6">
-              <TextFieldNumber label="Number" color="primary" v-model="state.number"></TextFieldNumber>
+              <TextFieldNumber
+                label="Number"
+                color="primary"
+                v-model="state.number"
+              ></TextFieldNumber>
             </v-col>
             <v-col cols="12" md="6" sm="9">
               <TextFieldText label="Item name" v-model="state.title" />
@@ -226,9 +241,14 @@ if(date.value!=''&&date.value!=null){
               ></v-textarea>
             </v-col>
             <v-col cols="12" sm="12" md="12" lg="12">
-              <v-file-input v-model="attachment" multiple label="File input" variant="outlined"></v-file-input>
+              <v-file-input
+                v-model="attachment"
+                multiple
+                label="File input"
+                variant="outlined"
+              ></v-file-input>
             </v-col>
-            <v-col cols="12" sm="6" md="2" lg="2" >
+            <v-col cols="12" sm="6" md="2" lg="2">
               <Button>To</Button>
             </v-col>
             <v-col cols="12" sm="6" md="4" lg="4">
@@ -251,7 +271,9 @@ if(date.value!=''&&date.value!=null){
               "
               >Clear</Button
             >
-            <Button variant="elevated" width="100" @click="addItem">{{state.itemId!=''?'Update':'Create'}}</Button>
+            <Button variant="elevated" width="100" @click="addItem">{{
+              state.itemId != '' ? 'Update' : 'Create'
+            }}</Button>
           </v-col>
         </v-row>
       </div>

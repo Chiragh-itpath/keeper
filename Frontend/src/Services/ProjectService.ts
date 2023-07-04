@@ -28,7 +28,7 @@ export async function GetAll(UserId: string): Promise<any> {
     return e
   }
 }
-export async function GetByTag(UserId:string,TagId:string): Promise<any> {
+export async function GetByTag(UserId: string, TagId: string): Promise<any> {
   try {
     const response = await http.get(`/Project/Tag/${UserId}/${TagId}`)
     return response.data.data

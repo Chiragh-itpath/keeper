@@ -13,9 +13,9 @@ async function signup(user: IRegister): Promise<any> {
 async function signin(user: ILogin): Promise<any> {
   try {
     const response = await http.post('/Account/Login', user)
-    return response
-  } catch (e) {
-    return e
+    return [response, null]
+  } catch (error) {
+    return [null, error]
   }
 }
 async function GenerateOTP(email: string): Promise<any> {

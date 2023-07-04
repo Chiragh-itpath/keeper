@@ -1,14 +1,14 @@
 import type { Ikeep } from '@/Models/KeepModel'
 import { type Ref, ref } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
-import { Insert, Update, Delete, GetAll, GetById,GetByTag } from '@/Services/KeepService'
+import { Insert, Update, Delete, GetAll, GetById, GetByTag } from '@/Services/KeepService'
 import { useUserStore } from './UserStore'
 export const useKeepStore = defineStore('KeepStore', () => {
   const { User } = storeToRefs(useUserStore())
   const Keeps: Ref<Ikeep[]> = ref([])
   async function AddKeep(keep: Ikeep): Promise<any> {
     keep.createdBy = User.value?.id
-    await Insert(keep)
+    return await Insert(keep)
   }
   async function GetKeepById(KeepId: string): Promise<any> {
     return await GetById(KeepId)
@@ -17,9 +17,9 @@ export const useKeepStore = defineStore('KeepStore', () => {
     const keeps = await GetAll(projectId)
     Keeps.value = keeps.data.data
   }
-  async function GetKeepByTag(TagId:string): Promise<any> {
-    const UserId=User.value!.id
-    const Keeps = await GetByTag(UserId,TagId)
+  async function GetKeepByTag(TagId: string): Promise<any> {
+    const UserId = User.value!.id
+    const Keeps = await GetByTag(UserId, TagId)
     Keeps.value = Keeps
     return Keeps
   }

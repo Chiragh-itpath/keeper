@@ -21,7 +21,13 @@ const props = withDefaults(
 <template>
   <v-app-bar>
     <template v-slot:prepend>
-      <button-component v-if="props.disableToggle" variant="text" :rounded="false" flat @click="toggleSideBar()">
+      <button-component
+        v-if="props.disableToggle"
+        variant="text"
+        :rounded="false"
+        flat
+        @click="toggleSideBar()"
+      >
         <v-icon size="x-large"> mdi-menu </v-icon>
       </button-component>
     </template>
