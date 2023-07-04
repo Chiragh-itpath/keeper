@@ -16,10 +16,11 @@ import { tagStore } from '@/stores/TagStore'
 import { useMailStore } from '@/stores/MailStore'
 import { watch } from 'vue'
 import type { IMail } from '@/Models/MailModel'
-import { useRoute } from 'vue-router'
-import RecordNotFoundComponent from "@/components/RecordNotFoundComponent.vue";
+import { useRouter, useRoute } from 'vue-router'
+import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import { TagTypeEnum } from '@/enum/TagTypeEnum'
-const { GetAll, GetByTagType, GetByTagTitle,GetTagByUser } = tagStore()
+import { StatusType } from '@/enum/StatusType'
+const { GetAll, GetByTagType, GetByTagTitle, GetTagByUser } = tagStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -37,18 +38,22 @@ const state = reactive({
 })
 
 const form = ref()
-const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag } = useProjectStore()
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag } =
+  useProjectStore()
 const { GetByTagId } = tagStore()
 const { Mail } = useMailStore()
 const { Projects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let date = ref()
-
 const route = useRoute()
+const router = useRouter()
+
 watch(route, async () => {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
+  } else {
+    filterData.value = await GetProjects()
   }
 })
 watch(Projects, () => {
@@ -60,7 +65,10 @@ watch(date, () => {
   } else filterData.value = Projects.value
 })
 onMounted(async () => {
-  if (route.name?.toString() == RouterEnum.PROJECT||route.name?.toString() == RouterEnum.PROJECT_BY_TAG)
+  if (
+    route.name?.toString() == RouterEnum.PROJECT ||
+    route.name?.toString() == RouterEnum.PROJECT_BY_TAG
+  )
     await GetTagByUser(TagTypeEnum.PROJECT)
   await GetProjects()
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
@@ -79,9 +87,12 @@ async function addProject(): Promise<void> {
       tagTitle: state.tag
     }
     form.value.reset()
-    await AddProject(project)
-    
-    
+    const response = await AddProject(project)
+    if (response.data.statusName == StatusType.SUCCESS) {
+      state.openSnackbar = true
+      state.snackbarMessage = response.data.message
+    }
+    await GetProjects()
   } else {
     const project: IProject = {
       id: state.projectId,
@@ -93,15 +104,14 @@ async function addProject(): Promise<void> {
     await UpdateProject(project)
     state.projectId = ''
     form.value.reset()
-    
-  }  
+  }
   if (state.inviteEmail.length > 0) {
-      let mailObj: IMail = {
-        ToEmail: state.inviteEmail,
-      }
-      await Mail(mailObj)
+    let mailObj: IMail = {
+      ToEmail: state.inviteEmail
     }
-  state.inviteEmail=[]
+    await Mail(mailObj)
+  }
+  state.inviteEmail = []
   await GetTagByUser(TagTypeEnum.PROJECT)
 }
 function onEnter() {
@@ -119,6 +129,7 @@ async function editProject(projectId: string) {
 }
 async function deleteProject(projectId: string) {
   await DeleteProject(projectId)
+  await GetTagByUser(TagTypeEnum.PROJECT)
 }
 function formatDate(datetime: Date) {
   const date = new Date(datetime)
@@ -127,7 +138,6 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
-
 </script>
 <template>
   <v-container>
@@ -136,7 +146,13 @@ function formatDate(datetime: Date) {
         <v-text-field color="primary" type="date" v-model="date" />
       </v-col>
       <v-col cols="12" md="2" sm="12" class="my-auto">
-        <Button class="w-100" @click="state.dialog = true" :rounded="false" variant="elevated" prepend-icon="mdi-plus">
+        <Button
+          class="w-100"
+          @click="state.dialog = true"
+          :rounded="false"
+          variant="elevated"
+          prepend-icon="mdi-plus"
+        >
           new folder
         </Button>
       </v-col>
@@ -145,20 +161,42 @@ function formatDate(datetime: Date) {
       <RecordNotFoundComponent />
     </div>
     <v-row v-else>
-      <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+      <v-col cols="12">
+        
+        <Button @click="() => router.push({name: RouterEnum.PROJECT})" v-if="route.fullPath.indexOf('Tag') > 0">   
+          All Projects
+        </Button>
+      </v-col>
+      <v-col
+        v-for="(project, index) in filterData"
+        :key="index"
+        cols="12"
+        lg="3"
+        md="4"
+        sm="6"
+        class="mb-3"
+      >
         <Card>
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{ project.title }}</span>
+              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
+                project.title
+              }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
                 <v-icon> mdi-dots-vertical </v-icon>
                 <v-menu activator="parent">
                   <v-list>
                     <v-list-item>
-                      <v-list-item-title><Button variant="text"
-                          @click="editProject(project.id!)">Edit</Button></v-list-item-title>
-                      <v-list-item-title><Button variant="text"
-                          @click="deleteProject(project.id!)">Delete</Button></v-list-item-title>
+                      <v-list-item-title
+                        ><Button variant="text" @click="editProject(project.id!)"
+                          >Edit</Button
+                        ></v-list-item-title
+                      >
+                      <v-list-item-title
+                        ><Button variant="text" @click="deleteProject(project.id!)"
+                          >Delete</Button
+                        ></v-list-item-title
+                      >
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -166,10 +204,14 @@ function formatDate(datetime: Date) {
             </div>
           </template>
           <template #text>
-            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
+            <v-card-text
+              @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })"
+            >
               {{ project.description }}
-              <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
-                description provided
+              <span
+                v-if="project.description == '' || project.description == null"
+                class="text-grey font-italic"
+                >No description provided
               </span>
             </v-card-text>
           </template>
@@ -180,14 +222,21 @@ function formatDate(datetime: Date) {
   <ModalComponent :dialog="state.dialog" @close="state.dialog = false">
     <template #title>
       <div class="text-left ml-4 mt-3">
-        <Button @click="() => {
-            state.dialog = false
-            form.reset()
-            state.projectId = ''
-          }
-          " prepend-icon="mdi-arrow-left-circle">Back</Button>
+        <Button
+          @click="
+            () => {
+              state.dialog = false
+              form.reset()
+              state.projectId = ''
+            }
+          "
+          prepend-icon="mdi-arrow-left-circle"
+          >Back</Button
+        >
       </div>
-      <div class="text-center text-primary mt-2">{{ state.projectId != '' ? 'Edit Project' : 'Create New Project' }}</div>
+      <div class="text-center text-primary mt-2">
+        {{ state.projectId != '' ? 'Edit Project' : 'Create New Project' }}
+      </div>
     </template>
 
     <template #formSlot>
@@ -201,11 +250,18 @@ function formatDate(datetime: Date) {
               <TextFieldText label="Tag" :is-required="false" v-model="state.tag" />
             </v-col>
             <v-col cols="12">
-              <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
-                clearable></v-textarea>
+              <v-textarea
+                label="Description"
+                color="primary"
+                variant="outlined"
+                v-model="state.description"
+                clearable
+              ></v-textarea>
             </v-col>
             <v-col cols="12" sm="6" md="2" lg="2">
-              <v-btn color="primary" variant="outlined" @click="state.openInvite = true">Invite</v-btn>
+              <v-btn color="primary" variant="outlined" @click="state.openInvite = true"
+                >Invite</v-btn
+              >
             </v-col>
             <v-col cols="12" sm="6" md="10" lg="10">
               <span v-for="(selection, index) in state.inviteEmail" :key="selection">
@@ -225,10 +281,15 @@ function formatDate(datetime: Date) {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button width="100" @click="() => {
-                form.reset()
-              }
-              ">Clear</Button>
+            <Button
+              width="100"
+              @click="
+                () => {
+                  form.reset()
+                }
+              "
+              >Clear</Button
+            >
             <Button variant="elevated" width="100" @click="addProject">{{
               state.projectId != '' ? 'Update' : 'Create'
             }}</Button>
@@ -249,8 +310,9 @@ function formatDate(datetime: Date) {
               <TextFieldEmail label="Email" color="primary" v-model="state.email" />
             </v-col>
             <v-col cols="2" md="2" sm="2">
-              <v-avatar @click="onEnter" color="primary" class="mt-2"><v-icon icon="mdi-plus-thick"
-                  color="white"></v-icon></v-avatar>
+              <v-avatar @click="onEnter" color="primary" class="mt-2"
+                ><v-icon icon="mdi-plus-thick" color="white"></v-icon
+              ></v-avatar>
             </v-col>
           </v-row>
           <v-col cols="12">
@@ -264,10 +326,15 @@ function formatDate(datetime: Date) {
                     {{ email }}
                   </v-col>
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
-                    <v-icon @click="() => {
-                        state.inviteEmail.splice(index, 1)
-                      }
-                      " icon="mdi-minus-circle-outline" size="large"></v-icon>
+                    <v-icon
+                      @click="
+                        () => {
+                          state.inviteEmail.splice(index, 1)
+                        }
+                      "
+                      icon="mdi-minus-circle-outline"
+                      size="large"
+                    ></v-icon>
                   </v-col>
                 </v-row>
               </div>
@@ -280,18 +347,25 @@ function formatDate(datetime: Date) {
       <div class="mb-2">
         <v-row>
           <v-col>
-            <Button width="100" @click="() => {
-                state.inviteEmail.splice(0, state.inviteEmail.length)
-                state.openInvite = false
-              }
-              ">Cancle</Button>
-            <Button variant="elevated" :width="100" @click="state.openInvite = false">Invite</Button>
+            <Button
+              width="100"
+              @click="
+                () => {
+                  state.inviteEmail.splice(0, state.inviteEmail.length)
+                  state.openInvite = false
+                }
+              "
+              >Cancle</Button
+            >
+            <Button variant="elevated" :width="100" @click="state.openInvite = false"
+              >Invite</Button
+            >
           </v-col>
         </v-row>
       </div>
     </template>
   </ModalComponent>
-  <Snackbar v-model="state.openSnackbar" :error="state.error">
+  <Snackbar v-model="state.openSnackbar" :error="state.error"  color="primary">
     <v-icon v-if="state.error">mdi-alert</v-icon>
     <v-icon v-if="state.success">mdi-check</v-icon>
     {{ state.snackbarMessage }}

@@ -4,7 +4,7 @@ import SideBar from '@/components/SideBar.vue'
 import { watch, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { RouterEnum } from '@/enum/RouterEnum'
-import { tagStore } from "@/stores/TagStore";
+import { tagStore } from '@/stores/TagStore'
 import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
 import NavBar from './components/NavBar.vue'
@@ -18,12 +18,11 @@ const state = reactive({
   isSignup: false,
   isForgotPwd: false,
   is404: false,
-  isItempage:false
+  isItempage: false
 })
 
 const { Tags, TagsByType } = storeToRefs(tagStore())
 const router = useRouter()
-
 
 watch(
   () => router.currentRoute.value.name,
@@ -37,22 +36,35 @@ watch(
   }
 )
 const ToggleSideBarAndNavBar = (): boolean => {
-  return state.isHome || state.isLogin || state.isSignup || state.isForgotPwd || state.is404 ||state.isItempage
+  return (
+    state.isHome ||
+    state.isLogin ||
+    state.isSignup ||
+    state.isForgotPwd ||
+    state.is404 ||
+    state.isItempage
+  )
 }
 
 async function FindTag(title: string) {
   var res = await GetByTagTitle(title)
-  if (route.name?.toString() == RouterEnum.PROJECT || route.name?.toString() == RouterEnum.PROJECT_BY_TAG)
+  if (
+    route.name?.toString() == RouterEnum.PROJECT ||
+    route.name?.toString() == RouterEnum.PROJECT_BY_TAG
+  )
     router.push({ name: RouterEnum.PROJECT_BY_TAG, params: { id: res.id } })
-  else if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
+  else if (
+    route.name?.toString() == RouterEnum.KEEP ||
+    route.name?.toString() == RouterEnum.KEEP_BY_TAG
+  )
     router.push({ name: RouterEnum.KEEP_BY_TAG, params: { id: res.id } })
 }
 </script>
 
 <template>
   <v-layout class="hide-scrollerbar">
-    <NavBar v-if="!ToggleSideBarAndNavBar()" :disableToggle="TagsByType.length>0"></NavBar>
-    <side-bar v-if="!ToggleSideBarAndNavBar() && TagsByType.length>0">
+    <NavBar v-if="!ToggleSideBarAndNavBar()" :disableToggle="TagsByType.length > 0"></NavBar>
+    <side-bar v-if="!ToggleSideBarAndNavBar() && TagsByType.length > 0">
       <template #data>
         <v-list color="transparent" class="mt-6">
           <v-list-item v-for="(tag, index) in TagsByType" :key="index" @click="FindTag(tag.title)">

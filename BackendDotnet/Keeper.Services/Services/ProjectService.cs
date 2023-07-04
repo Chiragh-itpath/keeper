@@ -56,7 +56,7 @@ namespace Keeper.Services.Services
                 {
                     StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
-                    Message = "Project Created SuccessFully",
+                    Message = "Project Created Suceessfully",
                 };
             }
         }

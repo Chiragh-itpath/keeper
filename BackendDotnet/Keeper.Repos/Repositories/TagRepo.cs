@@ -69,7 +69,7 @@ namespace Keeper.Repos.Repositories
                     string table = "projects";
                     if (tagType == TagType.KEEP)
                         table = "Keeps";
-                    string qry = $"select t.* from Tags as t inner join {table} as p on t.Id=p.TagId where p.CreatedBy=@uid and p.IsDeleted='False'";
+                    string qry = $"select distinct  t.* from Tags as t inner join {table} as p on t.Id=p.TagId where p.CreatedBy=@uid and p.IsDeleted='False'";
                     var res = await con.QueryAsync<TagModel>(qry, new { uid = userid });
                     return res;
                 }
