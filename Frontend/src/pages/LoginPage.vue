@@ -64,9 +64,7 @@ async function login(): Promise<void> {
     const { token, userId } = response.data.data
     await StoreUser(userId)
     setToken(token)
-    setTimeout(() => {
-      router.push({ name: RouterEnum.PROJECT })
-    }, 1000)
+    router.push({ name: RouterEnum.PROJECT })
   }
   state.isDisable = false
   state.isLoading = false
@@ -87,22 +85,12 @@ async function login(): Promise<void> {
               <v-card-subtitle class="text-center"> to continue to Keeper </v-card-subtitle>
               <v-card-text>
                 <v-form ref="form" @submit.prevent="login">
-                  <TextFieldEmail
-                    v-model="state.email"
-                    label="Email"
-                    color="primary"
-                    :error-messages="state.emailError ? state.emailErrorMessage : ''"
-                  />
-                  <TextFieldPassword
-                    v-model="state.password"
-                    label="Password"
-                    color="primary"
-                    :error-messages="state.passwordError ? state.passwordErrorMessage : ''"
-                  />
+                  <TextFieldEmail v-model="state.email" label="Email" color="primary"
+                    :error-messages="state.emailError ? state.emailErrorMessage : ''" />
+                  <TextFieldPassword v-model="state.password" label="Password" color="primary"
+                    :error-messages="state.passwordError ? state.passwordErrorMessage : ''" />
                   <div class="text-right">
-                    <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }"
-                      >Forgot Password?</router-link
-                    >
+                    <router-link :to="{ name: RouterEnum.FORGOT_PASSWORD }">Forgot Password?</router-link>
                   </div>
                   <v-card-actions>
                     <div class="d-flex flex-column justify-center mx-auto">
@@ -111,22 +99,11 @@ async function login(): Promise<void> {
                         <v-icon v-else>mdi-check</v-icon>
                         {{ state.SnackbarMessage }}
                       </Snackbar>
-                      <v-btn
-                        type="submit"
-                        flatcolor="#5865f2"
-                        rounded="lg"
-                        size="large"
-                        variant="flat"
-                        color="teal"
-                        class="mt-4"
-                        :disabled="state.isDisable"
-                        >Login</v-btn
-                      >
+                      <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat" color="teal"
+                        class="mt-4" :disabled="state.isDisable">Login</v-btn>
                       <div class="mt-5">
                         New User?
-                        <router-link :to="{ name: RouterEnum.SIGNUP }"
-                          >Create an account</router-link
-                        >
+                        <router-link :to="{ name: RouterEnum.SIGNUP }">Create an account</router-link>
                       </div>
                     </div>
                   </v-card-actions>

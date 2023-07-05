@@ -20,6 +20,7 @@ import { useRouter, useRoute } from 'vue-router'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { StatusType } from '@/enum/StatusType'
+import Loader from '@/components/LoaderComponent.vue';
 const { GetAll, GetByTagType, GetByTagTitle, GetTagByUser } = tagStore()
 const state = reactive({
   projectId: '',
@@ -34,7 +35,8 @@ const state = reactive({
   error: false,
   show: -1,
   openInvite: false,
-  email: ''
+  email: '',
+  isLoading: true
 })
 
 const form = ref()
@@ -56,8 +58,12 @@ watch(route, async () => {
     filterData.value = await GetProjects()
   }
 })
-watch(Projects, () => {
-  filterData.value = Projects.value
+watch(Projects,async () => {
+  if (route.name == RouterEnum.PROJECT_BY_TAG) {
+    filterData.value = await GetProjectByTag(route.params.id.toString())
+  } else {
+    filterData.value = Projects.value
+  }
 })
 watch(date, () => {
   if (date.value != '' && date.value != null) {
@@ -71,15 +77,13 @@ onMounted(async () => {
   )
     await GetTagByUser(TagTypeEnum.PROJECT)
   await GetProjects()
-  if (route.name == RouterEnum.PROJECT_BY_TAG) {
-    filterData.value = await GetProjectByTag(route.params.id.toString())
-  }
+  filterData.value =Projects.value
+  state.isLoading = false;
 })
 async function addProject(): Promise<void> {
+  const { valid } = await form.value.validate()
+  if (!valid) return
   if (state.projectId == '') {
-    const { valid } = await form.value.validate()
-
-    if (!valid) return
     state.dialog = false
     const project: IProject = {
       title: state.projectName,
@@ -103,6 +107,7 @@ async function addProject(): Promise<void> {
     await editProject(state.projectId)
     await UpdateProject(project)
     state.projectId = ''
+    state.dialog = false
     form.value.reset()
   }
   if (state.inviteEmail.length > 0) {
@@ -130,6 +135,7 @@ async function editProject(projectId: string) {
 async function deleteProject(projectId: string) {
   await DeleteProject(projectId)
   await GetTagByUser(TagTypeEnum.PROJECT)
+  await GetProjects()
 }
 function formatDate(datetime: Date) {
   const date = new Date(datetime)
@@ -140,6 +146,7 @@ function formatDate(datetime: Date) {
 }
 </script>
 <template>
+  <Loader v-if="state.isLoading" />
   <v-container>
     <v-row>
       <v-col cols="12" md="10" sm="12">
@@ -157,7 +164,7 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
     </v-row>
-    <div v-if="filterData.length == 0">
+    <div v-if="filterData.length == 0 && !state.isLoading">
       <RecordNotFoundComponent />
     </div>
     <v-row v-else>

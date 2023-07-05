@@ -26,7 +26,6 @@ export const useProjectStore = defineStore('ProjectStore', () => {
   }
   async function DeleteProject(ProjectId: string): Promise<any> {
     await Delete(ProjectId)
-    await GetProjects()
   }
   async function UpdateProject(Project: IProject): Promise<any> {
     Project.updatedBy = User.value!.id
