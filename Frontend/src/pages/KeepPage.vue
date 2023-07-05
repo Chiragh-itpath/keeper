@@ -11,7 +11,7 @@ import { useKeepStore } from '@/stores/KeepStore'
 import type { Ikeep } from '@/Models/KeepModel'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter} from 'vue-router'
 import { watch } from 'vue'
 import { tagStore } from '@/stores/TagStore'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
@@ -24,7 +24,7 @@ const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } =
 const { Keeps } = storeToRefs(useKeepStore())
 const { GetByTagId, GetByTagType, GetTagByUser } = tagStore()
 const { Mail } = useMailStore()
-
+const projectId=ref('')
 const proid = ref()
 const state = reactive({
   KeepId: '',
@@ -40,6 +40,7 @@ const state = reactive({
 
 const form = ref()
 const route = useRoute()
+const router = useRouter()
 var filteredkeeps = ref(Keeps.value)
 function formatDate(datetime: Date) {
   const date = new Date(datetime)
@@ -55,8 +56,12 @@ watch(route, async () => {
     filteredkeeps.value = await GetKeeps(route.params.id.toString())
   }
 })
-watch(Keeps, () => {
-  filteredkeeps.value = Keeps.value
+watch(Keeps,async () => {
+  if (route.name == RouterEnum.KEEP_BY_TAG) {
+    filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
+  } else {
+    filteredkeeps.value = Keeps.value
+  }
 })
 let date = ref()
 watch(date, () => {
@@ -67,10 +72,13 @@ watch(date, () => {
   }
 })
 onMounted(async () => {
+  if(route.name?.toString() == RouterEnum.KEEP)
+    projectId.value=route.params.id.toString() 
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
     await GetTagByUser(TagTypeEnum.KEEP)
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
+  filteredkeeps.value=Keeps.value
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
   }
@@ -159,6 +167,10 @@ function onEnter() {
       <RecordNotFoundComponent />
     </div>
     <v-row v-else>
+      <v-col cols="12">
+        <Button @Click="()=>router.push({name:RouterEnum.KEEP,params:{id:projectId}})" v-if="route.fullPath.indexOf('Tag') > 0">All keeps</Button>
+      </v-col>
+     
       <v-col
         v-for="(keep, index) in filteredkeeps"
         :key="index"
