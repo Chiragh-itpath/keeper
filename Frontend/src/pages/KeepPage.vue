@@ -20,6 +20,7 @@ import { useMailStore } from '@/stores/MailStore'
 import { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { StatusType } from '@/enum/StatusType'
 import SnackbarComponent from '@/components/SnackbarComponent.vue'
+import DeleteComponent from '@/components/DeleteComponent.vue'
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
 const { GetByTagId, GetByTagType, GetTagByUser } = tagStore()
@@ -35,7 +36,8 @@ const state = reactive({
   openSnkbar: false,
   openInvite: false,
   email: '',
-  snackbarMessage: ''
+  snackbarMessage: '',
+  isDeleted:false
 })
 
 const form = ref()
@@ -125,10 +127,14 @@ async function CreateKeep(): Promise<void> {
   await GetTagByUser(TagTypeEnum.KEEP)
 }
 
-async function deletekeep(keepId: string) {
-  await DeleteKeep(keepId)
+async function deletekeep(val:boolean) {
+  if(val){
+  await DeleteKeep(state.KeepId)
   await GetKeeps(proid.value)
   await GetTagByUser(TagTypeEnum.KEEP)
+  }
+  state.KeepId=''
+  state.isDeleted=false
 }
 async function editkeep(keepId: string) {
   state.dialog = true
@@ -166,11 +172,10 @@ function onEnter() {
     <div v-if="filteredkeeps.length == 0">
       <RecordNotFoundComponent />
     </div>
-    <v-row v-else>
+    <v-row  class="ma-6" v-else>
       <v-col cols="12">
         <Button @Click="()=>router.push({name:RouterEnum.KEEP,params:{id:projectId}})" v-if="route.fullPath.indexOf('Tag') > 0">All keeps</Button>
       </v-col>
-     
       <v-col
         v-for="(keep, index) in filteredkeeps"
         :key="index"
@@ -197,7 +202,7 @@ function onEnter() {
                         ></v-list-item-title
                       >
                       <v-list-item-title
-                        ><Button variant="text" @click="deletekeep(keep.id!)"
+                        ><Button variant="text" @click="()=> {state.isDeleted=true ; state.KeepId=keep.id!}"
                           >Delete</Button
                         ></v-list-item-title
                       >
@@ -363,6 +368,7 @@ function onEnter() {
   <SnackbarComponent v-model="state.openSnkbar" color="primary">
     {{ state.snackbarMessage }}
   </SnackbarComponent>
+  <DeleteComponent :dialog="state.isDeleted" @deleteAction="deletekeep" ></DeleteComponent>
 </template>
 
 <style scoped>

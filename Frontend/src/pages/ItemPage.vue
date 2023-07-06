@@ -14,6 +14,7 @@ import { storeToRefs } from 'pinia'
 import { watch } from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
+import DeleteComponent from '@/components/DeleteComponent.vue'
 const { AddItem, GetItem, GetAllItems, DeleteItem, UpdateItem } = useItemStore()
 const { Items } = storeToRefs(useItemStore())
 let filtereditems = ref(Items.value)
@@ -38,7 +39,8 @@ const state = reactive({
   openSnackbar: false,
   description: '',
   number: '',
-  ItemType: 'Ticket'
+  ItemType: 'Ticket',
+  isDeleted:false
 })
 let attachment = ref()
 async function addItem(): Promise<void> {
@@ -78,9 +80,13 @@ async function addItem(): Promise<void> {
 onMounted(async () => {
   await GetAllItems(route.params.id.toString())
 })
-async function deleteItem(ItemId: string) {
-  await DeleteItem(ItemId)
+async function deleteItem(val:boolean) {
+  if(val){
+  await DeleteItem(state.itemId)
   await GetAllItems(route.params.id.toString())
+  }
+  state.itemId='',
+  state.isDeleted=false
 }
 async function editItem(ItemId: string) {
   state.dialog = true
@@ -130,7 +136,7 @@ watch(date, () => {
       <RecordNotFoundComponent />
     </div>
     <v-row v-else>
-      <v-col col="12" sm="6" lg="6" v-for="item in filtereditems" :key="item.id" class="mb-10">
+      <v-col cols="12" lg="6" md="12" sm="12" v-for="item in filtereditems" :key="item.id" class="mb-10">
         <Card>
           <template #title>
             <v-row>
@@ -157,7 +163,7 @@ watch(date, () => {
                           ></v-list-item-title
                         >
                         <v-list-item-title
-                          ><Button variant="text" @click="deleteItem(item.id!)"
+                          ><Button variant="text" @click="()=>{state.isDeleted=true;state.itemId=item.id!}"
                             >Delete</Button
                           ></v-list-item-title
                         >
@@ -275,6 +281,7 @@ watch(date, () => {
       </div>
     </template>
   </ModalComponent>
+  <DeleteComponent :dialog="state.isDeleted" @deleteAction="deleteItem"></DeleteComponent>
 </template>
 <style scoped>
 .row-pointer:hover {
