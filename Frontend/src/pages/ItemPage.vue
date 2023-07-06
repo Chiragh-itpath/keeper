@@ -135,9 +135,8 @@ watch(date, () => {
           <template #title>
             <v-row>
               <v-col cols="4" md="2">
-                <v-chip class="bg-primary text-white"
-                  >{{ item.type == ItemType.TICKET ? '#' : '!' }} {{ item.number }}</v-chip
-                >
+               <a target="_blank" :href='item.url'> <v-chip class="bg-primary text-white row-pointer"
+                  >{{ item.type == ItemType.TICKET ? '#' : '!' }} {{ item.number }}</v-chip></a>
               </v-col>
               <v-col cols="5" md="7">
                 <p class="text-center">{{ item.title }}</p>
@@ -171,9 +170,6 @@ watch(date, () => {
           </template>
           <template #text>
             <v-card-text>
-              <span v-if="item.url !== '' || item.url !== null" class="d-flex mb-4"
-                ><a target="_blank" :href="item.url">{{ item.url }}</a>
-              </span>
               <span
                 v-if="item.description == '' || item.description == null"
                 class="text-grey font-italic"
@@ -280,3 +276,8 @@ watch(date, () => {
     </template>
   </ModalComponent>
 </template>
+<style scoped>
+.row-pointer:hover {
+  cursor: pointer;
+}
+</style>

@@ -96,7 +96,6 @@ async function addProject(): Promise<void> {
       state.openSnackbar = true
       state.snackbarMessage = response.data.message
     }
-    await GetProjects()
   } else {
     const project: IProject = {
       id: state.projectId,
@@ -117,6 +116,7 @@ async function addProject(): Promise<void> {
     await Mail(mailObj)
   }
   state.inviteEmail = []
+  await GetProjects()
   await GetTagByUser(TagTypeEnum.PROJECT)
 }
 function onEnter() {
