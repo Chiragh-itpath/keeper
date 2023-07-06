@@ -1,14 +1,14 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    dialog: boolean
-    width: number
-  }>(),
-  {
-    dialog: false,
-    width: 800
-  }
-)
+  const props = withDefaults(
+    defineProps<{
+      dialog: boolean
+      width: number
+    }>(),
+    {
+      dialog: false,
+      width: 800
+    }
+  )
 </script>
 
 <template>
