@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from './components/ButtonComponent.vue'
 import SideBar from '@/components/SideBar.vue'
 import { watch, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -7,7 +6,6 @@ import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from '@/stores/TagStore'
 import { storeToRefs } from 'pinia'
 import NavBar from './components/NavBar.vue'
-import { TagTypeEnum } from './enum/TagTypeEnum'
 
 const route = useRoute()
 const { GetAll, GetByTagType, GetByTagTitle } = tagStore()

@@ -17,13 +17,12 @@ import { tagStore } from '@/stores/TagStore'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import type { IMail } from '@/Models/MailModel'
 import { useMailStore } from '@/stores/MailStore'
-import { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { StatusType } from '@/enum/StatusType'
 import SnackbarComponent from '@/components/SnackbarComponent.vue'
 import DeleteComponent from '@/components/DeleteComponent.vue'
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
-const { GetByTagId, GetByTagType, GetTagByUser } = tagStore()
+const { GetByTagId, GetByTagType, TagForKeeps } = tagStore()
 const { Mail } = useMailStore()
 const projectId=ref('')
 const proid = ref()
@@ -77,7 +76,7 @@ onMounted(async () => {
   if(route.name?.toString() == RouterEnum.KEEP)
     projectId.value=route.params.id.toString() 
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
-    await GetTagByUser(TagTypeEnum.KEEP)
+    await TagForKeeps(projectId.value)
   proid.value = route.params.id.toString()
   await GetKeeps(proid.value)
   filteredkeeps.value=Keeps.value
@@ -124,14 +123,14 @@ async function CreateKeep(): Promise<void> {
   }
   state.inviteEmail = []
   await GetKeeps(proid.value)
-  await GetTagByUser(TagTypeEnum.KEEP)
+  await TagForKeeps(proid.value)
 }
 
 async function deletekeep(val:boolean) {
   if(val){
   await DeleteKeep(state.KeepId)
   await GetKeeps(proid.value)
-  await GetTagByUser(TagTypeEnum.KEEP)
+  await TagForKeeps(proid.value)
   }
   state.KeepId=''
   state.isDeleted=false
@@ -175,6 +174,7 @@ function onEnter() {
     <v-row  class="ma-6" v-else>
       <v-col cols="12">
         <Button @Click="()=>router.push({name:RouterEnum.KEEP,params:{id:projectId}})" v-if="route.fullPath.indexOf('Tag') > 0">All keeps</Button>
+        <Button @Click="()=>router.push({name:RouterEnum.PROJECT})" v-else>Back to Projects</Button>
       </v-col>
       <v-col
         v-for="(keep, index) in filteredkeeps"

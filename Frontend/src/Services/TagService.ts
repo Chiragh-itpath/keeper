@@ -33,15 +33,24 @@ export async function GetByTitle(title: string): Promise<any> {
     console.log(error)
   }
 }
-export async function GetByUser(userid: string, tagType: TagTypeEnum): Promise<any> {
+export async function GetForProject(userid: string): Promise<any> {
   try {
-    let res = await http.get(`Tag/User/${userid}/${tagType}`)
+    debugger
+    let res = await http.get(`Tag/Project/${userid}`)
     return res.data.data
   } catch (error) {
     console.log(error)
   }
 }
-
+export async function GetForKeeps(userid: string,projectId:string): Promise<any> {
+  try {
+    debugger
+    let res = await http.get(`Tag/Keep/${userid}/${projectId}`)
+    return res.data.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 export async function Post(tag: ITag): Promise<any> {
   try {
     return await http.post(`Tag`, tag)

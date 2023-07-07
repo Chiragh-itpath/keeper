@@ -41,7 +41,7 @@ import { RouterEnum } from '@/enum/RouterEnum'
         </v-sheet>
       </v-col>
       <v-col cols="12" md="6">
-        <v-img :src="homeimg" width="100%"></v-img>
+        <v-img :src="homeimg" width="100%" cover :aspect-ratio="1"></v-img>
       </v-col>
     </v-row>
   </v-container>

@@ -64,9 +64,15 @@ namespace Keeper.Services.Services
             return list;
         }
 
-        public async Task<ResponseModel<List<TagVM>>> GetByUserAsync(Guid userid, TagType tagType)
+        public async Task<ResponseModel<List<TagVM>>> GetForProjectAsync(Guid userid)
         {
-            var data=await _tagRepo.GetByUserAsync(userid, tagType);
+            var data=await _tagRepo.GetForProjectAsync(userid);
+            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
+        }
+
+        public async Task<ResponseModel<List<TagVM>>> GetForKeepsAsync(Guid userid, Guid projectid)
+        {
+            var data = await _tagRepo.GetForKeepAsync(userid,projectid);
             return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
     }

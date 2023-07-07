@@ -22,7 +22,7 @@ import { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { StatusType } from '@/enum/StatusType'
 import Loader from '@/components/LoaderComponent.vue';
 import DeleteComponent from '@/components/DeleteComponent.vue'
-const { GetAll, GetByTagType, GetByTagTitle, GetTagByUser } = tagStore()
+const { GetAll, GetByTagType, GetByTagTitle, TagForProject } = tagStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -77,7 +77,7 @@ onMounted(async () => {
     route.name?.toString() == RouterEnum.PROJECT ||
     route.name?.toString() == RouterEnum.PROJECT_BY_TAG
     )
-    await GetTagByUser(TagTypeEnum.PROJECT)
+    await TagForProject()
     await GetProjects()
   filterData.value = Projects.value
   state.isLoading = false;
@@ -119,7 +119,7 @@ async function addProject(): Promise<void> {
   }
   state.inviteEmail = []
   await GetProjects()
-  await GetTagByUser(TagTypeEnum.PROJECT)
+  await TagForProject()
 }
 function onEnter() {
   if (state.email.trim() != '') state.inviteEmail.push(state.email)
@@ -137,7 +137,7 @@ async function editProject(projectId: string) {
 async function deleteProject(val: boolean) {
   if (val) {
     await DeleteProject(state.projectId)
-    await GetTagByUser(TagTypeEnum.PROJECT)
+    await TagForProject()
     await GetProjects()
   }
   state.projectId='';

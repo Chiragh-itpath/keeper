@@ -59,7 +59,7 @@ namespace Keeper.Repos.Repositories
             }
             return false;
         }
-        public async Task<IEnumerable<TagModel>> GetByUserAsync(Guid userid, TagType tagType)
+        public async Task<IEnumerable<TagModel>> GetForProjectAsync(Guid userid)
         {
             using (var con = new SqlConnection(_configuration.GetConnectionString("DbConnection")))
             {
@@ -67,9 +67,26 @@ namespace Keeper.Repos.Repositories
                 try
                 {
                     string qry = $"select distinct  t.* from Tags as t inner join projects as p on t.Id=p.TagId where p.CreatedBy=@uid and p.IsDeleted='False'";
-                    if (tagType == TagType.KEEP)
-                        qry = $"select distinct  t.* from Tags as t inner join Keeps as p on t.Id=p.TagId where p.CreatedBy=@uid and p.IsDeleted='False' and ";
+                    //if (tagType == TagType.KEEP)
+                    //    qry = $"select distinct  t.* from Tags as t inner join Keeps as p on t.Id=p.TagId where (p.CreatedBy=@uid and p.IsDeleted='False') and p.ProjectId={projectid}";
                     var res = await con.QueryAsync<TagModel>(qry, new { uid = userid });
+                    return res;
+                }
+                catch
+                {
+                    throw new Exception();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<TagModel>> GetForKeepAsync(Guid userid, Guid projectid)
+        {
+            using(var con=new SqlConnection(_configuration.GetConnectionString("DbConnection")))
+            {
+                try
+                {
+                    string qry = $"select distinct  t.* from Tags as t inner join Keeps as p on t.Id=p.TagId where (p.CreatedBy=@uid and p.IsDeleted='False') and p.ProjectId=@pid";
+                    var res = await con.QueryAsync<TagModel>(qry, new { uid = userid,pid=projectid });
                     return res;
                 }
                 catch
