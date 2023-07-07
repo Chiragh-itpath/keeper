@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia'
-import { Get, GetByTitle, GetByType, Post, GetById, GetByUser } from '@/Services/TagService'
+import { Get, GetByTitle, GetByType, Post, GetById, GetForProject,GetForKeeps } from '@/Services/TagService'
 import type { TagTypeEnum } from '@/enum/TagTypeEnum'
 import type { ITag } from '@/Models/TagModel'
 import { ref, type Ref } from 'vue'
@@ -39,9 +39,18 @@ export const tagStore = defineStore('TagStore', () => {
       console.log(error)
     }
   }
-  async function GetTagByUser(tag: TagTypeEnum): Promise<any> {
+  async function TagForProject(): Promise<any> {
     try {
-      let res = await GetByUser(User.value!.id.toString(), tag)
+      let res = await GetForProject(User.value!.id.toString())
+      TagsByType.value = res
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  async function TagForKeeps(projectId:string): Promise<any> {
+    try {
+      let res = await GetForKeeps(User.value!.id.toString(),projectId)
       TagsByType.value = res
       return res
     } catch (error) {
@@ -63,6 +72,7 @@ export const tagStore = defineStore('TagStore', () => {
     Add,
     Tags,
     TagsByType,
-    GetTagByUser
+    TagForProject,
+    TagForKeeps
   }
 })
