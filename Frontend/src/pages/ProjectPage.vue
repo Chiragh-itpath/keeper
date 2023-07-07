@@ -57,7 +57,7 @@ watch(route, async () => {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
-    filterData.value = await GetProjects()
+    await GetProjects()
   }
 })
 watch(Projects, async () => {
@@ -76,9 +76,9 @@ onMounted(async () => {
   if (
     route.name?.toString() == RouterEnum.PROJECT ||
     route.name?.toString() == RouterEnum.PROJECT_BY_TAG
-  )
+    )
     await GetTagByUser(TagTypeEnum.PROJECT)
-  await GetProjects()
+    await GetProjects()
   filterData.value = Projects.value
   state.isLoading = false;
 })
@@ -152,7 +152,7 @@ function formatDate(datetime: Date) {
 }
 </script>
 <template>
-  <Loader v-if="state.isLoading" />
+ <Loader v-if="state.isLoading" /> 
   <v-container>
     <v-row>
       <v-col cols="12" md="10" sm="12">
