@@ -35,7 +35,6 @@ export async function GetByTitle(title: string): Promise<any> {
 }
 export async function GetForProject(userid: string): Promise<any> {
   try {
-    debugger
     let res = await http.get(`Tag/Project/${userid}`)
     return res.data.data
   } catch (error) {
@@ -44,7 +43,6 @@ export async function GetForProject(userid: string): Promise<any> {
 }
 export async function GetForKeeps(userid: string,projectId:string): Promise<any> {
   try {
-    debugger
     let res = await http.get(`Tag/Keep/${userid}/${projectId}`)
     return res.data.data
   } catch (error) {

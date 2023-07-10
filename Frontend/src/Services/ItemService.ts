@@ -41,7 +41,6 @@ async function Update(item: IItem) {
         form.append('files', file)
       }
     }
-    debugger
     const response = await http.put('/Item', form)
     return response.data.data
   } catch (e) {
