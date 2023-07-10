@@ -44,9 +44,9 @@ const state = reactive({
 })
 let attachment = ref()
 async function addItem(): Promise<void> {
-  if (state.itemId == '') {
-    const { valid } = await form.value.validate()
+  const { valid } = await form.value.validate()
     if (!valid) return
+  if (state.itemId == '') {
     const Items: IItem = {
       title: state.title,
       description: state.description,
@@ -91,13 +91,12 @@ async function deleteItem(val:boolean) {
 async function editItem(ItemId: string) {
   state.dialog = true
   const Itemdata = await GetItem(ItemId)
-  console.log(Itemdata)
-  ;(state.itemId = Itemdata.id!),
-    (state.title = Itemdata.title),
-    (state.description = Itemdata.description!),
-    (state.ItemType = Itemdata.type == ItemType.TICKET ? 'Ticket' : 'PR'),
-    (state.itemUrl = Itemdata.url!),
-    (state.number = Itemdata.number)
+  state.itemId = Itemdata.id!,
+  state.title = Itemdata.title,
+  state.description = Itemdata.description!,
+  state.ItemType = Itemdata.type == ItemType.TICKET ? 'Ticket' : 'PR',
+  state.itemUrl = Itemdata.url!,
+  state.number = Itemdata.number
 }
 const form = ref()
 function formatDate(datetime: Date) {

@@ -214,10 +214,10 @@ function onEnter() {
           </template>
           <template #actions>
             <Button
-              variant="outlined"
+              variant="tonal"
               @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })"
             >
-              Click</Button
+              OPEN</Button
             >
           </template>
         </Card>
@@ -302,7 +302,7 @@ function onEnter() {
   </ModalComponent>
   <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" :width="600">
     <template #title>
-      <div class="text-primary mt-2">Invite People</div>
+      <div class="text-primary mt-2 text-center">Invite People</div>
     </template>
     <template #formSlot>
       <v-form>
@@ -318,7 +318,7 @@ function onEnter() {
             </v-col>
           </v-row>
           <v-col cols="12">
-            <v-sheet elevation="5" class="px-2" height="200px" width="auto">
+            <v-sheet  class="px-2 border-color" height="200px" width="auto" rounded outlined>
               <div class="scroll">
                 <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
@@ -368,7 +368,7 @@ function onEnter() {
   <SnackbarComponent v-model="state.openSnkbar" color="primary">
     {{ state.snackbarMessage }}
   </SnackbarComponent>
-  <DeleteComponent :dialog="state.isDeleted" @deleteAction="deletekeep" ></DeleteComponent>
+  <DeleteComponent :dialog="state.isDeleted" @deleteAction="deletekeep"></DeleteComponent>
 </template>
 
 <style scoped>
@@ -380,5 +380,8 @@ function onEnter() {
 .scroll {
   max-height: 200px;
   overflow-y: scroll;
+}
+.border-color {
+  border: 1px solid gray; 
 }
 </style>

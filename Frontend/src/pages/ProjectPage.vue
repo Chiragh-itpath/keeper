@@ -286,8 +286,8 @@ function formatDate(datetime: Date) {
             </v-col>
           </v-row>
           <v-col cols="12">
-            <v-sheet elevation="5" class="px-2" height="200px" width="auto">
-              <div class="scroll">
+            <v-sheet elevation="5" class="px-2" height="200px" width="auto" rounded outlined>
+              <div class="scroll border-color">
                 <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
                     <v-avatar color="primary">{{ email.charAt(0) }}</v-avatar>
@@ -335,5 +335,8 @@ function formatDate(datetime: Date) {
 .scroll {
   max-height: 200px;
   overflow-y: scroll;
+}
+.border-color {
+  border: 1px solid gray; 
 }
 </style>
