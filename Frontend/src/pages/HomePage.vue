@@ -5,7 +5,6 @@ import { RouterEnum } from '@/enum/RouterEnum'
 </script>
 
 <template>
-  <v-container fluid>
     <v-row class="flex-wrap-reverse align-center h-screen">
       <v-col cols="12" md="6">
         <v-sheet class="text-center">
@@ -44,5 +43,4 @@ import { RouterEnum } from '@/enum/RouterEnum'
         <v-img :src="homeimg" width="100%" cover :aspect-ratio="1"></v-img>
       </v-col>
     </v-row>
-  </v-container>
 </template>

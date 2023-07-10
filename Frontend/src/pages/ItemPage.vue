@@ -195,7 +195,11 @@ watch(date, () => {
   <ModalComponent :dialog="state.dialog" @close="state.dialog = false" :width="830">
     <template #title>
       <div class="text-left ml-4 mt-3">
-        <Button @click="state.dialog = false" prepend-icon="mdi-arrow-left-circle">Back</Button>
+        <Button @click="() => {
+              state.dialog = false
+              form.reset()
+              state.itemId = ''
+            }" prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
       <div class="text-center text-primary mt-2">
         {{ state.itemId != '' ? 'Edit Item' : 'Create New Item' }}
