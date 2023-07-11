@@ -85,9 +85,9 @@ onMounted(async () => {
   }
 })
 async function CreateKeep(): Promise<void> {
-  if (state.KeepId == '') {
-    const { valid } = await form.value.validate()
+  const { valid } = await form.value.validate()
     if (!valid) return
+  if (state.KeepId == '') {
     state.dialog = false
     const keeps: Ikeep = {
       title: state.keepName,
@@ -169,7 +169,8 @@ function onEnter() {
       </v-col>
     </v-row>
     <div v-if="filteredkeeps.length == 0">
-      <RecordNotFoundComponent />
+      <RecordNotFoundComponent title="No keep with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
+      <RecordNotFoundComponent icon="mdi-google-keep" title="Keeps you add appear here" v-else></RecordNotFoundComponent>
     </div>
     <v-row  class="ma-6" v-else>
       <v-col cols="12">
