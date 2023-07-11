@@ -132,7 +132,8 @@ watch(date, () => {
       </v-col>
     </v-row>
     <div v-if="filtereditems.length == 0">
-      <RecordNotFoundComponent />
+      <RecordNotFoundComponent title="No item with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
+      <RecordNotFoundComponent title="Items you add appear here" icon="mdi-note-check-outline" v-else></RecordNotFoundComponent>
     </div>
     <v-row v-else>
       <!-- <v-col cols="12">

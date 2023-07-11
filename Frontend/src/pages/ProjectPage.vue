@@ -58,19 +58,23 @@ watch(route, async () => {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
     await GetProjects()
-  }
-})
-watch(Projects, async () => {
-  if (route.name == RouterEnum.PROJECT_BY_TAG) {
-    filterData.value = await GetProjectByTag(route.params.id.toString())
-  } else {
     filterData.value = Projects.value
   }
 })
+async function setProjectData() {
+  if (route.name == RouterEnum.PROJECT_BY_TAG) {
+    filterData.value = await GetProjectByTag(route.params.id.toString())
+  } else {
+    await GetProjects()
+    filterData.value = Projects.value
+  }
+}
 watch(date, () => {
   if (date.value != '' && date.value != null) {
     filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
-  } else filterData.value = Projects.value
+  } else{
+    filterData.value = Projects.value
+  } 
 })
 onMounted(async () => {
   if (
@@ -118,8 +122,8 @@ async function addProject(): Promise<void> {
     await Mail(mailObj)
   }
   state.inviteEmail = []
-  await GetProjects()
   await TagForProject()
+  setProjectData()
 }
 function onEnter() {
   if (state.email.trim() != '') state.inviteEmail.push(state.email)
@@ -138,7 +142,7 @@ async function deleteProject(val: boolean) {
   if (val) {
     await DeleteProject(state.projectId)
     await TagForProject()
-    await GetProjects()
+    setProjectData()
   }
   state.projectId='';
   state.isDeleted=false
@@ -165,7 +169,8 @@ function formatDate(datetime: Date) {
       </v-col>
     </v-row>
     <div v-if="filterData.length == 0 && !state.isLoading">
-      <RecordNotFoundComponent />
+      <RecordNotFoundComponent title="No project with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
+      <RecordNotFoundComponent icon="mdi-folder-file-outline" title="Projects you add appear here" v-else></RecordNotFoundComponent>
     </div>
     <v-row class="ma-6" v-else>
       <v-col cols="12">
@@ -286,8 +291,8 @@ function formatDate(datetime: Date) {
             </v-col>
           </v-row>
           <v-col cols="12">
-            <v-sheet elevation="5" class="px-2" height="200px" width="auto" rounded outlined>
-              <div class="scroll border-color">
+            <v-sheet class="px-2  border-color" height="200px" width="auto" rounded outlined>
+              <div class="scroll">
                 <v-row v-for="(email, index) in state.inviteEmail" :key="email" class="mt-2">
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
                     <v-avatar color="primary">{{ email.charAt(0) }}</v-avatar>
