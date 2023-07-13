@@ -13,7 +13,7 @@ namespace Keeper.Repos.Repositories.Interfaces
     {
         Task<List<ProjectModel>> GetAllAsync(Guid userId);
         Task<ProjectModel> GetByIdAsync(Guid Id);
-        Task<bool> SaveAsync(ProjectModel project);
+        Task<ProjectModel> SaveAsync(ProjectModel project);
         Task<bool> DeleteByIdAsync(Guid projectid);
         Task<bool> UpdatedAsync(ProjectModel project);
         Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId);

@@ -10,7 +10,7 @@ namespace Keeper.Context.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "KeepUser",
+                name: "KeepModelUserModel",
                 columns: table => new
                 {
                     KeepsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -35,14 +35,14 @@ namespace Keeper.Context.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_KeepModelUserModel_UsersId",
-                table: "KeepUser",
+                table: "KeepModelUserModel",
                 column: "UsersId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "KeepUser");
+                name: "KeepModelUserModel");
         }
     }
 }

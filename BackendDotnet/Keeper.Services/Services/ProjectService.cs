@@ -2,6 +2,7 @@
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
 using Keeper.Context.Model;
+using Keeper.Repos.Interfaces;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
 
@@ -12,13 +13,19 @@ namespace Keeper.Services.Services
     {
         private readonly IProjectRepo _repo;
         private readonly ITagService _tagService;
-        public ProjectService(IProjectRepo repo, ITagService tagService)
+        private readonly IUserRepo _userRepo;
+        private readonly IMailService _mailService;
+        public ProjectService(IProjectRepo repo, ITagService tagService,IUserRepo userRepo, IMailService mailService)
         {
             _repo = repo;
             _tagService = tagService;
+            _userRepo = userRepo;
+            _mailService = mailService;
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
+            List<UserModel> users = new();
+            List<ProjectModel> projects = new();
             var tagId = Guid.NewGuid();
             if (projectVM.TagTitle != null && projectVM.TagTitle != "")
             {
@@ -49,8 +56,29 @@ namespace Keeper.Services.Services
                 CreatedBy = projectVM.CreatedBy,
                 TagId = tagId
             };
+            UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
+            users.Add(user);
+            projects.Add(model);
 
-            await _repo.SaveAsync(model);
+            model.Users = users;
+            user.Projects = projects;
+            _userRepo.UpdateUser(user);
+            var result=await _repo.SaveAsync(model);
+            if (projectVM.Mail != null)
+            {
+                MailRequest mail = projectVM.Mail;
+                foreach(var mailid in mail.ToEmail)
+                {
+                    UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
+                    users.Add(userdata);
+                    result.Users = users;
+                    userdata.Projects = projects;
+                    _userRepo.UpdateUser(userdata);
+                    _repo.UpdatedAsync(result);
+                }
+                    mail.TypeId = result.Id;
+                    await _mailService.SendEmailAsync(mail);
+            }
             {
                 return new ResponseModel<string>
                 {
@@ -117,6 +145,12 @@ namespace Keeper.Services.Services
             existingModel.UpdatedBy = project.UpdatedBy;
             existingModel.TagId= tagid;
             await _repo.UpdatedAsync(existingModel);
+            if (project.Mail != null)
+            {
+                MailRequest mail = project.Mail;
+                mail.TypeId = project.Id;
+                await _mailService.SendEmailAsync(mail);
+            }
             {
                 return new ResponseModel<string>()
                 {

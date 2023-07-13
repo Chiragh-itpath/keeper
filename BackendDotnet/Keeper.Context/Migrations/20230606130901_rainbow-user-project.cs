@@ -10,7 +10,7 @@ namespace Keeper.Context.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ProjectUser",
+                name: "ProjectModelUserModel",
                 columns: table => new
                 {
                     ProjectsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -35,14 +35,14 @@ namespace Keeper.Context.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectModelUserModel_UsersId",
-                table: "ProjectUser",
+                table: "ProjectModelUserModel",
                 column: "UsersId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProjectUser");
+                name: "ProjectModelUserModel");
         }
     }
 }

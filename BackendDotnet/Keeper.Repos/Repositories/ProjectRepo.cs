@@ -22,10 +22,11 @@ namespace Keeper.Repos.Repositories
             _dbKeeperContext = dbKeeperContext;
         }
 
-        public async Task<bool> SaveAsync(ProjectModel project)
+        public async Task<ProjectModel> SaveAsync(ProjectModel project)
         {
             await _dbKeeperContext.Projects.AddAsync(project);
-            return _dbKeeperContext.SaveChanges() == 1;
+            _dbKeeperContext.SaveChanges();
+            return project;
         }
         public async Task<List<ProjectModel>> GetAllAsync(Guid UserId)
         {

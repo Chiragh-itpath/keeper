@@ -1,3 +1,5 @@
+import type { IMail } from "./MailModel"
+
 export interface Ikeep {
   id?: string
   title: string
@@ -7,4 +9,5 @@ export interface Ikeep {
   updatedBy?: string
   projectId?: string
   tagTitle?: string
+  mail?:IMail
 }

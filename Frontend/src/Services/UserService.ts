@@ -1,11 +1,16 @@
 import type { IUser } from '@/Models/UserModel'
-import axios from 'axios'
+import { http } from '@/GlobalConfig/ApiClient'
 const GetUser = async (id: string): Promise<IUser> => {
-  const response = await axios.get(`https://localhost:7134/api/User/${id}`, {
+  const response = await http.get(`User/${id}`, {
     headers: {
       'Content-Type': 'application/json'
     }
   })
   return response.data.data
 }
-export { GetUser }
+async function GetByEmail(email:string):Promise<any>{
+  const response=await http.get(`User/Email/${email}`)
+  debugger
+  return response.data.data
+}
+export { GetUser,GetByEmail }

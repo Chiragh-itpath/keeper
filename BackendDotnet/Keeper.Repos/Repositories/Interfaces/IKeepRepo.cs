@@ -11,7 +11,7 @@ namespace Keeper.Repos.Repositories.Interfaces
     {
         Task<List<KeepModel>> GetAllAsync(Guid projectId);
         Task<KeepModel> GetByIdAsync(Guid Id);
-        Task<bool> SaveAsync(KeepModel keep);
+        Task<KeepModel> SaveAsync(KeepModel keep);
         Task<bool> DeleteByIdAsync(Guid keepid);
         Task<bool> UpdatedAsync(KeepModel keepModel);
         Task<List<KeepModel>> GetByTagAsync(Guid userId, Guid tagId);

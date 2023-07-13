@@ -17,6 +17,7 @@ export const useProjectStore = defineStore('ProjectStore', () => {
   async function GetProjects(): Promise<any> {
     const projects = await GetAll(User.value!.id)
     Projects.value = projects.data.data
+    // Projects.value=[...res]
   }
   async function GetProjectByTag(TagId: string): Promise<any> {
     const UserId = User.value!.id

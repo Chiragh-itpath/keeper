@@ -14,6 +14,7 @@ import Snackbar from '@/components/SnackbarComponent.vue'
 import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from '@/stores/TagStore'
 import { useMailStore } from '@/stores/MailStore'
+import { useUserStore } from '@/stores/UserStore'
 import { watch } from 'vue'
 import type { IMail } from '@/Models/MailModel'
 import { useRouter, useRoute } from 'vue-router'
@@ -23,6 +24,7 @@ import { StatusType } from '@/enum/StatusType'
 import Loader from '@/components/LoaderComponent.vue';
 import DeleteComponent from '@/components/DeleteComponent.vue'
 const { GetAll, GetByTagType, GetByTagTitle, TagForProject } = tagStore()
+const{GetUserByEmail}=useUserStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -38,7 +40,9 @@ const state = reactive({
   openInvite: false,
   email: '',
   isLoading: true,
-  isDeleted: false
+  isDeleted: false,
+  isError:false,
+  errorMsg:''
 })
 
 const form = ref()
@@ -89,12 +93,21 @@ onMounted(async () => {
 async function addProject(): Promise<void> {
   const { valid } = await form.value.validate()
   if (!valid) return
+  let mailObj: IMail;
+  if (state.inviteEmail.length > 0) {
+    mailObj = {
+      ToEmail: state.inviteEmail,
+      Type:TagTypeEnum.PROJECT
+    }
+  }
   if (state.projectId == '') {
     state.dialog = false
+    
     const project: IProject = {
       title: state.projectName,
       description: state.description,
-      tagTitle: state.tag
+      tagTitle: state.tag,
+      mail:mailObj!
     }
     form.value.reset()
     const response = await AddProject(project)
@@ -107,7 +120,8 @@ async function addProject(): Promise<void> {
       id: state.projectId,
       title: state.projectName,
       description: state.description,
-      tagTitle: state.tag
+      tagTitle: state.tag,
+      mail:mailObj!
     }
     await editProject(state.projectId)
     await UpdateProject(project)
@@ -115,18 +129,35 @@ async function addProject(): Promise<void> {
     state.dialog = false
     form.value.reset()
   }
-  if (state.inviteEmail.length > 0) {
-    let mailObj: IMail = {
-      ToEmail: state.inviteEmail
-    }
-    await Mail(mailObj)
-  }
+  
+  // if (state.inviteEmail.length > 0) {
+  //   let mailObj: IMail = {
+  //     ToEmail: state.inviteEmail,
+  //     Type:TagTypeEnum.PROJECT,
+  //     TypeId:state.projectId
+  //   }
+  //   await Mail(mailObj)
+  // }
   state.inviteEmail = []
   await TagForProject()
   setProjectData()
 }
-function onEnter() {
-  if (state.email.trim() != '') state.inviteEmail.push(state.email)
+async function onEnter() {
+  if (state.email.trim() != ''){
+    const response=await GetUserByEmail(state.email)
+    if(response!=null){
+      state.inviteEmail.push(state.email)
+    }
+    else{
+      state.isError=true
+      state.errorMsg='Email is not registered in this application';
+      debugger
+      setTimeout(() => {
+        state.isError=false 
+        state.errorMsg=''
+      },3000)
+    }
+  } 
   state.email = ''
 }
 async function editProject(projectId: string) {
@@ -219,6 +250,7 @@ function formatDate(datetime: Date) {
             state.dialog = false
             form.reset()
             state.projectId = ''
+            state.inviteEmail=[]
           }
           " prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
@@ -283,7 +315,8 @@ function formatDate(datetime: Date) {
         <v-row>
           <v-row>
             <v-col cols="10" md="10" sm="10">
-              <TextFieldEmail label="Email" color="primary" v-model="state.email" />
+              <TextFieldEmail label="Email" color="primary" v-model="state.email" :error="state.isError"
+    :error-messages="state.errorMsg"/>
             </v-col>
             <v-col cols="2" md="2" sm="2">
               <v-avatar @click="onEnter" color="primary" class="mt-2"><v-icon icon="mdi-plus-thick"
