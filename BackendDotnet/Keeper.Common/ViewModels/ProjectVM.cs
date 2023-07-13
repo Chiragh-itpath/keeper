@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Keeper.Context.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Keeper.Common.View_Models
 {
@@ -18,6 +20,7 @@ namespace Keeper.Common.View_Models
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string? TagTitle { get; set; }
+        public MailRequest? Mail {  get; set; }
 
 
         public void Dispose()

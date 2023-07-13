@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Keeper.Common.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace Keeper.Context.Model
     {
        
         public string[] ToEmail { get; set; }
-        public Guid UserId { get; set; }
-       
+        public TagType Type { get; set; }
+        public Guid TypeId { get; set; }
+
     }
 }

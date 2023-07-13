@@ -20,6 +20,9 @@ import { useMailStore } from '@/stores/MailStore'
 import { StatusType } from '@/enum/StatusType'
 import SnackbarComponent from '@/components/SnackbarComponent.vue'
 import DeleteComponent from '@/components/DeleteComponent.vue'
+import { TagTypeEnum } from '@/enum/TagTypeEnum'
+import { useUserStore } from '@/stores/UserStore'
+const {GetUserByEmail}=useUserStore()
 const { AddKeep, GetKeeps, DeleteKeep, Updatekeep, GetKeepById, GetKeepByTag } = useKeepStore()
 const { Keeps } = storeToRefs(useKeepStore())
 const { GetByTagId, GetByTagType, TagForKeeps } = tagStore()
@@ -36,7 +39,9 @@ const state = reactive({
   openInvite: false,
   email: '',
   snackbarMessage: '',
-  isDeleted:false
+  isDeleted:false,
+  isError:false,
+  errorMsg:''
 })
 
 const form = ref()
@@ -57,13 +62,13 @@ watch(route, async () => {
     filteredkeeps.value = await GetKeeps(route.params.id.toString())
   }
 })
-watch(Keeps,async () => {
-  if (route.name == RouterEnum.KEEP_BY_TAG) {
-    filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
-  } else {
-    filteredkeeps.value = Keeps.value
-  }
-})
+// watch(Keeps,async () => {
+//   if (route.name == RouterEnum.KEEP_BY_TAG) {
+//     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
+//   } else {
+//     filteredkeeps.value = Keeps.value
+//   }
+// })
 let date = ref()
 watch(date, () => {
   if (date.value != '' && date.value != null) {
@@ -87,13 +92,22 @@ onMounted(async () => {
 async function CreateKeep(): Promise<void> {
   const { valid } = await form.value.validate()
     if (!valid) return
+    let mailObj:IMail;
+    if (state.inviteEmail.length > 0) {
+    mailObj= {
+      ToEmail: state.inviteEmail,
+      Type:TagTypeEnum.KEEP
+    }
+  }
   if (state.KeepId == '') {
     state.dialog = false
     const keeps: Ikeep = {
       title: state.keepName,
       projectId: proid.value,
-      tagTitle: state.tag
+      tagTitle: state.tag,
+      mail:mailObj!
     }
+    
     const response = await AddKeep(keeps)
     console.log(response);
     
@@ -107,7 +121,8 @@ async function CreateKeep(): Promise<void> {
     const keep: Ikeep = {
       id: state.KeepId,
       title: state.keepName,
-      tagTitle: state.tag
+      tagTitle: state.tag,
+      mail:mailObj!
     }
     await editkeep(state.KeepId)
     await Updatekeep(keep)
@@ -115,15 +130,12 @@ async function CreateKeep(): Promise<void> {
     form.value.reset()
     state.dialog = false
   }
-  if (state.inviteEmail.length > 0) {
-    let mailObj: IMail = {
-      ToEmail: state.inviteEmail
-    }
-    await Mail(mailObj)
-  }
+  
+    // await Mail(mailObj)
   state.inviteEmail = []
   await GetKeeps(proid.value)
   await TagForKeeps(proid.value)
+  setKeepData()
 }
 
 async function deletekeep(val:boolean) {
@@ -131,6 +143,7 @@ async function deletekeep(val:boolean) {
   await DeleteKeep(state.KeepId)
   await GetKeeps(proid.value)
   await TagForKeeps(proid.value)
+  setKeepData()
   }
   state.KeepId=''
   state.isDeleted=false
@@ -144,9 +157,30 @@ async function editkeep(keepId: string) {
   state.tag = tagdata.data.data?.title
 }
 
-function onEnter() {
-  if (state.email.trim() != '') state.inviteEmail.push(state.email)
+async function onEnter() {
+  if (state.email.trim() != ''){
+    const response=await GetUserByEmail(state.email)
+    if(response!=null){
+      state.inviteEmail.push(state.email)
+    }
+    else{
+      state.isError=true
+      state.errorMsg='Email is not registered in this application';
+      setTimeout(() => {
+        state.isError=false 
+        state.errorMsg=''
+      },3000)
+    }
+  }
   state.email = ''
+}
+async function setKeepData() {
+  if (route.name == RouterEnum.KEEP_BY_TAG) {
+    filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
+  } else {
+    await GetKeeps(proid.value)
+    filteredkeeps.value = Keeps.value
+  }
 }
 </script>
 <template>
@@ -310,7 +344,7 @@ function onEnter() {
         <v-row>
           <v-row>
             <v-col cols="10" md="10" sm="10">
-              <TextFieldEmail label="Email" color="primary" v-model="state.email" />
+              <TextFieldEmail label="Email" color="primary" v-model="state.email" :error="state.isError"  :error-messages="state.errorMsg" />
             </v-col>
             <v-col cols="2" md="2" sm="2">
               <v-avatar @click="onEnter" color="secondary" class="mt-2"

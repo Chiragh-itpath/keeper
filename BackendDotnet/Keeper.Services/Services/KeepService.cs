@@ -3,6 +3,7 @@ using Keeper.Common.Response;
 using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
+using Keeper.Repos.Interfaces;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
 using System;
@@ -17,15 +18,19 @@ namespace Keeper.Services.Services
     {
         private readonly IKeepRepo _repo;
         private readonly ITagService _tagService;
-        public KeepService(IKeepRepo repo, ITagService tagService)
+        private readonly IUserRepo _userRepo;
+        private readonly IMailService _mailService;
+        public KeepService(IKeepRepo repo, ITagService tagService,IUserRepo userRepo, IMailService mailService)
         {
             _repo = repo;
             _tagService = tagService;
+            _userRepo = userRepo;
+            _mailService = mailService;
         }
 
         public async Task<ResponseModel<string>> DeleteByIdAsync(Guid Id)
         {
-            await _repo.DeleteByIdAsync(Id);
+            await _repo.DeleteByIdAsync(Id); 
             return new ResponseModel<string>()
             {
                 StatusName = StatusType.SUCCESS,
@@ -69,9 +74,11 @@ namespace Keeper.Services.Services
                 Data = result
             };
         }
-
         public async Task<ResponseModel<string>> SaveAsync(KeepVM keep)
-        {
+            {
+            List<UserModel> users = new();
+            List<KeepModel> keeps = new();
+
             var tagId = Guid.NewGuid();
             if (keep.TagTitle != null && keep.TagTitle!="") 
             {
@@ -103,7 +110,29 @@ namespace Keeper.Services.Services
                 model.ProjectId = keep.ProjectId;
                 model.TagId = tagId;
             };
-            await _repo.SaveAsync(model);
+            UserModel user= await _userRepo.GetByIdAsync(model.CreatedBy);
+            users.Add(user);
+            keeps.Add(model);
+            model.Users = users;
+            user.Keeps = keeps;
+            _userRepo.UpdateUser(user);
+            var response=await _repo.SaveAsync(model);
+            if (keep.mail != null)
+            {
+                MailRequest mail = keep.mail;
+                foreach(var mailid in mail.ToEmail)
+                {
+                    UserModel userdata= await _userRepo.GetByEmailAsync(mailid);
+                    users.Add(userdata);
+                    response.Users= users;
+                    userdata.Keeps= keeps;
+                    _repo.UpdatedAsync(response);
+                    _userRepo.UpdateUser(userdata);
+
+                }
+                mail.TypeId = response.Id;
+                await _mailService.SendEmailAsync(mail);
+            }
             {
                 return new ResponseModel<string>
                 {

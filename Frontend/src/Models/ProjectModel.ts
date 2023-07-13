@@ -1,3 +1,5 @@
+import type { IMail } from "./MailModel"
+
 export interface IProject {
   id?: string
   title: string
@@ -7,4 +9,5 @@ export interface IProject {
   updatedOn?: Date
   updatedBy?: string
   tagTitle?: string
+  mail?:IMail
 }

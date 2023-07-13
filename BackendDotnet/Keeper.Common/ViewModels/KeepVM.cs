@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Keeper.Context.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,6 @@ namespace Keeper.Common.ViewModels
         public Guid? UpdatedBy { get; set; }
         public Guid ProjectId { get; set; }
         public string? TagTitle { get; set; }
+        public MailRequest? mail { get; set; }
     }
 }
