@@ -5,6 +5,7 @@ using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 
 namespace Keeper.Services.Services
@@ -182,6 +183,18 @@ namespace Keeper.Services.Services
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
+                Data = result
+            };
+        }
+
+        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProject(Guid userId)
+        {
+            var result=await _repo.SharedProject(userId);
+            return new ResponseModel<IEnumerable<ProjectModel>>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "All shared Projects",
                 Data = result
             };
         }

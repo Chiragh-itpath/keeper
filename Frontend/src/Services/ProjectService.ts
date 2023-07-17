@@ -56,3 +56,12 @@ export async function Update(Project: IProject): Promise<any> {
     return e
   }
 }
+export async function SharedProject(UserId:string): Promise<any> {
+  try {
+    const response = await http.get(`/Project/shared/${UserId}`)
+    return response.data.data
+  } catch (e) {
+    console.log(e)
+    return e
+  }
+}
