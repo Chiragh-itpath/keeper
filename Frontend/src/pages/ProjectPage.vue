@@ -23,7 +23,8 @@ import { TagTypeEnum } from '@/enum/TagTypeEnum'
 import { StatusType } from '@/enum/StatusType'
 import Loader from '@/components/LoaderComponent.vue';
 import DeleteComponent from '@/components/DeleteComponent.vue'
-const { GetAll, GetByTagType, GetByTagTitle, TagForProject } = tagStore()
+import type { Ref } from 'vue'
+const { TagForProject } = tagStore()
 const{GetUserByEmail}=useUserStore()
 const state = reactive({
   projectId: '',
@@ -46,13 +47,14 @@ const state = reactive({
 })
 
 const form = ref()
-const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag } =
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag,ContributeProject } =
   useProjectStore()
 const { GetByTagId } = tagStore()
 const { Mail } = useMailStore()
 const { Projects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
+let sharedProject:Ref<IProject[]> = ref([])
 let date = ref()
 const route = useRoute()
 const router = useRouter()
@@ -61,6 +63,7 @@ watch(route, async () => {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
+    sharedProject.value=await ContributeProject();
     await GetProjects()
     filterData.value = Projects.value
   }
@@ -69,6 +72,7 @@ async function setProjectData() {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
+    sharedProject.value=await ContributeProject();
     await GetProjects()
     filterData.value = Projects.value
   }
@@ -87,6 +91,7 @@ onMounted(async () => {
     )
     await TagForProject()
     await GetProjects()
+    sharedProject.value=await ContributeProject();
   filterData.value = Projects.value
   state.isLoading = false;
 })
@@ -129,15 +134,6 @@ async function addProject(): Promise<void> {
     state.dialog = false
     form.value.reset()
   }
-  
-  // if (state.inviteEmail.length > 0) {
-  //   let mailObj: IMail = {
-  //     ToEmail: state.inviteEmail,
-  //     Type:TagTypeEnum.PROJECT,
-  //     TypeId:state.projectId
-  //   }
-  //   await Mail(mailObj)
-  // }
   state.inviteEmail = []
   await TagForProject()
   setProjectData()
@@ -151,7 +147,6 @@ async function onEnter() {
     else{
       state.isError=true
       state.errorMsg='Email is not registered in this application';
-      debugger
       setTimeout(() => {
         state.isError=false 
         state.errorMsg=''
@@ -199,7 +194,7 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
     </v-row>
-    <div v-if="filterData.length == 0 && !state.isLoading">
+    <div v-if="filterData.length == 0 && !state.isLoading && sharedProject.length==0">
       <RecordNotFoundComponent title="No project with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
       <RecordNotFoundComponent icon="mdi-folder-file-outline" title="Projects you add appear here" v-else></RecordNotFoundComponent>
     </div>
@@ -209,6 +204,38 @@ function formatDate(datetime: Date) {
           All Projects
         </Button>
       </v-col>
+        <v-col v-for="(project, index) in sharedProject" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+          <Card>
+            <template #title>
+              <div class="position-relative text-grey-darken-4">
+                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
+                  project.title
+                }}</span>
+                <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
+                  <v-icon> mdi-dots-vertical </v-icon>
+                  <v-menu activator="parent">
+                    <v-list>
+                      <v-list-item>
+                        <v-list-item-title><Button variant="text"
+                            @click="editProject(project.id!)">Edit</Button></v-list-item-title>
+                        <v-list-item-title><Button variant="text"
+                            @click="()=>{state.isDeleted = true; state.projectId=project.id!}">Delete</Button></v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
+              </div>
+            </template>
+            <template #text>
+              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
+                {{ project.description }}
+                <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
+                  description provided
+                </span>
+              </v-card-text>
+            </template>
+          </Card>
+        </v-col>
       <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
         <Card>
           <template #title>

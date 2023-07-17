@@ -10,7 +10,10 @@ const GetUser = async (id: string): Promise<IUser> => {
 }
 async function GetByEmail(email:string):Promise<any>{
   const response=await http.get(`User/Email/${email}`)
-  debugger
   return response.data.data
 }
-export { GetUser,GetByEmail }
+async function GetById(id:string):Promise<any>{
+  const response=await http.get(`User/${id}`)
+  return response.data.data
+}
+export { GetUser,GetByEmail,GetById }

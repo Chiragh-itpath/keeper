@@ -30,7 +30,11 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<List<ProjectModel>>> GetAll(Guid UserId)
         {
             return await _projectService.GetAllAsync(UserId);
-
+        }
+        [HttpGet("shared/{UserId}")]
+        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid UserId)
+        {
+            return await _projectService.SharedProject(UserId);
         }
         [HttpGet]
         [Route("{Id}")]
