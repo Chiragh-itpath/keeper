@@ -18,5 +18,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
         Task<ResponseModel<string>> UpdatedAsync(KeepVM keep);
         Task<ResponseModel<List<KeepModel>>> GetByTagAsync(Guid userId, Guid tagId);
+        Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeepsAsync(Guid userId);
     }
 }

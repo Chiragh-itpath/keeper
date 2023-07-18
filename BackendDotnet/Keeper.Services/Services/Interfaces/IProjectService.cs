@@ -18,6 +18,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
         Task<ResponseModel<string>> UpdatedAsync(ProjectVM project);
         Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId,Guid tagId);
-        Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProject(Guid userId);
+        Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid userId);
     }
 }

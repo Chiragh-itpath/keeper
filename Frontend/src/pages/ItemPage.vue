@@ -15,6 +15,7 @@ import { watch } from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import DeleteComponent from '@/components/DeleteComponent.vue'
+import { SharedProject } from '@/Services/ProjectService'
 const { AddItem, GetItem, GetAllItems, DeleteItem, UpdateItem } = useItemStore()
 const { Items } = storeToRefs(useItemStore())
 let filtereditems = ref(Items.value)
@@ -110,7 +111,10 @@ const date = ref()
 watch(date, () => {
   if (date.value != '' && date.value != null) {
     filtereditems.value = Items.value.filter((x) => formatDate(x.createdOn!) == date.value)
-  } else filtereditems.value = Items.value
+  } else {
+    filtereditems.value = Items.value
+    window.location.reload()
+  }
 })
 </script>
 <template>
@@ -140,7 +144,7 @@ watch(date, () => {
         <Button onclick="history.back()">Back to Keeps</Button>
       </v-col> -->
       <v-col cols="12" lg="6" md="12" sm="12" v-for="item in filtereditems" :key="item.id" class="mb-10">
-        <Card>
+        <Card backgroundColor="lightenTeal">
           <template #title>
             <v-row>
               <v-col cols="4" md="2">

@@ -3,10 +3,12 @@ import { requiredRule, emailRules } from '@/data/ValidationRules'
 
 const props = withDefaults(
   defineProps<{
-    label: string
+    label: string,
+    isRequired:boolean
   }>(),
   {
-    label: ''
+    label: '',
+    isRequired:true
   }
 )
 </script>
@@ -15,7 +17,7 @@ const props = withDefaults(
   <v-text-field
     :label="props.label"
     type="email"
-    :rules="[requiredRule, emailRules]"
+    :rules="[props.isRequired?requiredRule:true, emailRules]"
     prepend-inner-icon="mdi-email"
     clearable
     variant="outlined"

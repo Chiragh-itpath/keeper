@@ -220,7 +220,7 @@ async function setKeepData() {
         sm="6"
         class="mb-3"
       >
-        <Card>
+        <Card backgroundColor="lightenTeal">
           <template #title>
             <div class="position-relative text-grey-darken-4">
               <span @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">{{

@@ -15,5 +15,6 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<bool> DeleteByIdAsync(Guid keepid);
         Task<bool> UpdatedAsync(KeepModel keepModel);
         Task<List<KeepModel>> GetByTagAsync(Guid userId, Guid tagId);
+        Task<IEnumerable<KeepModel>> SharedKeepAsync(Guid userId);
     }
 }

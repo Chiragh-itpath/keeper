@@ -51,7 +51,7 @@ const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, G
   useProjectStore()
 const { GetByTagId } = tagStore()
 const { Mail } = useMailStore()
-const { Projects } = storeToRefs(useProjectStore())
+const { Projects,SharedProjects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
 let sharedProject:Ref<IProject[]> = ref([])
@@ -61,6 +61,7 @@ const router = useRouter()
 
 watch(route, async () => {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
+    sharedProject.value=[]
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
     sharedProject.value=await ContributeProject();
@@ -77,10 +78,12 @@ async function setProjectData() {
     filterData.value = Projects.value
   }
 }
-watch(date, () => {
+watch(date, async() => {
   if (date.value != '' && date.value != null) {
     filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
+    sharedProject.value = SharedProjects.value.filter((p) => formatDate(p.createdOn!) == date.value)
   } else{
+    sharedProject.value=await ContributeProject();
     filterData.value = Projects.value
   } 
 })
@@ -98,6 +101,7 @@ onMounted(async () => {
 async function addProject(): Promise<void> {
   const { valid } = await form.value.validate()
   if (!valid) return
+  state.isLoading=true
   let mailObj: IMail;
   if (state.inviteEmail.length > 0) {
     mailObj = {
@@ -137,6 +141,7 @@ async function addProject(): Promise<void> {
   state.inviteEmail = []
   await TagForProject()
   setProjectData()
+  state.isLoading=false
 }
 async function onEnter() {
   if (state.email.trim() != ''){
@@ -194,7 +199,7 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
     </v-row>
-    <div v-if="filterData.length == 0 && !state.isLoading && sharedProject.length==0">
+    <div v-if="(filterData.length == 0 && !state.isLoading) && sharedProject.length==0">
       <RecordNotFoundComponent title="No project with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
       <RecordNotFoundComponent icon="mdi-folder-file-outline" title="Projects you add appear here" v-else></RecordNotFoundComponent>
     </div>
@@ -205,7 +210,7 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
         <v-col v-for="(project, index) in sharedProject" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-          <Card>
+          <Card backgroundColor="light-green-lighten-3">
             <template #title>
               <div class="position-relative text-grey-darken-4">
                 <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
@@ -237,7 +242,7 @@ function formatDate(datetime: Date) {
           </Card>
         </v-col>
       <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-        <Card>
+        <Card backgroundColor="lightenTeal">
           <template #title>
             <div class="position-relative text-grey-darken-4">
               <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
@@ -342,7 +347,7 @@ function formatDate(datetime: Date) {
         <v-row>
           <v-row>
             <v-col cols="10" md="10" sm="10">
-              <TextFieldEmail label="Email" color="primary" v-model="state.email" :error="state.isError"
+              <TextFieldEmail label="Email" :is-required="false" color="primary" v-model="state.email" :error="state.isError"
     :error-messages="state.errorMsg"/>
             </v-col>
             <v-col cols="2" md="2" sm="2">

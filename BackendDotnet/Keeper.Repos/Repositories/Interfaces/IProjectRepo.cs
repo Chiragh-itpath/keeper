@@ -14,8 +14,8 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<List<ProjectModel>> GetAllAsync(Guid userId);
         Task<ProjectModel> GetByIdAsync(Guid Id);
         Task<ProjectModel> SaveAsync(ProjectModel project);
-        Task<bool> DeleteByIdAsync(Guid projectid);
-        Task<bool> UpdatedAsync(ProjectModel project);
+        Task<ProjectModel> DeleteByIdAsync(Guid projectid);
+        Task<ProjectModel> UpdatedAsync(ProjectModel project);
         Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId);
         Task<IEnumerable<ProjectModel>> SharedProject(Guid userId);
     }

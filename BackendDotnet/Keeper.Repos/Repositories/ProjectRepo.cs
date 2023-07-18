@@ -38,7 +38,7 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
              
         }
-        public async Task<bool> DeleteByIdAsync(Guid id)
+        public async Task<ProjectModel> DeleteByIdAsync(Guid id)
         {
             var result= await GetByIdAsync(id);
             result.IsDeleted = true;
@@ -50,10 +50,11 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Projects.FindAsync(Id);   
         }
 
-        public async Task<bool> UpdatedAsync(ProjectModel project)
+        public async Task<ProjectModel> UpdatedAsync(ProjectModel project)
         {
             _dbKeeperContext.Entry(project).State = EntityState.Modified;
-            return _dbKeeperContext.SaveChanges() == 1;
+            _dbKeeperContext.SaveChanges();
+            return project;
         }
 
         public async Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId)
