@@ -10,6 +10,7 @@ import KeepPage from '@/pages/KeepPage.vue'
 import ItemPage from '@/pages/ItemPage.vue'
 import EditProject from '@/pages/EditProject.vue'
 import PageNotFound from '@/pages/PageNotFound.vue'
+import Verification from '@/pages/Verificationpage.com'
 export const routes = [
   {
     path: '/',
@@ -25,6 +26,11 @@ export const routes = [
     path: '/signup',
     component: signUp,
     name: RouterEnum.SIGNUP
+  },
+  {
+    path: '/verification',
+    component: Verification,
+    name: RouterEnum.LOGIN
   },
   {
     path: '/forgotPassword',

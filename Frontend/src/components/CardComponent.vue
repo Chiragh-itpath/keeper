@@ -2,10 +2,12 @@
 import type { Tvariant } from '@/type/variants'
 const props = withDefaults(
   defineProps<{
-    variant?: Tvariant
+    variant?: Tvariant,
+    backgroundColor?:string
   }>(),
   {
-    variant: 'elevated'
+    variant: 'elevated',
+    backgroundColor:''
   }
 )
 </script>
@@ -13,7 +15,7 @@ const props = withDefaults(
 <template>
   <v-card :variant="props.variant" :rounded="true" elevation="12">
     <div>
-      <v-card-title class="bg-lightenTeal text-white text-capitalize text-center">
+      <v-card-title :class="`bg-${props.backgroundColor} text-white text-capitalize text-center`">
         <slot name="title"> </slot>
       </v-card-title>
       <v-card-subtitle>

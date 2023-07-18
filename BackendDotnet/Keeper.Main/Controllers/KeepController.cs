@@ -54,6 +54,10 @@ namespace Keeper.Main.Controllers
         {
             return await _keepService.DeleteByIdAsync(Id);
         }
-
+        [HttpGet("shared/{userid}")]
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeeps(Guid userid)
+        {
+            return await _keepService.SharedKeepsAsync(userid);
+        }
     }
 }

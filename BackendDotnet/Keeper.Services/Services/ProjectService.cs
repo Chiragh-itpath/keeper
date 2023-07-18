@@ -1,6 +1,7 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
 using Keeper.Common.View_Models;
+using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Interfaces;
 using Keeper.Repos.Repositories.Interfaces;
@@ -68,26 +69,39 @@ namespace Keeper.Services.Services
             if (projectVM.Mail != null)
             {
                 MailRequest mail = projectVM.Mail;
-                foreach(var mailid in mail.ToEmail)
+                try
                 {
-                    UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
-                    users.Add(userdata);
-                    result.Users = users;
-                    userdata.Projects = projects;
-                    _userRepo.UpdateUser(userdata);
-                    _repo.UpdatedAsync(result);
-                }
+                    foreach (var mailid in mail.ToEmail)
+                    {
+                        UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
+                        users.Add(userdata);
+                        result.Users = users;
+                        userdata.Projects = projects;
+                        _userRepo.UpdateUser(userdata);
+                        _repo.UpdatedAsync(result);
+                    }
                     mail.TypeId = result.Id;
                     await _mailService.SendEmailAsync(mail);
+
+                }
+                catch(Exception ex)
+                {
+
+                    return new ResponseModel<string>
+                    {
+                        StatusName = StatusType.INTERNAL_SERVER_ERROR,
+                        IsSuccess = false,
+                        Message = ex.Message,
+                    };
+                }
+                
             }
-            {
                 return new ResponseModel<string>
                 {
                     StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
                     Message = "Project Created Suceessfully",
                 };
-            }
         }
         public async Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId)
         {
@@ -115,6 +129,8 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(ProjectVM project)
         {
+            List<UserModel> users = new();
+            List<ProjectModel> projects = new();
             var tagid= Guid.NewGuid();
             if(project.TagTitle != null && project.TagTitle != "")
             {
@@ -145,11 +161,20 @@ namespace Keeper.Services.Services
             existingModel.UpdatedOn = DateTime.Now;
             existingModel.UpdatedBy = project.UpdatedBy;
             existingModel.TagId= tagid;
-            await _repo.UpdatedAsync(existingModel);
+            var result=await _repo.UpdatedAsync(existingModel);
             if (project.Mail != null)
             {
                 MailRequest mail = project.Mail;
-                mail.TypeId = project.Id;
+                foreach (var mailid in mail.ToEmail)
+                {
+                    UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
+                    users.Add(userdata);
+                    result.Users = users;
+                    userdata.Projects = projects;
+                    _userRepo.UpdateUser(userdata);
+                    _repo.UpdatedAsync(result);
+                }
+                mail.TypeId = result.Id;
                 await _mailService.SendEmailAsync(mail);
             }
             {
@@ -187,9 +212,9 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProject(Guid userId)
+        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid userId)
         {
-            var result=await _repo.SharedProject(userId);
+            var result = await _repo.SharedProject(userId);
             return new ResponseModel<IEnumerable<ProjectModel>>
             {
                 StatusName = StatusType.SUCCESS,

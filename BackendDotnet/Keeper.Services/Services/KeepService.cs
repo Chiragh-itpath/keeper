@@ -117,7 +117,9 @@ namespace Keeper.Services.Services
             user.Keeps = keeps;
             _userRepo.UpdateUser(user);
             var response=await _repo.SaveAsync(model);
-            if (keep.mail != null)
+            try
+            {
+if (keep.mail != null)
             {
                 MailRequest mail = keep.mail;
                 foreach(var mailid in mail.ToEmail)
@@ -133,6 +135,11 @@ namespace Keeper.Services.Services
                 mail.TypeId = response.Id;
                 await _mailService.SendEmailAsync(mail);
             }
+            }
+            catch (Exception ex)
+            {
+
+            }
             {
                 return new ResponseModel<string>
                 {
@@ -141,6 +148,18 @@ namespace Keeper.Services.Services
                     Message = "keep Created SuccessFully",
                 };
             }
+        }
+
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeepsAsync(Guid userId)
+        {
+           var response=await _repo.SharedKeepAsync(userId);
+            return new ResponseModel<IEnumerable<KeepModel>>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "All shared Keeps",
+                Data = response
+            };
         }
 
         public async Task<ResponseModel<string>> UpdatedAsync(KeepVM keep)
