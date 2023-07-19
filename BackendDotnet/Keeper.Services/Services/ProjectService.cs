@@ -61,32 +61,19 @@ namespace Keeper.Services.Services
             UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
             users.Add(user);
             projects.Add(model);
-
             model.Users = users;
             user.Projects = projects;
             _userRepo.UpdateUser(user);
             var result=await _repo.SaveAsync(model);
             if (projectVM.Mail != null)
             {
-                MailRequest mail = projectVM.Mail;
                 try
                 {
-                    foreach (var mailid in mail.ToEmail)
-                    {
-                        UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
-                        users.Add(userdata);
-                        result.Users = users;
-                        userdata.Projects = projects;
-                        _userRepo.UpdateUser(userdata);
-                        _repo.UpdatedAsync(result);
-                    }
-                    mail.TypeId = result.Id;
-                    await _mailService.SendEmailAsync(mail);
-
+                    projectVM.Mail.TypeId = result.Id;
+                    await _mailService.SendEmailAsync(projectVM.Mail);
                 }
                 catch(Exception ex)
                 {
-
                     return new ResponseModel<string>
                     {
                         StatusName = StatusType.INTERNAL_SERVER_ERROR,
@@ -164,18 +151,8 @@ namespace Keeper.Services.Services
             var result=await _repo.UpdatedAsync(existingModel);
             if (project.Mail != null)
             {
-                MailRequest mail = project.Mail;
-                foreach (var mailid in mail.ToEmail)
-                {
-                    UserModel userdata = await _userRepo.GetByEmailAsync(mailid);
-                    users.Add(userdata);
-                    result.Users = users;
-                    userdata.Projects = projects;
-                    _userRepo.UpdateUser(userdata);
-                    _repo.UpdatedAsync(result);
-                }
-                mail.TypeId = result.Id;
-                await _mailService.SendEmailAsync(mail);
+                project.Mail.TypeId = result.Id;
+                await _mailService.SendEmailAsync(project.Mail);
             }
             {
                 return new ResponseModel<string>()

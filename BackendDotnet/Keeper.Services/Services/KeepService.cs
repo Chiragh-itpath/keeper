@@ -117,37 +117,17 @@ namespace Keeper.Services.Services
             user.Keeps = keeps;
             _userRepo.UpdateUser(user);
             var response=await _repo.SaveAsync(model);
-            try
-            {
-if (keep.mail != null)
-            {
-                MailRequest mail = keep.mail;
-                foreach(var mailid in mail.ToEmail)
+                if (keep.mail != null)
                 {
-                    UserModel userdata= await _userRepo.GetByEmailAsync(mailid);
-                    users.Add(userdata);
-                    response.Users= users;
-                    userdata.Keeps= keeps;
-                    _repo.UpdatedAsync(response);
-                    _userRepo.UpdateUser(userdata);
-
+                    keep.mail.TypeId = response.Id;
+                    await _mailService.SendEmailAsync(keep.mail);
                 }
-                mail.TypeId = response.Id;
-                await _mailService.SendEmailAsync(mail);
-            }
-            }
-            catch (Exception ex)
-            {
-
-            }
-            {
                 return new ResponseModel<string>
                 {
                     StatusName = StatusType.SUCCESS,
                     IsSuccess = true,
                     Message = "keep Created SuccessFully",
                 };
-            }
         }
 
         public async Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeepsAsync(Guid userId)
@@ -181,7 +161,6 @@ if (keep.mail != null)
                 else
                 {
                     tagid = tagdata.Data.Id;
-
                 }
             }
             else
@@ -195,15 +174,17 @@ if (keep.mail != null)
             existingModel.UpdatedBy = (Guid)keep.UpdatedBy!;
             existingModel.TagId=tagid;
             await _repo.UpdatedAsync(existingModel);
+            if (keep.mail != null)
             {
-                return new ResponseModel<string>()
-                {
-                    StatusName = StatusType.SUCCESS,
-                    IsSuccess = true,
-                    Message = "keep Updated SuccessFully",
-                };
+                keep.mail.TypeId = existingModel.Id;
+                await _mailService.SendEmailAsync(keep.mail);
             }
-
+            return new ResponseModel<string>()
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "keep Updated SuccessFully",
+            };
         }
     }
 }

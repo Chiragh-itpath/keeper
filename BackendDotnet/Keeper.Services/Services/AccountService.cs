@@ -21,11 +21,15 @@ namespace Keeper.Services.Services
         private readonly IAccountRepo _accountRepo;
         private readonly IConfiguration _configuration;
         private readonly IUserRepo _userRepo;
-        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo)
+        private readonly IProjectRepo _projectRepo;
+        private readonly IKeepRepo _keepRepo;
+        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo,IProjectRepo projectRepo, IKeepRepo keepRepo)
         {
             _accountRepo = accountRepo;
             _configuration = configuration;
             _userRepo = userRepo;
+            _projectRepo = projectRepo;
+            _keepRepo = keepRepo;
         }
         public async Task<ResponseModel<string>> RegisterAsync(RegisterVM register)
         {
@@ -227,6 +231,41 @@ namespace Keeper.Services.Services
             {
                 return 0;
             }
+        }
+
+        public async Task<ResponseModel<string>> ConfirmationOfSharedItemAsync(SharedItemVM sharedItem)
+        {
+            List<UserModel> users = new();
+            List<ProjectModel> projects = new();
+            List<KeepModel> Keeps = new();
+            if (sharedItem.Type == 0)
+            {
+                var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
+                var projectdata = await _projectRepo.GetByIdAsync(sharedItem.TypeId);
+                users.Add(userdata);
+                projects.Add(projectdata);
+                projectdata.Users = users;
+                userdata.Projects = projects;
+                await _projectRepo.UpdatedAsync(projectdata);
+                _userRepo.UpdateUser(userdata);
+            }
+            else
+            {
+                var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
+                var keepdata = await _keepRepo.GetByIdAsync(sharedItem.TypeId);
+                users.Add(userdata);
+                Keeps.Add(keepdata);
+                keepdata.Users = users;
+                userdata.Keeps = Keeps;
+                await _keepRepo.UpdatedAsync(keepdata);
+                _userRepo.UpdateUser(userdata);
+            }
+            return new ResponseModel<string>()
+            {
+                StatusName=StatusType.SUCCESS,
+                IsSuccess=true,
+                Message="Confirmation Done"
+            };
         }
     }
 }

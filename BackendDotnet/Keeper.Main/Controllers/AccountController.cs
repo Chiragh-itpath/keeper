@@ -36,5 +36,10 @@ namespace Keeper.Main.Controllers
         {
             return await _accountService.UpdatePasswordAsync(loginVM);
         }
+        [HttpPost("SharedItem")]
+        public async Task<ResponseModel<string>> ConfirmationOfSharedItem(SharedItemVM sharedItem)
+        {
+            return await _accountService.ConfirmationOfSharedItemAsync(sharedItem);
+        }
     }
 }
