@@ -1,6 +1,7 @@
 import type { ILogin } from '@/Models/LoginModel'
 import type { IRegister } from '@/Models/RegisterModel'
 import { http } from '@/GlobalConfig/ApiClient'
+import type { ISharedItem } from '@/Models/SharedItem'
 async function signup(user: IRegister): Promise<any> {
   try {
     const response = await http.post('/Account/Register', user)
@@ -36,4 +37,12 @@ async function ChangePassword(user: ILogin): Promise<any> {
     return e
   }
 }
-export { signup, signin, GenerateOTP, ChangePassword }
+async function SharedItem(ItemDetails:ISharedItem): Promise<any> {
+  try {
+    const response = await http.post('/Account/SharedItem', ItemDetails)
+    return response
+  } catch (e) {
+    return e
+  }
+}
+export { signup, signin, GenerateOTP, ChangePassword,SharedItem }

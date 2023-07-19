@@ -9,5 +9,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM);
         Task<ResponseModel<OTPModel>> GenerateOTP(string email);
         Task<ResponseModel<string>> UpdatePasswordAsync(LoginVM user);
+        Task<ResponseModel<string>> ConfirmationOfSharedItemAsync(SharedItemVM sharedItem);
     }
 }

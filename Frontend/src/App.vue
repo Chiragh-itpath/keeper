@@ -15,7 +15,8 @@ const state = reactive({
   isSignup: false,
   isForgotPwd: false,
   is404: false,
-  isItempage: false
+  isItempage: false,
+  isConfirm:false
 })
 
 const { Tags, TagsByType } = storeToRefs(tagStore())
@@ -30,6 +31,7 @@ watch(
     state.isForgotPwd = name == RouterEnum.FORGOT_PASSWORD
     state.is404 = name == RouterEnum.PAGE_NOT_FOUND
     state.isItempage = name == RouterEnum.ITEM
+    state.isConfirm=name==RouterEnum.VERIFICATION
   }
 )
 const ToggleSideBarAndNavBar = (): boolean => {
@@ -39,7 +41,8 @@ const ToggleSideBarAndNavBar = (): boolean => {
     state.isSignup ||
     state.isForgotPwd ||
     state.is404 ||
-    state.isItempage
+    state.isItempage ||
+    state.isConfirm
   )
 }
 
