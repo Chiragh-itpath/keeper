@@ -9,7 +9,7 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IKeepRepo
     {
-        Task<List<KeepModel>> GetAllAsync(Guid projectId);
+        Task<IEnumerable<KeepModel>> GetAllAsync(Guid projectId,Guid UserId);
         Task<KeepModel> GetByIdAsync(Guid Id);
         Task<KeepModel> SaveAsync(KeepModel keep);
         Task<bool> DeleteByIdAsync(Guid keepid);

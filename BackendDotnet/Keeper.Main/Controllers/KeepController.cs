@@ -25,10 +25,11 @@ namespace Keeper.Main.Controllers
         {
             return await _keepService.SaveAsync(keep);
         }
-        [HttpGet("")]
-        public async Task<ResponseModel<List<KeepModel>>> GetAll(Guid ProjectId)
+        [HttpGet]
+        [Route("{ProjectId}/{UserId}")]
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAll(Guid ProjectId,Guid UserId)
         {
-            return await _keepService.GetAllAsync(ProjectId);
+            return await _keepService.GetAllAsync(ProjectId,UserId);
 
         }
         [HttpGet]

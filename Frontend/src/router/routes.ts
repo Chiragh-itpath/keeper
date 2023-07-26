@@ -44,7 +44,7 @@ export const routes = [
     beforeEnter: routeGuard
   },
   {
-    path: '/Projects/Keeps/:id',
+    path: '/Projects/Keeps/:id/:isShared',
     component: KeepPage,
     name: RouterEnum.KEEP,
     beforeEnter: routeGuard

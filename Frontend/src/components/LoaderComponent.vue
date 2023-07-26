@@ -1,7 +1,19 @@
 <script setup lang="ts"></script>
 
 <template>
-  <v-progress-circular indeterminate color="primary" size="x-large"></v-progress-circular>
+  <div class="text-center">
+  <v-overlay
+      class="align-center justify-center"
+      :model-value="true"
+      :persistent="true"
+    >
+      <v-progress-circular
+        color="primary"
+        indeterminate
+        size="x-large"
+      ></v-progress-circular>
+    </v-overlay>
+    </div>
 </template>
 
 <style scoped>

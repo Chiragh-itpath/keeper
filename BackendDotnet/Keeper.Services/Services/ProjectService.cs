@@ -29,60 +29,68 @@ namespace Keeper.Services.Services
             List<UserModel> users = new();
             List<ProjectModel> projects = new();
             var tagId = Guid.NewGuid();
-            if (projectVM.TagTitle != null && projectVM.TagTitle != "")
+            try
             {
-                var tag = await _tagService.GetByTitleAsync(projectVM.TagTitle);
-                if (tag.Data == null)
+                if (projectVM.TagTitle != null && projectVM.TagTitle != "")
                 {
-                    TagModel tagModel = new TagModel()
+                    var tag = await _tagService.GetByTitleAsync(projectVM.TagTitle);
+                    if (tag.Data == null)
                     {
-                        Id = tagId,
-                        Title = projectVM.TagTitle,
-                        Type = TagType.PROJECT,
-                    };
-                    await _tagService.SaveAsync(tagModel);
+                        TagModel tagModel = new TagModel()
+                        {
+                            Id = tagId,
+                            Title = projectVM.TagTitle,
+                            Type = TagType.PROJECT,
+                        };
+                        await _tagService.SaveAsync(tagModel);
+                    }
+                    else
+                    {
+                        tagId = tag.Data.Id;
+                    }
                 }
                 else
-                {
-                    tagId = tag.Data.Id;
-                }
-            }
-            else
-                tagId = Guid.Empty;
+                    tagId = Guid.Empty;
 
-            ProjectModel model = new ProjectModel
-            {
-                Title = projectVM.Title,
-                Description = projectVM.Description,
-                CreatedOn = DateTime.Now,
-                CreatedBy = projectVM.CreatedBy,
-                TagId = tagId
-            };
-            UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
-            users.Add(user);
-            projects.Add(model);
-            model.Users = users;
-            user.Projects = projects;
-            _userRepo.UpdateUser(user);
-            var result=await _repo.SaveAsync(model);
-            if (projectVM.Mail != null)
-            {
-                try
+                ProjectModel model = new ProjectModel
                 {
-                    projectVM.Mail.TypeId = result.Id;
-                    await _mailService.SendEmailAsync(projectVM.Mail);
-                }
-                catch(Exception ex)
+                    Title = projectVM.Title,
+                    Description = projectVM.Description,
+                    CreatedOn = DateTime.Now,
+                    CreatedBy = projectVM.CreatedBy,
+                    TagId = tagId
+                };
+                UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
+                users.Add(user);
+                projects.Add(model);
+                model.Users = users;
+                user.Projects = projects;
+                await _userRepo.UpdateUser(user);
+                var result = await _repo.SaveAsync(model);
+                if (projectVM.Mail != null)
                 {
-                    return new ResponseModel<string>
+                    try
                     {
-                        StatusName = StatusType.INTERNAL_SERVER_ERROR,
-                        IsSuccess = false,
-                        Message = ex.Message,
-                    };
+                        projectVM.Mail.TypeId = result.Id;
+                        await _mailService.SendEmailAsync(projectVM.Mail);
+                    }
+                    catch (Exception ex)
+                    {
+                        return new ResponseModel<string>
+                        {
+                            StatusName = StatusType.INTERNAL_SERVER_ERROR,
+                            IsSuccess = false,
+                            Message = ex.Message,
+                        };
+                    }
+
                 }
-                
             }
+            catch(Exception ex)
+            {
+
+            }
+            
                 return new ResponseModel<string>
                 {
                     StatusName = StatusType.SUCCESS,

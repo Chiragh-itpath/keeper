@@ -25,9 +25,13 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Id == id) ?? new UserModel();
         }
 
-        public void UpdateUser(UserModel user)
+        public async Task<bool> UpdateUser(UserModel user)
         {
-          _dbKeeperContext.Update(user);
+            _dbKeeperContext.Update(user);
+            return _dbKeeperContext.SaveChanges() == 1;
+
+
+
         }
     }
 }

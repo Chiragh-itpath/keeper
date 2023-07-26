@@ -13,6 +13,8 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Win32;
+using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace Keeper.Services.Services
 {
@@ -235,6 +237,10 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> ConfirmationOfSharedItemAsync(SharedItemVM sharedItem)
         {
+          
+            try
+            {
+
             List<UserModel> users = new();
             List<ProjectModel> projects = new();
             List<KeepModel> Keeps = new();
@@ -247,18 +253,34 @@ namespace Keeper.Services.Services
                 projectdata.Users = users;
                 userdata.Projects = projects;
                 await _projectRepo.UpdatedAsync(projectdata);
-                _userRepo.UpdateUser(userdata);
+                await _userRepo.UpdateUser(userdata);
             }
             else
             {
                 var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
                 var keepdata = await _keepRepo.GetByIdAsync(sharedItem.TypeId);
+                var projectdata = await _projectRepo.GetByIdAsync(keepdata.ProjectId);
                 users.Add(userdata);
                 Keeps.Add(keepdata);
+                projects.Add(projectdata);
                 keepdata.Users = users;
                 userdata.Keeps = Keeps;
+                    var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
+                    string query = "select * from ProjectModelUserModel where UsersId=@userid and ProjectsId=@projectid";
+                    var result = con.Query(query, new { userid = userdata.Id, projectid = projectdata.Id });
+                    if (result.Count() == 0)
+                    {
+                        userdata.Projects = projects;
+                        projectdata.Users = users;
+                        await _projectRepo.UpdatedAsync(projectdata);
+                    } 
                 await _keepRepo.UpdatedAsync(keepdata);
-                _userRepo.UpdateUser(userdata);
+                await _userRepo.UpdateUser(userdata);
+            }
+            }
+            catch (Exception ex)
+            {
+
             }
             return new ResponseModel<string>()
             {

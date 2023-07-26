@@ -32,7 +32,7 @@ const props = withDefaults(
         <v-icon size="x-large"> mdi-menu </v-icon>
       </button-component>
     </template>
-    <v-app-bar-title @click="()=>$router.push({name:RouterEnum.HOME})">Keeper</v-app-bar-title>
+    <v-app-bar-title @click="()=>$router.push({name:RouterEnum.PROJECT})" class="pointer">Keeper</v-app-bar-title>
     <template v-slot:append>
       <div class="pa-5">
         <Button variant="outlined" @click="logout"> Logout </Button>
@@ -40,4 +40,8 @@ const props = withDefaults(
     </template>
   </v-app-bar>
 </template>
-
+<style>
+.pointer {
+  cursor: pointer;
+}
+</style>
