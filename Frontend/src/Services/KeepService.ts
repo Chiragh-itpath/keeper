@@ -28,10 +28,10 @@ export async function Delete(KeepId: string): Promise<any> {
     return e
   }
 }
-export async function GetAll(ProjectId: string,UserId:string): Promise<any> {
+export async function GetAll(ProjectId: string,UserId:string,isShared:number): Promise<any> {
   try {
     // const response = await http.get(`/Keep?ProjectId=${ProjectId}/${UserId}`)
-    const response = await http.get(`/Keep/${ProjectId}/${UserId}`)
+    const response = await http.get(`/Keep/${ProjectId}/${UserId}/${isShared}`)
     return response
   } catch (e) {
     console.log(e)

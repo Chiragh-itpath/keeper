@@ -13,7 +13,7 @@ namespace Keeper.Services.Services.Interfaces
     public interface IKeepService
     {
         Task<ResponseModel<string>> SaveAsync(KeepVM keep);
-        Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId);
+        Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId, int isShared);
         Task<ResponseModel<KeepModel>> GetByIdAsync(Guid Id);
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
         Task<ResponseModel<string>> UpdatedAsync(KeepVM keep);

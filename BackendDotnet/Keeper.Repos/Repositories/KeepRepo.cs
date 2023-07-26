@@ -32,35 +32,45 @@ namespace Keeper.Repos.Repositories
             return await UpdatedAsync(result);
         }
 
-        public async Task<IEnumerable<KeepModel>> GetAllAsync(Guid projectId,Guid UserId)
+        public async Task<IEnumerable<KeepModel>> GetAllAsync(Guid projectId,Guid UserId,int isShared)
         {
-            var result = Guid.Empty;
             var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-            try
+            if (isShared==1)
             {
-                var query = "select top 1 km.KeepsId from KeepModelUserModel km join ProjectModelUserModel pm on km.UsersId = @usersId where pm.ProjectsId = @projectId";
-                result = await con.QuerySingleOrDefaultAsync<Guid>(query, new { projectId = projectId, usersId = UserId });
-
-                if (result != Guid.Empty)
+                try
                 {
-                    var Allkeeps = "select distinct k.Id, k.* from Keeps k join KeepModelUserModel ku on  k.Id = ku.KeepsId join ProjectModelUserModel pu on pu.ProjectsId = k.ProjectId and pu.UsersId = ku.UsersId and pu.UsersId = @usersId and pu.ProjectsId = @projectsId where k.IsDeleted=0";
-                    var keeps = await con.QueryAsync<KeepModel>(Allkeeps, new { usersId = UserId, projectsId = projectId });
-                    return keeps;
+                    var query = "select k.* from Keeps k join KeepModelUserModel ku on  k.Id = ku.KeepsId and ku.UsersId = @usersId join ProjectModelUserModel pu on pu.ProjectsId = k.ProjectId and pu.ProjectsId =@projectsId and pu.UsersId = ku.UsersId ";
+                    var sharedkeep = await con.QueryAsync<KeepModel>(query, new { usersId = UserId, projectsId = projectId });
+                    if (sharedkeep.Count() == 0)
+                    {
+                        var AllKeeps = "select * from keeps where keeps.ProjectId=@projectId";
+                        var keeps = await con.QueryAsync<KeepModel>(AllKeeps, new { projectId = projectId });
+                        return keeps;
+                    }
+                    else
+                    {
+                        return sharedkeep.ToList();
+                    }
                 }
-                else
+                catch(Exception ex)
                 {
-                    var keep = "select k.* from Keeps k where k.ProjectId = @projectId";
-                    var keepresult = await con.QueryAsync<KeepModel>(keep, new { projectId = projectId });
-                    return keepresult;
+                    throw ex;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                throw ex;
+                try
+                {
+                    var AllKeeps = "select * from keeps where keeps.ProjectId=@projectId";
+                    var result = await con.QueryAsync<KeepModel>(AllKeeps, new { projectId = projectId });
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                } 
             }
-            
         }
-
         public async Task<KeepModel> GetByIdAsync(Guid Id)
         {
             return await _dbKeeperContext.Keeps.FindAsync(Id);

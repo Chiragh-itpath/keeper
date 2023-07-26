@@ -13,9 +13,9 @@ export const useKeepStore = defineStore('KeepStore', () => {
   async function GetKeepById(KeepId: string): Promise<any> {
     return await GetById(KeepId)
   }
-  async function GetKeeps(projectId: string): Promise<any> {
+  async function GetKeeps(projectId: string,isShared:number=0): Promise<any> {
     const UserId = User.value!.id
-    const keeps = await GetAll(projectId,UserId)
+    const keeps = await GetAll(projectId,UserId,isShared)
     Keeps.value = keeps.data.data
   }
   async function GetKeepByTag(TagId: string): Promise<any> {

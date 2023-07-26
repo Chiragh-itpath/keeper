@@ -39,9 +39,9 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId)
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId, int isShared)
         {
-            var result = await _repo.GetAllAsync(ProjectId,UserId);
+            var result = await _repo.GetAllAsync(ProjectId,UserId,isShared);
 
             return new ResponseModel<IEnumerable<KeepModel>>
             {
@@ -102,7 +102,7 @@ namespace Keeper.Services.Services
                 }
                 else
                 {
-                    tagId = Guid.Empty;
+                    tagId = default(Guid);
                 }
                 KeepModel model = new KeepModel();
                 {
