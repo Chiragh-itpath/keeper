@@ -59,7 +59,7 @@ watch(route, async () => {
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
   } else {
-    filteredkeeps.value = await GetKeeps(route.params.id.toString())
+    filteredkeeps.value = await GetKeeps(route.params.id.toString(),Number.parseInt(route.params.isShared.toString()))
   }
 })
 // watch(Keeps,async () => {
@@ -83,7 +83,7 @@ onMounted(async () => {
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
     await TagForKeeps(projectId.value)
   proid.value = route.params.id.toString()
-  await GetKeeps(proid.value)
+  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
   filteredkeeps.value=Keeps.value
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
@@ -131,7 +131,7 @@ async function CreateKeep(): Promise<void> {
   
     // await Mail(mailObj)
   state.inviteEmail = []
-  await GetKeeps(proid.value)
+  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
   await TagForKeeps(proid.value)
   setKeepData()
 }
@@ -139,7 +139,7 @@ async function CreateKeep(): Promise<void> {
 async function deletekeep(val:boolean) {
   if(val){
   await DeleteKeep(state.KeepId)
-  await GetKeeps(proid.value)
+  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
   await TagForKeeps(proid.value)
   setKeepData()
   }
@@ -176,7 +176,7 @@ async function setKeepData() {
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
   } else {
-    await GetKeeps(proid.value)
+    await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
     filteredkeeps.value = Keeps.value
   }
 }
