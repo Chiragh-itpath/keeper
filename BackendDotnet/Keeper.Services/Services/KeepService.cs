@@ -39,11 +39,11 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<List<KeepModel>>> GetAllAsync(Guid ProjectId)
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId)
         {
-            var result = await _repo.GetAllAsync(ProjectId);
+            var result = await _repo.GetAllAsync(ProjectId,UserId);
 
-            return new ResponseModel<List<KeepModel>>
+            return new ResponseModel<IEnumerable<KeepModel>>
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
@@ -80,48 +80,55 @@ namespace Keeper.Services.Services
             List<KeepModel> keeps = new();
 
             var tagId = Guid.NewGuid();
-            if (keep.TagTitle != null && keep.TagTitle!="") 
+            try
             {
-                var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
-                if (tagdata.Data == null)
+                if (keep.TagTitle != null && keep.TagTitle != "")
                 {
-                    TagModel tag = new TagModel()
+                    var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
+                    if (tagdata.Data == null)
                     {
-                        Id = tagId,
-                        Title = keep.TagTitle,
-                        Type = TagType.KEEP
-                    };
-                    await _tagService.SaveAsync(tag);
+                        TagModel tag = new TagModel()
+                        {
+                            Id = tagId,
+                            Title = keep.TagTitle,
+                            Type = TagType.KEEP
+                        };
+                        await _tagService.SaveAsync(tag);
+                    }
+                    else
+                    {
+                        tagId = tagdata.Data.Id;
+                    }
                 }
                 else
                 {
-                    tagId = tagdata.Data.Id;
+                    tagId = Guid.Empty;
                 }
-            }
-            else
-            {
-                tagId=Guid.Empty;
-            }
-            KeepModel model = new KeepModel();
-            {
-                model.Title=keep.Title;
-                model.CreatedOn = DateTime.Now;
-                model.CreatedBy= keep.CreatedBy;
-                model.ProjectId = keep.ProjectId;
-                model.TagId = tagId;
-            };
-            UserModel user= await _userRepo.GetByIdAsync(model.CreatedBy);
-            users.Add(user);
-            keeps.Add(model);
-            model.Users = users;
-            user.Keeps = keeps;
-            _userRepo.UpdateUser(user);
-            var response=await _repo.SaveAsync(model);
+                KeepModel model = new KeepModel();
+                {
+                    model.Title = keep.Title;
+                    model.CreatedOn = DateTime.Now;
+                    model.CreatedBy = keep.CreatedBy;
+                    model.ProjectId = keep.ProjectId;
+                    model.TagId = tagId;
+                };
+                UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
+                users.Add(user);
+                keeps.Add(model);
+                model.Users = users;
+                user.Keeps = keeps;
+                await _userRepo.UpdateUser(user);
+                var response = await _repo.SaveAsync(model);
                 if (keep.mail != null)
                 {
                     keep.mail.TypeId = response.Id;
                     await _mailService.SendEmailAsync(keep.mail);
                 }
+
+            }
+            catch(Exception ex) { 
+            }
+            
                 return new ResponseModel<string>
                 {
                     StatusName = StatusType.SUCCESS,

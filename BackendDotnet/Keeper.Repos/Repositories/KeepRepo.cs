@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
 using Keeper.Context;
 using Keeper.Context.Model;
@@ -16,7 +17,7 @@ namespace Keeper.Repos.Repositories
 {
     public class KeepRepo : IKeepRepo
     {
-        private readonly DbKeeperContext _dbKeeperContext;
+        private readonly DbKeeperContext _dbKeeperContext;        
         private readonly IConfiguration _configuration;
         public KeepRepo(DbKeeperContext dbKeeperContext,IConfiguration configuration)
         {
@@ -31,9 +32,33 @@ namespace Keeper.Repos.Repositories
             return await UpdatedAsync(result);
         }
 
-        public async Task<List<KeepModel>> GetAllAsync(Guid projectId)
+        public async Task<IEnumerable<KeepModel>> GetAllAsync(Guid projectId,Guid UserId)
         {
-            return await _dbKeeperContext.Keeps.Where(x => x.ProjectId == projectId && x.IsDeleted == false).ToListAsync();
+            var result = Guid.Empty;
+            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
+            try
+            {
+                var query = "select top 1 km.KeepsId from KeepModelUserModel km join ProjectModelUserModel pm on km.UsersId = @usersId where pm.ProjectsId = @projectId";
+                result = await con.QuerySingleOrDefaultAsync<Guid>(query, new { projectId = projectId, usersId = UserId });
+
+                if (result != Guid.Empty)
+                {
+                    var Allkeeps = "select distinct k.Id, k.* from Keeps k join KeepModelUserModel ku on  k.Id = ku.KeepsId join ProjectModelUserModel pu on pu.ProjectsId = k.ProjectId and pu.UsersId = ku.UsersId and pu.UsersId = @usersId and pu.ProjectsId = @projectsId where k.IsDeleted=0";
+                    var keeps = await con.QueryAsync<KeepModel>(Allkeeps, new { usersId = UserId, projectsId = projectId });
+                    return keeps;
+                }
+                else
+                {
+                    var keep = "select k.* from Keeps k where k.ProjectId = @projectId";
+                    var keepresult = await con.QueryAsync<KeepModel>(keep, new { projectId = projectId });
+                    return keepresult;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         public async Task<KeepModel> GetByIdAsync(Guid Id)

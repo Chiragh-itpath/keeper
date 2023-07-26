@@ -107,7 +107,7 @@ async function CreateKeep(): Promise<void> {
       tagTitle: state.tag,
       mail:mailObj!
     }
-    
+    form.value.reset()
     const response = await AddKeep(keeps)
     console.log(response);
     
@@ -115,8 +115,6 @@ async function CreateKeep(): Promise<void> {
       state.openSnkbar = true
       state.snackbarMessage = response.data.message
     }
-    form.value.reset()
-    state.dialog = false
   } else {
     const keep: Ikeep = {
       id: state.KeepId,

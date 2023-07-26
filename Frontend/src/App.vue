@@ -6,6 +6,10 @@ import { RouterEnum } from '@/enum/RouterEnum'
 import { tagStore } from '@/stores/TagStore'
 import { storeToRefs } from 'pinia'
 import NavBar from './components/NavBar.vue'
+import Loader from "@/components/LoaderComponent.vue";
+import { useUserStore } from "@/stores/UserStore";
+import { onMounted } from 'vue'
+const {isLoading} =storeToRefs(useUserStore())
 
 const route = useRoute()
 const { GetAll, GetByTagType, GetByTagTitle } = tagStore()
@@ -59,10 +63,14 @@ async function FindTag(title: string) {
   )
     router.push({ name: RouterEnum.KEEP_BY_TAG, params: { id: res.id } })
 }
+onMounted(() => {
+  isLoading.value = false;
+});
 </script>
 
 <template>
   <v-layout class="hide-scrollerbar">
+    <Loader v-if="isLoading"/>
     <NavBar v-if="!ToggleSideBarAndNavBar()" :disableToggle="TagsByType.length > 0"></NavBar>
     <side-bar v-if="!ToggleSideBarAndNavBar() && TagsByType.length > 0">
       <template #data>

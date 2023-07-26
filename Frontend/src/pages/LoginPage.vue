@@ -11,6 +11,7 @@ import { useUserStore } from '@/stores/UserStore'
 import { useTokenStore } from '@/stores/TokenStore'
 import Snackbar from '@/components/SnackbarComponent.vue'
 import Loader from '@/components/LoaderComponent.vue'
+import { onMounted } from 'vue'
 const { loginUser } = useAccountStore()
 const router = useRouter()
 const form = ref()
@@ -41,6 +42,7 @@ async function login(): Promise<void> {
   }
   const [response, error] = await loginUser(user)
   if (error) {
+    console.log(error)
     state.serverError = true
     state.showSnackbar = true
     state.SnackbarMessage = 'Internal Server Error'
@@ -71,7 +73,7 @@ async function login(): Promise<void> {
 }
 </script>
 <template>
-  <loader v-if="state.isLoading" />
+  <!-- <loader v-if="state.isLoading" /> -->
   <v-app :class="{ blur: state.isLoading }">
     <v-main>
       <v-container fill-height fluid>
@@ -100,7 +102,7 @@ async function login(): Promise<void> {
                         {{ state.SnackbarMessage }}
                       </Snackbar>
                       <v-btn type="submit" flatcolor="#5865f2" rounded="lg" size="large" variant="flat" color="teal"
-                        class="mt-4" :disabled="state.isDisable">Login</v-btn>
+                        class="mt-4" :disabled="state.isDisable" >Login</v-btn>
                       <div class="mt-5">
                         New User?
                         <router-link :to="{ name: RouterEnum.SIGNUP }">Create an account</router-link>

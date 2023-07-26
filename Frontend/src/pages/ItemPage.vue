@@ -15,7 +15,7 @@ import { watch } from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import DeleteComponent from '@/components/DeleteComponent.vue'
-import { SharedProject } from '@/Services/ProjectService'
+// import { SharedProject } from '@/Services/ProjectService'
 const { AddItem, GetItem, GetAllItems, DeleteItem, UpdateItem } = useItemStore()
 const { Items } = storeToRefs(useItemStore())
 let filtereditems = ref(Items.value)

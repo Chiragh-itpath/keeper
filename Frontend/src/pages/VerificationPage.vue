@@ -34,7 +34,7 @@ await SharedItemDetail(model)
             </v-card-title>
             <v-card-subtitle class="text-center mb-5"><v-img  class="mx-auto" :width="200" src="https://img.icons8.com/clouds/100/000000/handshake.png"></v-img> </v-card-subtitle>
             <v-card-text class="text-center text-subtitle-1">
-                    Thank you for your interest in contributing to Project. You now have access to the project and can begin collaborating with the team. </v-card-text>
+              Thank you for your collaboration! Feel free to make any edits or add your thoughts directly to the note.To access the note and start collaborating, click the button below: </v-card-text>
               <v-card-actions>
                 <div class="d-flex flex-column justify-center mx-auto">
                   <v-btn

@@ -23,6 +23,10 @@ namespace Keeper.Common.View_Models
         public MailRequest? Mail {  get; set; }
 
 
+
+
+
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

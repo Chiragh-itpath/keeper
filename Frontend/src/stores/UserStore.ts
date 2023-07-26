@@ -9,6 +9,7 @@ const { cookies } = useCookies()
 export const useUserStore = defineStore(
   'user',
   () => {
+    const isLoading=ref(false)
     const router = useRouter()
     let User = ref<IUser>()
     const { getToken } = useTokenStore()
@@ -33,7 +34,8 @@ export const useUserStore = defineStore(
       isLoggedin,
       logout,
       GetUserByEmail,
-      GetUserById
+      GetUserById,
+      isLoading
     }
   },
   {

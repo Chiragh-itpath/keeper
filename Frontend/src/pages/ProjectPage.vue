@@ -187,7 +187,7 @@ function formatDate(datetime: Date) {
 }
 </script>
 <template>
- <Loader v-if="state.isLoading" /> 
+ <!-- <Loader v-if="state.isLoading" />  -->
   <v-container>
     <v-row>
       <v-col cols="12" md="10" sm="12">
@@ -213,7 +213,7 @@ function formatDate(datetime: Date) {
           <Card backgroundColor="light-green-lighten-3">
             <template #title>
               <div class="position-relative text-grey-darken-4">
-                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
+                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:1 } })">{{
                   project.title
                 }}</span>
                 <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
@@ -232,7 +232,7 @@ function formatDate(datetime: Date) {
               </div>
             </template>
             <template #text>
-              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
+              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:1 } })">
                 {{ project.description }}
                 <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
                   description provided
@@ -245,7 +245,7 @@ function formatDate(datetime: Date) {
         <Card backgroundColor="lightenTeal">
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">{{
+              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:0 } })">{{
                 project.title
               }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
@@ -264,7 +264,7 @@ function formatDate(datetime: Date) {
             </div>
           </template>
           <template #text>
-            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id } })">
+            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:0 } })">
               {{ project.description }}
               <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
                 description provided
@@ -340,7 +340,7 @@ function formatDate(datetime: Date) {
   </ModalComponent>
   <ModalComponent :dialog="state.openInvite" @close="state.openInvite = false" :width="600">
     <template #title>
-      <div class="text-primary mt-2">Invite People</div>
+      <div class="text-primary mt-2 text-center">Invite People</div>
     </template>
     <template #formSlot>
       <v-form>
