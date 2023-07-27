@@ -19,5 +19,6 @@ namespace Keeper.Services.Services.Interfaces
         Task<ResponseModel<string>> UpdatedAsync(ProjectVM project);
         Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId,Guid tagId);
         Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid userId);
+        Task<IEnumerable<string>> OwnerName(Guid projectId);
     }
 }

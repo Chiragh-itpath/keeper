@@ -1,6 +1,6 @@
 import type { IProject } from '@/Models/ProjectModel'
 
- import { Insert, GetById, Delete, Update, GetAll, GetByTag,SharedProject } from '@/Services/ProjectService'
+ import { Insert, GetById, Delete, Update, GetAll, GetByTag,SharedProject,OwnerName } from '@/Services/ProjectService'
 import { defineStore, storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/UserStore'
 import { ref, type Ref } from 'vue'
@@ -36,8 +36,14 @@ export const useProjectStore = defineStore('ProjectStore', () => {
   }
   async function ContributeProject() {
     const UserId = User.value!.id
-    let res=await SharedProject(UserId)
+    let res:IProject[]=await SharedProject(UserId)
+    res.forEach(async (element) => {
+      let response=await OwnerName(element.id!)
+      console.log(response)
+      element.Contributers=response
+    });
     SharedProjects.value=res
+    console.log(res)
     return res
   }
   return {
