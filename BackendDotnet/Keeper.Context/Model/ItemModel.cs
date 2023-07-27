@@ -1,7 +1,7 @@
 ﻿using Keeper.Common.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace Keeper.Context.Model
 {
@@ -25,7 +25,8 @@ namespace Keeper.Context.Model
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public Guid CreatedBy { get; set; }
-        public Guid UpdatedBy { get; set; }
+        [AllowNull]
+        public Guid? UpdatedBy { get; set; }
         public virtual ICollection<FileModel>? Files { get; set; }
         public void Dispose()
         {
