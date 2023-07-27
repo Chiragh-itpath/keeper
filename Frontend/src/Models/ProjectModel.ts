@@ -10,4 +10,5 @@ export interface IProject {
   updatedBy?: string
   tagTitle?: string
   mail?:IMail
+  Contributers?:string[]
 }
