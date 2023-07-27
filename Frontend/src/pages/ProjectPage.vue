@@ -186,6 +186,7 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
+
 </script>
 <template>
  <!-- <Loader v-if="state.isLoading" />  -->
