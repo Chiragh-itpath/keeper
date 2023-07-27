@@ -28,7 +28,7 @@ namespace Keeper.Services.Services
         {
             List<UserModel> users = new();
             List<ProjectModel> projects = new();
-            var tagId = Guid.NewGuid();
+            Guid? tagId = Guid.NewGuid();
             try
             {
                 if (projectVM.TagTitle != null && projectVM.TagTitle != "")
@@ -38,7 +38,7 @@ namespace Keeper.Services.Services
                     {
                         TagModel tagModel = new TagModel()
                         {
-                            Id = tagId,
+                            Id = tagId.Value,
                             Title = projectVM.TagTitle,
                             Type = TagType.PROJECT,
                         };
@@ -50,7 +50,7 @@ namespace Keeper.Services.Services
                     }
                 }
                 else
-                    tagId = Guid.Empty;
+                    tagId = null;
 
                 ProjectModel model = new ProjectModel
                 {
@@ -126,7 +126,7 @@ namespace Keeper.Services.Services
         {
             List<UserModel> users = new();
             List<ProjectModel> projects = new();
-            var tagid= Guid.NewGuid();
+            Guid? tagid= Guid.NewGuid();
             if(project.TagTitle != null && project.TagTitle != "")
             {
                 var tagdata= await _tagService.GetByTitleAsync(project.TagTitle);
@@ -134,7 +134,7 @@ namespace Keeper.Services.Services
                 {
                     TagModel tag = new TagModel()
                     {
-                        Id = tagid,
+                        Id = tagid.Value,
                         Title = project.TagTitle,
                         Type = TagType.PROJECT
                     };
@@ -148,7 +148,7 @@ namespace Keeper.Services.Services
             }
             else
             {
-                tagid = Guid.Empty;
+                tagid = null;
             }
             ProjectModel existingModel = await _repo.GetByIdAsync(project.Id);
             existingModel.Title = project.Title;

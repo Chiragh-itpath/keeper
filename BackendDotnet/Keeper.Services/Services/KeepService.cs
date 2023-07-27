@@ -79,7 +79,7 @@ namespace Keeper.Services.Services
             List<UserModel> users = new();
             List<KeepModel> keeps = new();
 
-            var tagId = Guid.NewGuid();
+            Guid? tagId = Guid.NewGuid();
             try
             {
                 if (keep.TagTitle != null && keep.TagTitle != "")
@@ -89,7 +89,7 @@ namespace Keeper.Services.Services
                     {
                         TagModel tag = new TagModel()
                         {
-                            Id = tagId,
+                            Id = tagId.Value,
                             Title = keep.TagTitle,
                             Type = TagType.KEEP
                         };
@@ -102,7 +102,7 @@ namespace Keeper.Services.Services
                 }
                 else
                 {
-                    tagId = default(Guid);
+                    tagId = null;
                 }
                 KeepModel model = new KeepModel();
                 {
@@ -151,7 +151,7 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<string>> UpdatedAsync(KeepVM keep)
         {
-            var tagid = Guid.NewGuid();
+            Guid? tagid = Guid.NewGuid();
             if (keep.TagTitle != null && keep.TagTitle != "")
             {
                 var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
@@ -159,7 +159,7 @@ namespace Keeper.Services.Services
                 {
                     TagModel tag = new TagModel()
                     {
-                        Id = tagid,
+                        Id = tagid.Value,
                         Title = keep.TagTitle,
                         Type = TagType.PROJECT
                     };
@@ -172,7 +172,7 @@ namespace Keeper.Services.Services
             }
             else
             {
-                tagid = Guid.Empty;
+                tagid = null;
             }
             KeepModel existingModel = await _repo.GetByIdAsync((Guid)keep.Id!);
             existingModel.Id = (Guid)keep.Id!;
