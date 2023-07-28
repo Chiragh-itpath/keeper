@@ -96,8 +96,8 @@ onMounted(async () => {
     await TagForProject()
     await GetProjects()
     sharedProject.value=await ContributeProject();
-  filterData.value = Projects.value
-  state.isLoading = false;
+    filterData.value = Projects.value
+    state.isLoading = false;
 })
 async function addProject(): Promise<void> {
   const { valid } = await form.value.validate()
@@ -239,7 +239,7 @@ function formatDate(datetime: Date) {
                 <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
                   description provided
                 </span>
-                  {{ project.Contributers}}
+                {{ project.Contributers![0]  }}
               </v-card-text>
             </template>
           </Card>

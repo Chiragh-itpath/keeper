@@ -37,13 +37,11 @@ export const useProjectStore = defineStore('ProjectStore', () => {
   async function ContributeProject() {
     const UserId = User.value!.id
     let res:IProject[]=await SharedProject(UserId)
-    res.forEach(async (element) => {
-      let response=await OwnerName(element.id!)
-      console.log(response)
-      element.Contributers=response
-    });
+    for (const element of res) {
+      let response = await OwnerName(element.id!);
+      element.Contributers = response;
+    }
     SharedProjects.value=res
-    console.log(res)
     return res
   }
   return {
