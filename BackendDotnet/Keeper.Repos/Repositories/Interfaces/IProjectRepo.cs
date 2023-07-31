@@ -18,5 +18,7 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<ProjectModel> UpdatedAsync(ProjectModel project);
         Task<List<ProjectModel>> GetByTagAsync(Guid userId, Guid tagId);
         Task<IEnumerable<ProjectModel>> SharedProject(Guid userId);
+        Task<IEnumerable<string>> OwnerName(Guid projectId);
+
     }
 }
