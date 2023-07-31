@@ -4,6 +4,7 @@ using Keeper.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Keeper.Context.Migrations
 {
     [DbContext(typeof(DbKeeperContext))]
-    partial class DbKeeperContextModelSnapshot : ModelSnapshot
+    [Migration("20230728082851_project-User-Model")]
+    partial class projectUserModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,23 +149,6 @@ namespace Keeper.Context.Migrations
                     b.ToTable("Keeps");
                 });
 
-            modelBuilder.Entity("Keeper.Context.Model.KeepUserModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("KeepId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("keepUser");
-                });
-
             modelBuilder.Entity("Keeper.Context.Model.ProjectModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -207,7 +192,7 @@ namespace Keeper.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("HasFullAccess")
+                    b.Property<bool>("IsShared")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("ProjectId")
@@ -218,7 +203,7 @@ namespace Keeper.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectUser");
+                    b.ToTable("ProjectUserModels");
                 });
 
             modelBuilder.Entity("Keeper.Context.Model.TagModel", b =>

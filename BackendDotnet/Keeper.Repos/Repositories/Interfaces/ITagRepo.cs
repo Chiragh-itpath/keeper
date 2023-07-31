@@ -18,6 +18,6 @@ namespace Keeper.Repos.Repositories.Interfaces
         Task<TagModel> GetByTitleAsync(string title);
         Task<TagModel> SaveAsync(TagModel tag);
         Task<IEnumerable<TagModel>> GetForProjectAsync(Guid userid);
-        Task<IEnumerable<TagModel>> GetForKeepAsync(Guid userid,Guid projectid);
+        Task<IEnumerable<TagModel>> GetForKeepAsync(Guid userid, Guid projectid);
     }
 }

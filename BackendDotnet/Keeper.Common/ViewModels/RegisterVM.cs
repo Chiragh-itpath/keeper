@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Keeper.Common.ViewModels
 {
-    public class RegisterVM:IDisposable
+    public class RegisterVM : IDisposable
     {
         [Required(ErrorMessage = "This field is required")]
-        public string UserName { get; set; } 
+        public string UserName { get; set; }
         [
             Required(ErrorMessage = "This field is required"),
             EmailAddress(ErrorMessage = "Enter an valid email")
@@ -18,15 +18,15 @@ namespace Keeper.Common.ViewModels
         public string Contact { get; set; } = default!;
 
         [
-            Required(ErrorMessage = "This field is required"),            
-            StringLength(8,ErrorMessage = "Password must be 8 charecter long")
+            Required(ErrorMessage = "This field is required"),
+            StringLength(8, ErrorMessage = "Password must be 8 charecter long")
         ]
 
         public string Password { get; set; } = default!;
         [
             Required(ErrorMessage = "This field is required"),
             StringLength(8, ErrorMessage = "Password must be 8 charecter long"),
-            Compare("Password",ErrorMessage ="Confrim password and Password must be same")
+            Compare("Password", ErrorMessage = "Confrim password and Password must be same")
         ]
         public string ConfirmPassword { get; set; } = default!;
 

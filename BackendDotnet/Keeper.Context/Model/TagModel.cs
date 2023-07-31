@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Keeper.Context.Model
 {
-    public class TagModel:IDisposable
+    public class TagModel : IDisposable
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

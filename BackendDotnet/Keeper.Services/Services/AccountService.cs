@@ -25,13 +25,17 @@ namespace Keeper.Services.Services
         private readonly IUserRepo _userRepo;
         private readonly IProjectRepo _projectRepo;
         private readonly IKeepRepo _keepRepo;
-        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo,IProjectRepo projectRepo, IKeepRepo keepRepo)
+        private readonly IProjectUserService _projectUserService;
+        private readonly IKeepUserService _keepUserService;
+        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo,IProjectRepo projectRepo, IKeepRepo keepRepo, IProjectUserService projectUserService, IKeepUserService keepUserService)
         {
             _accountRepo = accountRepo;
             _configuration = configuration;
             _userRepo = userRepo;
             _projectRepo = projectRepo;
             _keepRepo = keepRepo;
+            _projectUserService = projectUserService;
+            _keepUserService = keepUserService;
         }
         public async Task<ResponseModel<string>> RegisterAsync(RegisterVM register)
         {
@@ -240,47 +244,24 @@ namespace Keeper.Services.Services
           
             try
             {
-
-            List<UserModel> users = new();
-            List<ProjectModel> projects = new();
-            List<KeepModel> Keeps = new();
             if (sharedItem.Type == 0)
             {
                 var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
                 var projectdata = await _projectRepo.GetByIdAsync(sharedItem.TypeId);
-                users.Add(userdata);
-                projects.Add(projectdata);
-                projectdata.Users = users;
-                userdata.Projects = projects;
-                await _projectRepo.UpdatedAsync(projectdata);
-                await _userRepo.UpdateUser(userdata);
+                await _projectUserService.SaveAsync(userdata.Id, projectdata.Id, true);
             }
             else
             {
                 var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
                 var keepdata = await _keepRepo.GetByIdAsync(sharedItem.TypeId);
-                var projectdata = await _projectRepo.GetByIdAsync(keepdata.ProjectId);
-                users.Add(userdata);
-                Keeps.Add(keepdata);
-                projects.Add(projectdata);
-                keepdata.Users = users;
-                userdata.Keeps = Keeps;
-                    var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-                    string query = "select * from ProjectModelUserModel where UsersId=@userid and ProjectsId=@projectid";
-                    var result = con.Query(query, new { userid = userdata.Id, projectid = projectdata.Id });
-                    if (result.Count() == 0)
-                    {
-                        userdata.Projects = projects;
-                        projectdata.Users = users;
-                        await _projectRepo.UpdatedAsync(projectdata);
-                    } 
-                await _keepRepo.UpdatedAsync(keepdata);
-                await _userRepo.UpdateUser(userdata);
+                    var projectdata = await _projectRepo.GetByIdAsync(keepdata.ProjectId);
+                await _projectUserService.SaveAsync(userdata.Id, projectdata.Id, false);
+                await _keepUserService.SaveAsync(userdata.Id,keepdata.Id);
             }
             }
             catch (Exception ex)
             {
-
+                throw ex;
             }
             return new ResponseModel<string>()
             {

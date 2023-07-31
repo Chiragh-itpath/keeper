@@ -26,7 +26,7 @@ namespace Keeper.Main.Controllers
             catch (Exception ex)
             {
 
-                throw ex;
+                throw;
             }
 
         }

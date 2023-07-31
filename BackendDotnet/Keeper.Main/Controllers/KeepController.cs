@@ -27,9 +27,9 @@ namespace Keeper.Main.Controllers
         }
         [HttpGet]
         [Route("{ProjectId}/{UserId}/{isShared}")]
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAll(Guid ProjectId,Guid UserId, int isShared)
+        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAll(Guid ProjectId, Guid UserId, int isShared)
         {
-            return await _keepService.GetAllAsync(ProjectId,UserId, isShared);
+            return await _keepService.GetAllAsync(ProjectId, UserId, isShared);
 
         }
         [HttpGet]

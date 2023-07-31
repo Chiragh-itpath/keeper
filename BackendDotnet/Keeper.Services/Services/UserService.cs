@@ -22,7 +22,7 @@ namespace KeeperCore.Services
         {
             var res = await _userRepo.GetAllAsync();
             return res;
-        }      
+        }
         public async Task<UserModel> GetByEmailAsync(string email)
         {
             return await _userRepo.GetByEmailAsync(email);
@@ -30,7 +30,7 @@ namespace KeeperCore.Services
         public async Task<ResponseModel<UserVM>> GetByIdAsync(Guid id)
         {
             var user = await _userRepo.GetByIdAsync(id);
-            if(user.Id == Guid.Empty)
+            if (user.Id == Guid.Empty)
             {
                 return new ResponseModel<UserVM>
                 {
@@ -55,6 +55,6 @@ namespace KeeperCore.Services
             };
         }
 
-   
+
     }
 }

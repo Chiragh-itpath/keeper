@@ -1,4 +1,5 @@
-﻿using Keeper.Context.Model;
+﻿using Keeper.Common.Response;
+using Keeper.Context.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IKeepRepo
     {
-        Task<IEnumerable<KeepModel>> GetAllAsync(Guid projectId,Guid UserId, int isShared);
+        Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid projectId, Guid UserId, int isShared);
         Task<KeepModel> GetByIdAsync(Guid Id);
         Task<KeepModel> SaveAsync(KeepModel keep);
         Task<bool> DeleteByIdAsync(Guid keepid);

@@ -10,7 +10,7 @@ namespace Keeper.Context.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required]
-        public string FilePath { get; set; } = default!; 
+        public string FilePath { get; set; } = default!;
         public virtual ICollection<ItemModel>? Items { get; set; }
     }
 }

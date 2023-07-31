@@ -16,19 +16,19 @@ namespace Keeper.Main.Controllers
         {
             _itemService = itemService;
         }
-        
+
         [HttpPost]
         public async Task<ResponseModel<string>> Post([FromForm] ItemVM itemVM)
         {
             return await _itemService.SaveAsync(itemVM);
         }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update([FromForm]ItemVM itemVM)
+        public async Task<ResponseModel<string>> Update([FromForm] ItemVM itemVM)
         {
             return await _itemService.UpdateAsync(itemVM);
         }
         [HttpGet("{id}")]
-        public async Task<ResponseModel<ItemModel>> Get(Guid id) 
+        public async Task<ResponseModel<ItemModel>> Get(Guid id)
         {
             return await _itemService.GetByIdAsync(id);
         }

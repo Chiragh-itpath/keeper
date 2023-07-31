@@ -19,7 +19,7 @@ namespace Keeper.Services.Services
     {
         private readonly MailSettings _mailSettings;
         private readonly IUserService _userService;
-        public MailService(IOptions<MailSettings> mailSettings,IUserService userService)
+        public MailService(IOptions<MailSettings> mailSettings, IUserService userService)
         {
             _mailSettings = mailSettings.Value;
             _userService = userService;
@@ -30,7 +30,7 @@ namespace Keeper.Services.Services
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
             foreach (string multiemailid in mailRequest.ToEmail)
             {
-                var data= await _userService.GetByEmailAsync(multiemailid);
+                var data = await _userService.GetByEmailAsync(multiemailid);
                 email.To.Add(MailboxAddress.Parse(multiemailid));
                 email.Subject = "You're Invited! Collaborate with us on Keeper";
                 var builder = new BodyBuilder();
@@ -43,7 +43,7 @@ namespace Keeper.Services.Services
                 await smtp.SendAsync(email);
                 smtp.Disconnect(true);
             }
-           
+
         }
     }
 }

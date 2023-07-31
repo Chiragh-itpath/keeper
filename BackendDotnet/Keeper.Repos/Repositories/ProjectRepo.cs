@@ -22,7 +22,7 @@ namespace Keeper.Repos.Repositories
     {
         private readonly DbKeeperContext _dbKeeperContext;
         private readonly IConfiguration _configuration;
-        public ProjectRepo(DbKeeperContext dbKeeperContext,IConfiguration configuration)
+        public ProjectRepo(DbKeeperContext dbKeeperContext, IConfiguration configuration)
         {
             _dbKeeperContext = dbKeeperContext;
             _configuration = configuration;
@@ -37,18 +37,18 @@ namespace Keeper.Repos.Repositories
         public async Task<List<ProjectModel>> GetAllAsync(Guid UserId)
         {
             return await _dbKeeperContext.Projects.Where(x => x.CreatedBy == UserId && x.IsDeleted == false).ToListAsync();
-             
+
         }
         public async Task<ProjectModel> DeleteByIdAsync(Guid id)
         {
-            var result= await GetByIdAsync(id);
+            var result = await GetByIdAsync(id);
             result.IsDeleted = true;
             return await UpdatedAsync(result);
         }
 
         public async Task<ProjectModel> GetByIdAsync(Guid Id)
         {
-            return await _dbKeeperContext.Projects.FindAsync(Id);   
+            return await _dbKeeperContext.Projects.FindAsync(Id);
         }
 
         public async Task<ProjectModel> UpdatedAsync(ProjectModel project)
@@ -58,15 +58,15 @@ namespace Keeper.Repos.Repositories
             return project;
         }
 
-        public async Task<List<ProjectModel>> GetByTagAsync(Guid userId,Guid tagId)
+        public async Task<List<ProjectModel>> GetByTagAsync(Guid userId, Guid tagId)
         {
-            return await _dbKeeperContext.Projects.Where(x=>(x.CreatedBy==userId && x.TagId == tagId) && x.IsDeleted == false).ToListAsync();
+            return await _dbKeeperContext.Projects.Where(x => (x.CreatedBy == userId && x.TagId == tagId) && x.IsDeleted == false).ToListAsync();
         }
         public async Task<IEnumerable<ProjectModel>> SharedProject(Guid userId)
         {
             var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-                string query = "select p.* from Projects p inner join ProjectModelUserModel PU on p.Id=pu.ProjectsId where (pu.UsersId=@uid and p.createdby!=@uid) and IsDeleted='false'";
-                var result=await con.QueryAsync<ProjectModel>(query, new { uid = userId });
+            string query = "select p.* from Projects p inner join ProjectUser PU on p.Id=pu.ProjectId where (pu.UserId=@uid and p.createdby!=@uid) and IsDeleted='false'";
+            var result = await con.QueryAsync<ProjectModel>(query, new { uid = userId });
             return result;
         }
         public async Task<IEnumerable<string>> OwnerName(Guid projectId)

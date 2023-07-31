@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Common.ViewModels
 {
-    public class TagVM:IDisposable
+    public class TagVM : IDisposable
     {
         public string Title { get; set; }
         public TagType Type { get; set; }

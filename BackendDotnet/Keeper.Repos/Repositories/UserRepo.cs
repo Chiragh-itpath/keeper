@@ -17,8 +17,8 @@ namespace Keeper.Repos.Repositories
             return await _dbKeeperContext.Users.ToListAsync();
         }
         public async Task<UserModel> GetByEmailAsync(string email)
-        {        
-            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel(); 
+        {
+            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel();
         }
         public async Task<UserModel> GetByIdAsync(Guid id)
         {
