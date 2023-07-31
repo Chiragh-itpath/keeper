@@ -16,9 +16,8 @@ namespace Keeper.Context.Model
         public DateTime? UpdatedOn { get; set; }
         public bool IsDeleted { get; set; } = false;
         public Guid? TagId { get; set; }
-        public Guid CreatedBy { get;set; }
-        public Guid? UpdatedBy { get;set; }
-        public virtual IEnumerable<UserModel>? Users { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid? UpdatedBy { get; set; }
         public virtual IEnumerable<KeepModel>? Keeps { get; set; }
 
         public void Dispose()

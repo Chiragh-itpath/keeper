@@ -10,7 +10,7 @@ namespace Keeper.Context.Model
 {
     public class MailRequest
     {
-       
+
         public string[] ToEmail { get; set; }
         public TagType Type { get; set; }
         public Guid TypeId { get; set; }

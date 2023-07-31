@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Keeper.Common.View_Models
 {
-    public class ProjectVM:IDisposable
+    public class ProjectVM : IDisposable
     {
         public Guid Id { get; set; }
         [Required]
@@ -20,7 +20,7 @@ namespace Keeper.Common.View_Models
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string? TagTitle { get; set; }
-        public MailRequest? Mail {  get; set; }
+        public MailRequest? Mail { get; set; }
 
 
 

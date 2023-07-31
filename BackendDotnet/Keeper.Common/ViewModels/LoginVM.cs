@@ -14,7 +14,7 @@ namespace Keeper.Common.ViewModels
             EmailAddress(ErrorMessage = "Enter an valid email")
         ]
         public string Email { get; set; }
-        
+
         [
             Required(ErrorMessage = "This field is required"),
             StringLength(8, ErrorMessage = "Password must be 8 charecter long"),

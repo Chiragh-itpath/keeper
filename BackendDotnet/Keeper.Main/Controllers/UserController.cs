@@ -24,14 +24,14 @@ namespace Keeper.Main.Controllers
         [HttpGet("Email/{email}")]
         public async Task<ResponseModel<UserModel>> Get(string email)
         {
-            var res=await _userService.GetByEmailAsync(email);
-            if(res.Email == null)
+            var res = await _userService.GetByEmailAsync(email);
+            if (res.Email == null)
             {
                 return new ResponseModel<UserModel>()
                 {
                     IsSuccess = false,
-                    Message="Not exist",
-                    StatusName=Common.Enums.StatusType.NOT_FOUND
+                    Message = "Not exist",
+                    StatusName = Common.Enums.StatusType.NOT_FOUND
                 };
             }
             return new ResponseModel<UserModel>()
@@ -39,7 +39,7 @@ namespace Keeper.Main.Controllers
                 IsSuccess = true,
                 Message = "User data by email",
                 StatusName = Common.Enums.StatusType.SUCCESS,
-                Data=res
+                Data = res
             };
         }
     }

@@ -41,7 +41,8 @@ const state = reactive({
   snackbarMessage: '',
   isDeleted:false,
   isError:false,
-  errorMsg:''
+  errorMsg:'',
+  HasFullAccess:true
 })
 
 const form = ref()
@@ -83,7 +84,10 @@ onMounted(async () => {
   if (route.name?.toString() == RouterEnum.KEEP || route.name?.toString() == RouterEnum.KEEP_BY_TAG)
     await TagForKeeps(projectId.value)
   proid.value = route.params.id.toString()
-  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  let res=await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  if(res.message=="Shared Keep"){
+    state.HasFullAccess=false
+  }
   filteredkeeps.value=Keeps.value
   if (route.name == RouterEnum.KEEP_BY_TAG) {
     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
@@ -131,7 +135,10 @@ async function CreateKeep(): Promise<void> {
   
     // await Mail(mailObj)
   state.inviteEmail = []
-  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  let res=await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  if(res.message=="Shared Keep"){
+    state.HasFullAccess=false
+  }
   await TagForKeeps(proid.value)
   setKeepData()
 }
@@ -139,7 +146,10 @@ async function CreateKeep(): Promise<void> {
 async function deletekeep(val:boolean) {
   if(val){
   await DeleteKeep(state.KeepId)
-  await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  let res=await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
+  if(res.message=="Shared Keep"){
+    state.HasFullAccess=false
+  }
   await TagForKeeps(proid.value)
   setKeepData()
   }
@@ -195,6 +205,7 @@ async function setKeepData() {
           @click="state.dialog = true"
           variant="elevated"
           prepend-icon="mdi-plus"
+          v-if="state.HasFullAccess"
         >
           New Keep
         </Button>

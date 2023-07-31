@@ -78,12 +78,12 @@ namespace Keeper.Repos.Repositories
 
         public async Task<IEnumerable<TagModel>> GetForKeepAsync(Guid userid, Guid projectid)
         {
-            using(var con=new SqlConnection(_configuration.GetConnectionString("DbConnection")))
+            using (var con = new SqlConnection(_configuration.GetConnectionString("DbConnection")))
             {
                 try
                 {
                     string qry = $"select distinct  t.* from Tags as t inner join Keeps as p on t.Id=p.TagId where (p.CreatedBy=@uid and p.IsDeleted='False') and p.ProjectId=@pid";
-                    var res = await con.QueryAsync<TagModel>(qry, new { uid = userid,pid=projectid });
+                    var res = await con.QueryAsync<TagModel>(qry, new { uid = userid, pid = projectid });
                     return res;
                 }
                 catch

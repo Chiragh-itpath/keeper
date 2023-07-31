@@ -20,6 +20,7 @@ namespace Keeper.Services.Services
         private readonly ITagService _tagService;
         private readonly IUserRepo _userRepo;
         private readonly IMailService _mailService;
+        private readonly IKeepUserService _keepUserService;
         public KeepService(IKeepRepo repo, ITagService tagService,IUserRepo userRepo, IMailService mailService)
         {
             _repo = repo;
@@ -41,17 +42,8 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId, int isShared)
         {
-            var result = await _repo.GetAllAsync(ProjectId,UserId,isShared);
-
-            return new ResponseModel<IEnumerable<KeepModel>>
-            {
-                StatusName = StatusType.SUCCESS,
-                IsSuccess = true,
-                Message = "All Keeps",
-                Data = result
-            };
+            return await _repo.GetAllAsync(ProjectId,UserId,isShared);
         }
-
         public async Task<ResponseModel<KeepModel>> GetByIdAsync(Guid Id)
         {
             var result = await _repo.GetByIdAsync(Id);
@@ -76,9 +68,6 @@ namespace Keeper.Services.Services
         }
         public async Task<ResponseModel<string>> SaveAsync(KeepVM keep)
             {
-            List<UserModel> users = new();
-            List<KeepModel> keeps = new();
-
             Guid? tagId = Guid.NewGuid();
             try
             {
@@ -112,12 +101,6 @@ namespace Keeper.Services.Services
                     model.ProjectId = keep.ProjectId;
                     model.TagId = tagId;
                 };
-                UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
-                users.Add(user);
-                keeps.Add(model);
-                model.Users = users;
-                user.Keeps = keeps;
-                await _userRepo.UpdateUser(user);
                 var response = await _repo.SaveAsync(model);
                 if (keep.mail != null)
                 {

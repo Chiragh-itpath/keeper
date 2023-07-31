@@ -17,17 +17,17 @@ namespace Keeper.Services.Services
         private readonly ITagService _tagService;
         private readonly IUserRepo _userRepo;
         private readonly IMailService _mailService;
-        public ProjectService(IProjectRepo repo, ITagService tagService,IUserRepo userRepo, IMailService mailService)
+        private readonly IProjectUserService _projectUserService;
+        public ProjectService(IProjectRepo repo, ITagService tagService, IUserRepo userRepo, IMailService mailService, IProjectUserService projectUserService)
         {
             _repo = repo;
             _tagService = tagService;
             _userRepo = userRepo;
             _mailService = mailService;
+            _projectUserService = projectUserService;
         }
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
-            List<UserModel> users = new();
-            List<ProjectModel> projects = new();
             Guid? tagId = Guid.NewGuid();
             try
             {
@@ -60,12 +60,6 @@ namespace Keeper.Services.Services
                     CreatedBy = projectVM.CreatedBy,
                     TagId = tagId
                 };
-                UserModel user = await _userRepo.GetByIdAsync(model.CreatedBy);
-                users.Add(user);
-                projects.Add(model);
-                model.Users = users;
-                user.Projects = projects;
-                await _userRepo.UpdateUser(user);
                 var result = await _repo.SaveAsync(model);
                 if (projectVM.Mail != null)
                 {
@@ -86,17 +80,16 @@ namespace Keeper.Services.Services
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
-            
-                return new ResponseModel<string>
-                {
-                    StatusName = StatusType.SUCCESS,
-                    IsSuccess = true,
-                    Message = "Project Created Suceessfully",
-                };
+            return new ResponseModel<string>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "Project Created Suceessfully",
+            };
         }
         public async Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId)
         {
@@ -126,10 +119,10 @@ namespace Keeper.Services.Services
         {
             List<UserModel> users = new();
             List<ProjectModel> projects = new();
-            Guid? tagid= Guid.NewGuid();
-            if(project.TagTitle != null && project.TagTitle != "")
+            Guid? tagid = Guid.NewGuid();
+            if (project.TagTitle != null && project.TagTitle != "")
             {
-                var tagdata= await _tagService.GetByTitleAsync(project.TagTitle);
+                var tagdata = await _tagService.GetByTitleAsync(project.TagTitle);
                 if (tagdata.Data == null)
                 {
                     TagModel tag = new TagModel()
@@ -138,7 +131,7 @@ namespace Keeper.Services.Services
                         Title = project.TagTitle,
                         Type = TagType.PROJECT
                     };
-                   await _tagService.SaveAsync(tag);
+                    await _tagService.SaveAsync(tag);
                 }
                 else
                 {
@@ -155,8 +148,8 @@ namespace Keeper.Services.Services
             existingModel.Description = project.Description;
             existingModel.UpdatedOn = DateTime.Now;
             existingModel.UpdatedBy = project.UpdatedBy;
-            existingModel.TagId= tagid;
-            var result=await _repo.UpdatedAsync(existingModel);
+            existingModel.TagId = tagid;
+            var result = await _repo.UpdatedAsync(existingModel);
             if (project.Mail != null)
             {
                 project.Mail.TypeId = result.Id;
@@ -186,9 +179,9 @@ namespace Keeper.Services.Services
 
         }
 
-        public async Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId,Guid tagId)
+        public async Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId, Guid tagId)
         {
-            var result=await _repo.GetByTagAsync(userId,tagId);
+            var result = await _repo.GetByTagAsync(userId, tagId);
             return new ResponseModel<List<ProjectModel>>
             {
                 StatusName = StatusType.SUCCESS,

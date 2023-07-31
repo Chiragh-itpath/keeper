@@ -8,6 +8,6 @@ namespace Keeper.Repos.Repositories.Interfaces
     {
         Task<bool> RegisterAsync(UserModel user);
         Task<bool> UpdatePasswordAsync(LoginVM user);
-    
+
     }
 }

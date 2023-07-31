@@ -11,7 +11,7 @@ namespace Keeper.Repos.Repositories
     {
         private readonly DbKeeperContext _dbKeeperContext;
 
- 
+
         public AccountRepo(DbKeeperContext dbKeeperContext)
         {
             _dbKeeperContext = dbKeeperContext;
@@ -26,7 +26,7 @@ namespace Keeper.Repos.Repositories
         {
             var person = await _dbKeeperContext.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
             person.Password = user.Password;
-            person.UpdateOn= DateTime.Now;
+            person.UpdateOn = DateTime.Now;
             return await _dbKeeperContext.SaveChangesAsync() > 0;
         }
     }

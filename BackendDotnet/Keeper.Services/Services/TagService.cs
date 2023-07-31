@@ -66,13 +66,13 @@ namespace Keeper.Services.Services
 
         public async Task<ResponseModel<List<TagVM>>> GetForProjectAsync(Guid userid)
         {
-            var data=await _tagRepo.GetForProjectAsync(userid);
+            var data = await _tagRepo.GetForProjectAsync(userid);
             return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
 
         public async Task<ResponseModel<List<TagVM>>> GetForKeepsAsync(Guid userid, Guid projectid)
         {
-            var data = await _tagRepo.GetForKeepAsync(userid,projectid);
+            var data = await _tagRepo.GetForKeepAsync(userid, projectid);
             return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
         }
     }

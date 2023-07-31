@@ -45,9 +45,9 @@ namespace Keeper.Main.Controllers
         }
         [HttpGet]
         [Route("Tag/{userId}/{tagId}")]
-        public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId,Guid tagId)
+        public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId, Guid tagId)
         {
-            return await _projectService.GetByTagAsync(userId,tagId);
+            return await _projectService.GetByTagAsync(userId, tagId);
 
         }
         [HttpPut]

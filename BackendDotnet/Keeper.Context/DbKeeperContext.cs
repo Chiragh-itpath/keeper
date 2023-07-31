@@ -11,6 +11,8 @@ namespace Keeper.Context
         public DbSet<ItemModel> Items { get; set; }
         public DbSet<TagModel> Tags { get; set; }
         public DbSet<FileModel> Files { get; set; }
-        public DbKeeperContext(DbContextOptions options): base(options) { }
+        public DbSet<ProjectUserModel> ProjectUser { get; set; }
+        public DbSet<KeepUserModel> keepUser { get; set; }
+        public DbKeeperContext(DbContextOptions options) : base(options) { }
     }
 }

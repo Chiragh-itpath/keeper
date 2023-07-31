@@ -11,7 +11,7 @@ namespace Keeper.Context.Config
             string ConnectionString = configuration.GetConnectionString("DbConnection");
             services.AddDbContext<DbKeeperContext>(option => option.UseSqlServer(ConnectionString));
         }
-        
-            
+
+
     }
 }
