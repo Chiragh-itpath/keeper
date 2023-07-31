@@ -201,5 +201,10 @@ namespace Keeper.Services.Services
                 Data = result
             };
         }
+
+        public Task<IEnumerable<string>> OwnerName(Guid projectId)
+        {
+            return _repo.OwnerName(projectId);
+        }
     }
 }

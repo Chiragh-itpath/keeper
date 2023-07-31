@@ -43,7 +43,7 @@ const state = reactive({
   isLoading: true,
   isDeleted: false,
   isError:false,
-  errorMsg:''
+  errorMsg:'',
 })
 
 const form = ref()
@@ -54,7 +54,7 @@ const { Mail } = useMailStore()
 const { Projects,SharedProjects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
-let sharedProject:Ref<IProject[]> = ref([])
+let sharedProject:Ref<IProject[]> = ref(SharedProjects.value)
 let date = ref()
 const route = useRoute()
 const router = useRouter()
@@ -74,6 +74,7 @@ async function setProjectData() {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
     sharedProject.value=await ContributeProject();
+    console.log(sharedProject.value)
     await GetProjects()
     filterData.value = Projects.value
   }
@@ -95,8 +96,8 @@ onMounted(async () => {
     await TagForProject()
     await GetProjects()
     sharedProject.value=await ContributeProject();
-  filterData.value = Projects.value
-  state.isLoading = false;
+    filterData.value = Projects.value
+    state.isLoading = false;
 })
 async function addProject(): Promise<void> {
   const { valid } = await form.value.validate()
@@ -185,6 +186,7 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
+
 </script>
 <template>
  <!-- <Loader v-if="state.isLoading" />  -->
@@ -237,6 +239,7 @@ function formatDate(datetime: Date) {
                 <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
                   description provided
                 </span>
+                {{ project.Contributers![0]  }}
               </v-card-text>
             </template>
           </Card>

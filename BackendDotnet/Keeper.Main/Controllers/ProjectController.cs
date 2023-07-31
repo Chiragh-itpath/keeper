@@ -41,14 +41,12 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<ProjectModel>> GetById(Guid Id)
         {
             return await _projectService.GetByIdAsync(Id);
-
         }
         [HttpGet]
         [Route("Tag/{userId}/{tagId}")]
         public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId, Guid tagId)
         {
             return await _projectService.GetByTagAsync(userId, tagId);
-
         }
         [HttpPut]
         public async Task<ResponseModel<string>> Update(ProjectVM project)
@@ -59,6 +57,12 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<string>> Delete(Guid id)
         {
             return await _projectService.DeleteByIdAsync(id);
+        }
+        [HttpGet]
+        [Route("owner/{projectId}")]
+        public async Task<IEnumerable<string>> OwnerName(Guid projectId)
+        {
+            return await _projectService.OwnerName(projectId);;
         }
 
     }
