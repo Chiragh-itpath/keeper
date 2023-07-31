@@ -68,5 +68,12 @@ namespace Keeper.Repos.Repositories
             var result = await con.QueryAsync<ProjectModel>(query, new { uid = userId });
             return result;
         }
+        public async Task<IEnumerable<string>> OwnerName(Guid projectId)
+        {
+            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
+            string query = " select u.UserName from Projects p inner join Users u on p.CreatedBy=u.Id where p.Id=@projectId";
+            var result = await con.QueryAsync<string>(query, new { projectId = projectId });
+            return result;
+        }
     }
 }
