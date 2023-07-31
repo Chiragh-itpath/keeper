@@ -47,6 +47,7 @@ namespace Keeper.Main.Controllers
         public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId, Guid tagId)
         {
             return await _projectService.GetByTagAsync(userId, tagId);
+
         }
         [HttpPut]
         public async Task<ResponseModel<string>> Update(ProjectVM project)
