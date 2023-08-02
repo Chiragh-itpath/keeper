@@ -27,12 +27,12 @@ namespace Keeper.Main.Controllers
             return await _projectService.SaveAsync(projectVM);
         }
         [HttpGet("")]
-        public async Task<ResponseModel<List<ProjectModel>>> GetAll(Guid UserId)
+        public async Task<ResponseModel<List<ProjectVM>>> GetAll(Guid UserId)
         {
             return await _projectService.GetAllAsync(UserId);
         }
         [HttpGet("shared/{UserId}")]
-        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid UserId)
+        public async Task<ResponseModel<List<ProjectVM>>> SharedProjects(Guid UserId)
         {
             return await _projectService.SharedProjects(UserId);
         }
@@ -61,9 +61,15 @@ namespace Keeper.Main.Controllers
         }
         [HttpGet]
         [Route("owner/{projectId}")]
-        public async Task<IEnumerable<string>> OwnerName(Guid projectId)
+        public async Task<string> OwnerName(Guid projectId)
         {
-            return await _projectService.OwnerName(projectId);;
+            return await _projectService.OwnerName(projectId);
+        }
+        [HttpGet]
+        [Route("contributor/{projectId}")]
+        public async Task<IEnumerable<string>> ContributorName(Guid projectId)
+        {
+            return await _projectService.ContributorName(projectId); 
         }
 
     }

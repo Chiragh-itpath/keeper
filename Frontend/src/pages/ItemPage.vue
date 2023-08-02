@@ -261,11 +261,11 @@ watch(date, () => {
                 variant="outlined"
               ></v-file-input>
             </v-col>
-            <v-col cols="12" sm="6" md="2" lg="2">
-              <Button>To</Button>
+            <v-col cols="12" sm="6" md="6" lg="6">
+              <TextFieldText label="To"></TextFieldText>
             </v-col>
-            <v-col cols="12" sm="6" md="4" lg="4">
-              <Button>Discussed by</Button>
+            <v-col cols="12" sm="6" md="6" lg="6">
+              <TextFieldText label="Discussed by"></TextFieldText>
             </v-col>
           </v-row>
         </v-container>

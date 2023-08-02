@@ -1,4 +1,5 @@
-﻿using Keeper.Context.Model;
+﻿using Keeper.Common.Enums;
+using Keeper.Context.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,10 +20,11 @@ namespace Keeper.Common.View_Models
         public Guid UpdatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
+        public Guid? TagId { get; set; }
         public string? TagTitle { get; set; }
         public MailRequest? Mail { get; set; }
-
-
+        public string? Owner { get; set; }
+        public string[]? Contributers { get; set; }
 
 
 

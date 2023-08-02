@@ -74,3 +74,12 @@ export async function OwnerName(projectId:string): Promise<any> {
     return e
   }
 }
+export async function ContributorName(projectId:string): Promise<any> {
+  try {
+    const response = await http.get(`/Project/contributor/${projectId}`)
+    return response.data
+  } catch (e) {
+    console.log(e)
+    return e
+  }
+}

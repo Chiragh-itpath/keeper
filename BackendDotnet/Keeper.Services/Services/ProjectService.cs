@@ -26,6 +26,7 @@ namespace Keeper.Services.Services
             _mailService = mailService;
             _projectUserService = projectUserService;
         }
+
         public async Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM)
         {
             Guid? tagId = Guid.NewGuid();
@@ -91,16 +92,34 @@ namespace Keeper.Services.Services
                 Message = "Project Created Suceessfully",
             };
         }
-        public async Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId)
+        public async Task<ResponseModel<List<ProjectVM>>> GetAllAsync(Guid UserId)
         {
             var result = await _repo.GetAllAsync(UserId);
+            List<string> emails = new List<string>();
+            List<ProjectVM> projectVMs = new List<ProjectVM>();
+            foreach (var item in result)
+            {
+                var contributers=await ContributorName(item.Id);
 
-            return new ResponseModel<List<ProjectModel>>
+                projectVMs.Add(
+                    new ProjectVM()
+                    {
+                        Id = item.Id,
+                        Title = item.Title,
+                        Description = item.Description,
+                        CreatedBy = item.CreatedBy,
+                        CreatedOn = item.CreatedOn,
+                        TagId = item.TagId,
+                        Contributers = contributers.ToArray()
+                    }
+                    );
+            }
+            return new ResponseModel<List<ProjectVM>>
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
                 Message = "All Projects",
-                Data = result
+                Data = projectVMs
             };
         }
 
@@ -152,7 +171,17 @@ namespace Keeper.Services.Services
             var result = await _repo.UpdatedAsync(existingModel);
             if (project.Mail != null)
             {
+                var toEmail=new List<string>();
                 project.Mail.TypeId = result.Id;
+                foreach (var item in project.Mail.ToEmail)
+                {
+                    var userdata=await _userRepo.GetByEmailAsync(item);
+                    if(!await _repo.IsContributorExist(project.Id, userdata.Id))
+                    {
+                        toEmail.Add(item);
+                    }
+                }
+                project.Mail.ToEmail=toEmail.ToArray();
                 await _mailService.SendEmailAsync(project.Mail);
             }
             {
@@ -190,21 +219,42 @@ namespace Keeper.Services.Services
             };
         }
 
-        public async Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid userId)
+        public async Task<ResponseModel<List<ProjectVM>>> SharedProjects(Guid userId)
         {
             var result = await _repo.SharedProject(userId);
-            return new ResponseModel<IEnumerable<ProjectModel>>
+            List<ProjectVM> projectVMs = new List<ProjectVM>();
+            foreach (var item in result)
+            {
+                projectVMs.Add(
+                    new ProjectVM()
+                    {
+                        Id = item.Id,
+                        Title = item.Title,
+                        Description = item.Description,
+                        CreatedBy = item.CreatedBy,
+                        CreatedOn = item.CreatedOn,
+                        TagId = item.TagId,
+                        Owner= await OwnerName(item.Id)
+                    }
+                    );
+            }
+            return new ResponseModel<List<ProjectVM>>
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
                 Message = "All shared Projects",
-                Data = result
+                Data = projectVMs
             };
         }
 
-        public Task<IEnumerable<string>> OwnerName(Guid projectId)
+        public Task<string> OwnerName(Guid projectId)
         {
             return _repo.OwnerName(projectId);
         }
+        public Task<IEnumerable<string>> ContributorName(Guid projectId)
+        {
+            return _repo.ContributorName(projectId);
+        }
+
     }
 }

@@ -229,7 +229,8 @@ async function setKeepData() {
         sm="6"
         class="mb-3"
       >
-        <Card backgroundColor="lightenTeal">
+      <v-hover v-slot:default="{ isHovering, props }" >
+        <Card backgroundColor="lightenTeal" class="row-pointer" v-bind="props" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
           <template #title>
             <div class="position-relative text-grey-darken-4">
               <span @click="$router.push({ name: RouterEnum.ITEM, params: { id: keep.id } })">{{
@@ -265,6 +266,7 @@ async function setKeepData() {
             >
           </template>
         </Card>
+      </v-hover>
       </v-col>
     </v-row>
   </v-container>
@@ -420,7 +422,9 @@ async function setKeepData() {
   text-decoration: none;
   color: black;
 }
-
+.row-pointer:hover {
+  cursor: pointer;
+}
 .scroll {
   max-height: 200px;
   overflow-y: scroll;
