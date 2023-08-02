@@ -13,12 +13,13 @@ namespace Keeper.Services.Services.Interfaces
     public interface IProjectService
     {
         Task<ResponseModel<string>> SaveAsync(ProjectVM projectVM);
-        Task<ResponseModel<List<ProjectModel>>> GetAllAsync(Guid UserId);
+        Task<ResponseModel<List<ProjectVM>>> GetAllAsync(Guid UserId);
         Task<ResponseModel<ProjectModel>> GetByIdAsync(Guid Id);
         Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
         Task<ResponseModel<string>> UpdatedAsync(ProjectVM project);
         Task<ResponseModel<List<ProjectModel>>> GetByTagAsync(Guid userId, Guid tagId);
-        Task<ResponseModel<IEnumerable<ProjectModel>>> SharedProjects(Guid userId);
-        Task<IEnumerable<string>> OwnerName(Guid projectId);
+        Task<ResponseModel<List<ProjectVM>>> SharedProjects(Guid userId);
+        Task<string> OwnerName(Guid projectId);
+        Task<IEnumerable<string>> ContributorName(Guid projectId);
     }
 }

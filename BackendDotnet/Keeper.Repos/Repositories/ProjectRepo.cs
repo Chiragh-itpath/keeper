@@ -22,12 +22,14 @@ namespace Keeper.Repos.Repositories
     {
         private readonly DbKeeperContext _dbKeeperContext;
         private readonly IConfiguration _configuration;
+        private readonly SqlConnection con;
         public ProjectRepo(DbKeeperContext dbKeeperContext, IConfiguration configuration)
         {
             _dbKeeperContext = dbKeeperContext;
             _configuration = configuration;
+            con= new SqlConnection(_configuration.GetConnectionString("DbConnection"));
         }
-
+        
         public async Task<ProjectModel> SaveAsync(ProjectModel project)
         {
             await _dbKeeperContext.Projects.AddAsync(project);
@@ -64,17 +66,27 @@ namespace Keeper.Repos.Repositories
         }
         public async Task<IEnumerable<ProjectModel>> SharedProject(Guid userId)
         {
-            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
             string query = "select p.* from Projects p inner join ProjectUser PU on p.Id=pu.ProjectId where (pu.UserId=@uid and p.createdby!=@uid) and IsDeleted='false'";
             var result = await con.QueryAsync<ProjectModel>(query, new { uid = userId });
             return result;
         }
-        public async Task<IEnumerable<string>> OwnerName(Guid projectId)
+        public async Task<string> OwnerName(Guid projectId)
         {
-            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-            string query = " select u.UserName from Projects p inner join Users u on p.CreatedBy=u.Id where p.Id=@projectId";
+            string query = " select u.email from Projects p inner join Users u on p.CreatedBy=u.Id where p.Id=@projectId";
+            var result = await con.QuerySingleAsync<string>(query, new { projectId = projectId });
+            return result;
+        }
+        public async Task<IEnumerable<string>> ContributorName(Guid projectId)
+        {
+            string query = " select Users.Email from Users join ProjectUser on Users.Id=ProjectUser.UserId join Projects on Projects.Id=ProjectUser.ProjectId where Projects.CreatedBy!=ProjectUser.UserId and Projects.Id=@projectId";
             var result = await con.QueryAsync<string>(query, new { projectId = projectId });
             return result;
+        }
+        public async Task<bool> IsContributorExist(Guid projectId,Guid userId)
+        {
+            string query = " select top 1 1 from ProjectUser where ProjectId=@projectId  and UserId=@uid";
+            var result = await con.QueryAsync<bool>(query, new { projectId = projectId,uid=userId});
+            return result.Count()>0;
         }
     }
 }

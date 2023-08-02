@@ -25,7 +25,7 @@ import Loader from '@/components/LoaderComponent.vue';
 import DeleteComponent from '@/components/DeleteComponent.vue'
 import type { Ref } from 'vue'
 const { TagForProject } = tagStore()
-const{GetUserByEmail}=useUserStore()
+const { GetUserByEmail } = useUserStore()
 const state = reactive({
   projectId: '',
   projectName: '',
@@ -42,29 +42,30 @@ const state = reactive({
   email: '',
   isLoading: true,
   isDeleted: false,
-  isError:false,
-  errorMsg:'',
+  isError: false,
+  errorMsg: '',
+  isShared:true
 })
 
 const form = ref()
-const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag,ContributeProject } =
+const { AddProject, GetProjects, UpdateProject, GetProjectById, DeleteProject, GetProjectByTag, ContributeProject } =
   useProjectStore()
 const { GetByTagId } = tagStore()
 const { Mail } = useMailStore()
-const { Projects,SharedProjects } = storeToRefs(useProjectStore())
+const { Projects, SharedProjects } = storeToRefs(useProjectStore())
 const { Tags } = storeToRefs(tagStore())
 let filterData = ref(Projects.value)
-let sharedProject:Ref<IProject[]> = ref(SharedProjects.value)
+let sharedProject: Ref<IProject[]> = ref(SharedProjects.value)
 let date = ref()
 const route = useRoute()
 const router = useRouter()
 
 watch(route, async () => {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
-    sharedProject.value=[]
+    sharedProject.value = []
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
-    sharedProject.value=await ContributeProject();
+    sharedProject.value = await ContributeProject();
     await GetProjects()
     filterData.value = Projects.value
   }
@@ -73,51 +74,51 @@ async function setProjectData() {
   if (route.name == RouterEnum.PROJECT_BY_TAG) {
     filterData.value = await GetProjectByTag(route.params.id.toString())
   } else {
-    sharedProject.value=await ContributeProject();
+    sharedProject.value = await ContributeProject();
     console.log(sharedProject.value)
     await GetProjects()
     filterData.value = Projects.value
   }
 }
-watch(date, async() => {
+watch(date, async () => {
   if (date.value != '' && date.value != null) {
     filterData.value = Projects.value.filter((p) => formatDate(p.createdOn!) == date.value)
     sharedProject.value = SharedProjects.value.filter((p) => formatDate(p.createdOn!) == date.value)
-  } else{
-    sharedProject.value=await ContributeProject();
+  } else {
+    sharedProject.value = await ContributeProject();
     filterData.value = Projects.value
-  } 
+  }
 })
 onMounted(async () => {
   if (
     route.name?.toString() == RouterEnum.PROJECT ||
     route.name?.toString() == RouterEnum.PROJECT_BY_TAG
-    )
+  )
     await TagForProject()
-    await GetProjects()
-    sharedProject.value=await ContributeProject();
-    filterData.value = Projects.value
-    state.isLoading = false;
+  await GetProjects()
+  sharedProject.value = await ContributeProject();
+  filterData.value = Projects.value
+  state.isLoading = false;
 })
 async function addProject(): Promise<void> {
   const { valid } = await form.value.validate()
   if (!valid) return
-  state.isLoading=true
+  state.isLoading = true
   let mailObj: IMail;
   if (state.inviteEmail.length > 0) {
     mailObj = {
       ToEmail: state.inviteEmail,
-      Type:TagTypeEnum.PROJECT
+      Type: TagTypeEnum.PROJECT
     }
   }
   if (state.projectId == '') {
     state.dialog = false
-    
+
     const project: IProject = {
       title: state.projectName,
       description: state.description,
       tagTitle: state.tag,
-      mail:mailObj!
+      mail: mailObj!
     }
     form.value.reset()
     const response = await AddProject(project)
@@ -131,7 +132,7 @@ async function addProject(): Promise<void> {
       title: state.projectName,
       description: state.description,
       tagTitle: state.tag,
-      mail:mailObj!
+      mail: mailObj!
     }
     await editProject(state.projectId)
     await UpdateProject(project)
@@ -142,23 +143,33 @@ async function addProject(): Promise<void> {
   state.inviteEmail = []
   await TagForProject()
   setProjectData()
-  state.isLoading=false
+  state.isLoading = false
 }
 async function onEnter() {
-  if (state.email.trim() != ''){
-    const response=await GetUserByEmail(state.email)
-    if(response!=null){
-      state.inviteEmail.push(state.email)
+  if (state.email.trim() != '') {
+    const response = await GetUserByEmail(state.email)
+    if (response != null) {
+      if (state.inviteEmail.find(x => x == state.email) == null)
+        state.inviteEmail.push(state.email)
+      else {
+        state.isError = true
+        state.errorMsg = 'Email is already present in list.';
+        setTimeout(() => {
+          state.isError = false
+          state.errorMsg = ''
+        }, 3000)
+      }
+
     }
-    else{
-      state.isError=true
-      state.errorMsg='Email is not registered in this application';
+    else {
+      state.isError = true
+      state.errorMsg = 'Email is not registered in this application';
       setTimeout(() => {
-        state.isError=false 
-        state.errorMsg=''
-      },3000)
+        state.isError = false
+        state.errorMsg = ''
+      }, 3000)
     }
-  } 
+  }
   state.email = ''
 }
 async function editProject(projectId: string) {
@@ -176,8 +187,8 @@ async function deleteProject(val: boolean) {
     await TagForProject()
     setProjectData()
   }
-  state.projectId='';
-  state.isDeleted=false
+  state.projectId = '';
+  state.isDeleted = false
 }
 function formatDate(datetime: Date) {
   const date = new Date(datetime)
@@ -186,10 +197,18 @@ function formatDate(datetime: Date) {
   const day = ('0' + date.getDate()).slice(-2)
   return `${year}-${month}-${day}`
 }
+function getRandomColor() {
+  const getRandomValue = () => Math.floor(Math.random() * 128) + 128; // Generating values between 128 and 255 (lighter colors)
 
+  const r = getRandomValue().toString(16).padStart(2, '0');
+  const g = getRandomValue().toString(16).padStart(2, '0');
+  const b = getRandomValue().toString(16).padStart(2, '0');
+
+  return `#${r}${g}${b}`;
+}
 </script>
 <template>
- <!-- <Loader v-if="state.isLoading" />  -->
+  <!-- <Loader v-if="state.isLoading" />  -->
   <v-container>
     <v-row>
       <v-col cols="12" md="10" sm="12">
@@ -201,9 +220,11 @@ function formatDate(datetime: Date) {
         </Button>
       </v-col>
     </v-row>
-    <div v-if="(filterData.length == 0 && !state.isLoading) && sharedProject.length==0">
-      <RecordNotFoundComponent title="No project with this date" icon="mdi-note-remove-outline" v-if="date!=null"></RecordNotFoundComponent>
-      <RecordNotFoundComponent icon="mdi-folder-file-outline" title="Projects you add appear here" v-else></RecordNotFoundComponent>
+    <div v-if="(filterData.length == 0 && !state.isLoading) && sharedProject.length == 0">
+      <RecordNotFoundComponent title="No project with this date" icon="mdi-note-remove-outline" v-if="date != null">
+      </RecordNotFoundComponent>
+      <RecordNotFoundComponent icon="mdi-folder-file-outline" title="Projects you add appear here" v-else>
+      </RecordNotFoundComponent>
     </div>
     <v-row class="ma-6" v-else>
       <v-col cols="12">
@@ -211,44 +232,12 @@ function formatDate(datetime: Date) {
           All Projects
         </Button>
       </v-col>
-        <v-col v-for="(project, index) in sharedProject" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-          <Card backgroundColor="light-green-lighten-3">
-            <template #title>
-              <div class="position-relative text-grey-darken-4">
-                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:1 } })">{{
-                  project.title
-                }}</span>
-                <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
-                  <v-icon> mdi-dots-vertical </v-icon>
-                  <v-menu activator="parent">
-                    <v-list>
-                      <v-list-item>
-                        <v-list-item-title><Button variant="text"
-                            @click="editProject(project.id!)">Edit</Button></v-list-item-title>
-                        <v-list-item-title><Button variant="text"
-                            @click="()=>{state.isDeleted = true; state.projectId=project.id!}">Delete</Button></v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-btn>
-              </div>
-            </template>
-            <template #text>
-              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:1 } })">
-                {{ project.description }}
-                <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
-                  description provided
-                </span>
-                {{ project.Contributers![0]  }}
-              </v-card-text>
-            </template>
-          </Card>
-        </v-col>
-      <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-        <Card backgroundColor="lightenTeal">
+      <v-col v-for="(project, index) in sharedProject" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+        <v-hover v-slot:default="{ isHovering, props }" >
+        <Card :min-width="200" :max-width="400" :fluid="true" backgroundColor="light-green-lighten-3" v-bind="props" class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
           <template #title>
             <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:0 } })">{{
+              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">{{
                 project.title
               }}</span>
               <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
@@ -257,9 +246,9 @@ function formatDate(datetime: Date) {
                   <v-list>
                     <v-list-item>
                       <v-list-item-title><Button variant="text"
-                          @click="editProject(project.id!)">Edit</Button></v-list-item-title>
+                          @click="()=>{editProject(project.id!); state.isShared=false}">Edit</Button></v-list-item-title>
                       <v-list-item-title><Button variant="text"
-                          @click="()=>{state.isDeleted = true; state.projectId=project.id!}">Delete</Button></v-list-item-title>
+                          @click="() => { state.isDeleted = true; state.projectId = project.id! }">Delete</Button></v-list-item-title>
                     </v-list-item>
                   </v-list>
                 </v-menu>
@@ -267,14 +256,59 @@ function formatDate(datetime: Date) {
             </div>
           </template>
           <template #text>
-            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id,isShared:0 } })">
+            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">
               {{ project.description }}
               <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
                 description provided
               </span>
+              <div class="avatar-container">
+                <v-avatar class="font-weight-medium  text-uppercase row-pointer" :style="{ backgroundColor: getRandomColor() }">{{
+                  project.owner![0] }}<v-tooltip activator="parent" location="bottom">{{ project.owner
+  }}</v-tooltip></v-avatar>
+              </div>
             </v-card-text>
           </template>
         </Card>
+      </v-hover>
+      </v-col>
+      <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
+        <v-hover v-slot:default="{ isHovering, props }" >
+        <Card :style="{ 'min-width': '200px', 'max-width': 'auto' }" backgroundColor="lightenTeal" v-bind="props" class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
+          <template #title>
+            <div class="position-relative text-grey-darken-4">
+              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">{{
+                project.title
+              }}</span>
+              <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
+                <v-icon> mdi-dots-vertical </v-icon>
+                <v-menu activator="parent">
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-title><Button variant="text"
+                          @click="() => { editProject(project.id!); state.inviteEmail = project.contributers }">Edit</Button></v-list-item-title>
+                      <v-list-item-title><Button variant="text"
+                          @click="() => { state.isDeleted = true; state.projectId = project.id! }">Delete</Button></v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-btn>
+            </div>
+          </template>
+          <template #text>
+            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">
+              {{ project.description }}
+              <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
+                description provided
+              </span>
+              <div class="avatar-container">
+                <v-avatar v-for="c in project.contributers" class="font-weight-medium  text-uppercase mr-1 row-pointer"
+                  :style="{ backgroundColor: getRandomColor() }"> {{ c.charAt(0) }}<v-tooltip activator="parent"
+                    location="bottom">{{ c }}</v-tooltip></v-avatar> 
+              </div>
+            </v-card-text>
+          </template>
+        </Card>
+      </v-hover>
       </v-col>
     </v-row>
   </v-container>
@@ -282,11 +316,11 @@ function formatDate(datetime: Date) {
     <template #title>
       <div class="text-left ml-4 mt-3">
         <Button @click="() => {
-            state.dialog = false
-            form.reset()
-            state.projectId = ''
-            state.inviteEmail=[]
-          }
+          state.dialog = false
+          form.reset()
+          state.projectId = ''
+          state.inviteEmail = []
+        }
           " prepend-icon="mdi-arrow-left-circle">Back</Button>
       </div>
       <div class="text-center text-primary mt-2">
@@ -308,9 +342,9 @@ function formatDate(datetime: Date) {
               <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
                 clearable></v-textarea>
             </v-col>
-            <v-col cols="12" sm="6" md="2" lg="2">
-              <v-btn color="primary" variant="outlined" @click="state.openInvite = true">Invite</v-btn>
-            </v-col>
+             <v-col cols="12" sm="6" md="2" lg="2">
+              <v-btn v-if="state.isShared" color="primary" variant="outlined" @click="state.openInvite = true">Invite</v-btn>
+            </v-col> 
             <v-col cols="12" sm="6" md="10" lg="10">
               <span v-for="(selection, index) in state.inviteEmail" :key="selection">
                 <v-chip closable v-if="index < 2" @click:close="state.inviteEmail.splice(index, 1)">
@@ -330,8 +364,8 @@ function formatDate(datetime: Date) {
         <v-row>
           <v-col>
             <Button width="100" @click="() => {
-                form.reset()
-              }
+              form.reset()
+            }
               ">Clear</Button>
             <Button variant="elevated" width="100" @click="addProject">{{
               state.projectId != '' ? 'Update' : 'Create'
@@ -350,8 +384,8 @@ function formatDate(datetime: Date) {
         <v-row>
           <v-row>
             <v-col cols="10" md="10" sm="10">
-              <TextFieldEmail label="Email" :is-required="false" color="primary" v-model="state.email" :error="state.isError"
-    :error-messages="state.errorMsg"/>
+              <TextFieldEmail label="Email" :is-required="false" color="primary" v-model="state.email"
+                :error="state.isError" :error-messages="state.errorMsg" />
             </v-col>
             <v-col cols="2" md="2" sm="2">
               <v-avatar @click="onEnter" color="primary" class="mt-2"><v-icon icon="mdi-plus-thick"
@@ -370,8 +404,8 @@ function formatDate(datetime: Date) {
                   </v-col>
                   <v-col cols="3" sm="3" md="2" lg="2" class="d-flex justify-center">
                     <v-icon @click="() => {
-                        state.inviteEmail.splice(index, 1)
-                      }
+                      state.inviteEmail.splice(index, 1)
+                    }
                       " icon="mdi-minus-circle-outline" size="large"></v-icon>
                   </v-col>
                 </v-row>
@@ -386,9 +420,9 @@ function formatDate(datetime: Date) {
         <v-row>
           <v-col>
             <Button width="100" @click="() => {
-                state.inviteEmail.splice(0, state.inviteEmail.length)
-                state.openInvite = false
-              }
+              state.inviteEmail.splice(0, state.inviteEmail.length)
+              state.openInvite = false
+            }
               ">Cancle</Button>
             <Button variant="elevated" :width="100" @click="state.openInvite = false">Invite</Button>
           </v-col>
@@ -410,6 +444,18 @@ function formatDate(datetime: Date) {
   overflow-y: scroll;
 }
 .border-color {
-  border: 1px solid gray; 
+  border: 1px solid gray;
 }
+.row-pointer:hover {
+  cursor: pointer;
+}
+.avatar-container {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+.on-hover{
+  background-color: rgba(#FFF, 0.8)
+}
+ 
 </style>
