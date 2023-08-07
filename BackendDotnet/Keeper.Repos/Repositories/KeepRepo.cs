@@ -45,7 +45,7 @@ namespace Keeper.Repos.Repositories
                 var sharedkeep = await con.QueryFirstOrDefaultAsync<ProjectUserModel>(query, new { projectsId = projectId });
                 if (isShared == 0 || sharedkeep.HasFullAccess == true)
                 {
-                    var AllKeeps = "select keeps.* from keeps join Projects on Keeps.ProjectId=Projects.Id where Projects.Id=@projectId and Projects.IsDeleted='0'";
+                    var AllKeeps = "select keeps.* from keeps join Projects on Keeps.ProjectId=Projects.Id where Projects.Id=@projectId and keeps.IsDeleted='0'";
                     var result = await con.QueryAsync<KeepModel>(AllKeeps, new { projectId = projectId });
                     return new ResponseModel<IEnumerable<KeepModel>>() {
                         IsSuccess = true,

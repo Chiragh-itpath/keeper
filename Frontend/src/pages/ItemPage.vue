@@ -15,7 +15,6 @@ import { watch } from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import RecordNotFoundComponent from '@/components/RecordNotFoundComponent.vue'
 import DeleteComponent from '@/components/DeleteComponent.vue'
-// import { SharedProject } from '@/Services/ProjectService'
 const { AddItem, GetItem, GetAllItems, DeleteItem, UpdateItem } = useItemStore()
 const { Items } = storeToRefs(useItemStore())
 let filtereditems = ref(Items.value)
@@ -41,12 +40,15 @@ const state = reactive({
   description: '',
   number: '',
   ItemType: 'Ticket',
-  isDeleted:false
+  isDeleted:false,
+  to:'',
+  discussedBy:''
 })
 let attachment = ref()
 async function addItem(): Promise<void> {
   const { valid } = await form.value.validate()
     if (!valid) return
+    
   if (state.itemId == '') {
     const Items: IItem = {
       title: state.title,
@@ -55,7 +57,9 @@ async function addItem(): Promise<void> {
       url: state.itemUrl,
       type: state.ItemType == 'Ticket' ? ItemType.TICKET : ItemType.PR,
       keepId: route.params.id.toString(),
-      files: attachment.value
+      files: attachment.value,
+      to:state.to,
+      discussedBy:state.discussedBy
     }
     form.value.reset()
     await AddItem(Items)
@@ -121,10 +125,13 @@ watch(date, () => {
   <Navbar />
   <v-container>
     <v-row>
-      <v-col cols="12" lg="10" md="9" sm="12">
+      <v-col cols="12" md="1" sm="12" class="my-auto " >
+        <Button onclick="history.back()" :rounded="false" variant="elevated">Back</Button>
+      </v-col>
+      <v-col cols="12" md="9" sm="12">
         <v-text-field type="date" color="primary" v-model="date"></v-text-field>
       </v-col>
-      <v-col cols="12" lg="2" md="3" sm="12">
+      <v-col cols="12" md="2" sm="12" class="my-auto">
         <Button
           class="w-100 mt-3"
           :rounded="false"
@@ -140,9 +147,6 @@ watch(date, () => {
       <RecordNotFoundComponent title="Items you add appear here" icon="mdi-note-check-outline" v-else></RecordNotFoundComponent>
     </div>
     <v-row v-else>
-      <!-- <v-col cols="12">
-        <Button onclick="history.back()">Back to Keeps</Button>
-      </v-col> -->
       <v-col cols="12" lg="6" md="12" sm="12" v-for="item in filtereditems" :key="item.id" class="mb-10">
         <Card backgroundColor="lightenTeal">
           <template #title>
@@ -209,7 +213,6 @@ watch(date, () => {
         {{ state.itemId != '' ? 'Edit Item' : 'Create New Item' }}
       </div>
     </template>
-
     <template #formSlot>
       <v-form ref="form">
         <v-container>
@@ -262,11 +265,11 @@ watch(date, () => {
               ></v-file-input>
             </v-col>
             <v-col cols="12" sm="6" md="6" lg="6">
-              <TextFieldText label="To"></TextFieldText>
+              <TextFieldText label="To" :is-required="false"></TextFieldText>
             </v-col>
             <v-col cols="12" sm="6" md="6" lg="6">
-              <TextFieldText label="Discussed by"></TextFieldText>
-            </v-col>
+              <TextFieldText label="Discussed by" :is-required="false"></TextFieldText>
+            </v-col> 
           </v-row>
         </v-container>
       </v-form>

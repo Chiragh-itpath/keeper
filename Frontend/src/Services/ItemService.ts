@@ -14,6 +14,8 @@ async function Insert(item: IItem) {
     form.append('type', item.type.toString())
     form.append('keepid', item.keepId!)
     form.append('createdby', item.createdBy!)
+    form.append('to', item.to??'')
+    form.append('discussedBy', item.discussedBy??'')
     if (item.files != undefined) {
       for (let file of item.files) {
         form.append('files', file)
@@ -23,6 +25,7 @@ async function Insert(item: IItem) {
   } catch (e) {
     console.log(e)
   }
+  
 }
 async function Update(item: IItem) {
   try {

@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\01414155-7e45-402c-9e0c-0a4eafbfaae8\**" />
+    <Content Remove="wwwroot\01414155-7e45-402c-9e0c-0a4eafbfaae8\**" />
+    <EmbeddedResource Remove="wwwroot\01414155-7e45-402c-9e0c-0a4eafbfaae8\**" />
+    <None Remove="wwwroot\01414155-7e45-402c-9e0c-0a4eafbfaae8\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.16">
       <PrivateAssets>all</PrivateAssets>
@@ -22,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <Folder Include="wwwroot\01414155-7e45-402c-9e0c-0a4eafbfaae8\" />
   </ItemGroup>
 
 </Project>

@@ -44,7 +44,7 @@ const state = reactive({
   isDeleted: false,
   isError: false,
   errorMsg: '',
-  isShared:true
+  isShared: true
 })
 
 const form = ref()
@@ -208,16 +208,17 @@ function getRandomColor() {
 }
 </script>
 <template>
-  <!-- <Loader v-if="state.isLoading" />  -->
   <v-container>
     <v-row>
-      <v-col cols="12" md="10" sm="12">
+      <v-col cols="12" md="1" sm="12" class="my-auto " v-if="route.name?.toString() != RouterEnum.PROJECT">
+        <Button onclick="history.back()" :rounded="false" variant="elevated">Back</Button>
+      </v-col>
+      <v-col cols="12" md="9" sm="12">
         <v-text-field color="primary" type="date" v-model="date" />
       </v-col>
       <v-col cols="12" md="2" sm="12" class="my-auto">
-        <Button class="w-100" @click="state.dialog = true" :rounded="false" variant="elevated" prepend-icon="mdi-plus">
-          new folder
-        </Button>
+        <Button class="w-100" @click="state.dialog = true" :rounded="false" variant="elevated" prepend-icon="mdi-plus">new
+          folder</Button>
       </v-col>
     </v-row>
     <div v-if="(filterData.length == 0 && !state.isLoading) && sharedProject.length == 0">
@@ -227,88 +228,94 @@ function getRandomColor() {
       </RecordNotFoundComponent>
     </div>
     <v-row class="ma-6" v-else>
-      <v-col cols="12">
-        <Button @click="() => router.push({ name: RouterEnum.PROJECT })" v-if="route.fullPath.indexOf('Tag') > 0">
-          All Projects
-        </Button>
-      </v-col>
       <v-col v-for="(project, index) in sharedProject" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-        <v-hover v-slot:default="{ isHovering, props }" >
-        <Card :min-width="200" :max-width="400" :fluid="true" backgroundColor="light-green-lighten-3" v-bind="props" class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
-          <template #title>
-            <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">{{
-                project.title
-              }}</span>
-              <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
-                <v-icon> mdi-dots-vertical </v-icon>
-                <v-menu activator="parent">
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title><Button variant="text"
-                          @click="()=>{editProject(project.id!); state.isShared=false}">Edit</Button></v-list-item-title>
-                      <v-list-item-title><Button variant="text"
-                          @click="() => { state.isDeleted = true; state.projectId = project.id! }">Delete</Button></v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-btn>
-            </div>
-          </template>
-          <template #text>
-            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">
-              {{ project.description }}
-              <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
-                description provided
-              </span>
-              <div class="avatar-container">
-                <v-avatar class="font-weight-medium  text-uppercase row-pointer" :style="{ backgroundColor: getRandomColor() }">{{
-                  project.owner![0] }}<v-tooltip activator="parent" location="bottom">{{ project.owner
-  }}</v-tooltip></v-avatar>
+        <v-hover v-slot:default="{ isHovering, props }">
+          <Card :min-width="200" :max-width="400" :fluid="true" backgroundColor="light-green-lighten-3" v-bind="props"
+            class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
+            <template #title>
+              <div class="position-relative text-grey-darken-4">
+                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">{{
+                  project.title
+                }}</span>
+                <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
+                  <v-icon> mdi-dots-vertical </v-icon>
+                  <v-menu activator="parent">
+                    <v-list>
+                      <v-list-item>
+                        <v-list-item-title><Button variant="text"
+                            @click="() => { editProject(project.id!); state.isShared = false }">Edit</Button></v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
               </div>
-            </v-card-text>
-          </template>
-        </Card>
-      </v-hover>
+            </template>
+            <template #text>
+              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 1 } })">
+                {{ project.description }}
+                <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
+                  description provided
+                </span>
+                <div class="avatar-container">
+                  <v-avatar class="font-weight-medium  text-uppercase row-pointer"
+                    :style="{ backgroundColor: getRandomColor() }">{{
+                      project.owner![0] }}<v-tooltip activator="parent" location="bottom">{{ project.owner
+  }}</v-tooltip></v-avatar>
+                </div>
+              </v-card-text>
+            </template>
+          </Card>
+        </v-hover>
       </v-col>
       <v-col v-for="(project, index) in filterData" :key="index" cols="12" lg="3" md="4" sm="6" class="mb-3">
-        <v-hover v-slot:default="{ isHovering, props }" >
-        <Card :style="{ 'min-width': '200px', 'max-width': 'auto' }" backgroundColor="lightenTeal" v-bind="props" class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
-          <template #title>
-            <div class="position-relative text-grey-darken-4">
-              <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">{{
-                project.title
-              }}</span>
-              <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
-                <v-icon> mdi-dots-vertical </v-icon>
-                <v-menu activator="parent">
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title><Button variant="text"
-                          @click="() => { editProject(project.id!); state.inviteEmail = project.contributers }">Edit</Button></v-list-item-title>
-                      <v-list-item-title><Button variant="text"
-                          @click="() => { state.isDeleted = true; state.projectId = project.id! }">Delete</Button></v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-btn>
-            </div>
-          </template>
-          <template #text>
-            <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">
-              {{ project.description }}
-              <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
-                description provided
-              </span>
-              <div class="avatar-container">
-                <v-avatar v-for="c in project.contributers" class="font-weight-medium  text-uppercase mr-1 row-pointer"
-                  :style="{ backgroundColor: getRandomColor() }"> {{ c.charAt(0) }}<v-tooltip activator="parent"
-                    location="bottom">{{ c }}</v-tooltip></v-avatar> 
+        <v-hover v-slot:default="{ isHovering, props }">
+          <Card :style="{ 'min-width': '200px', 'max-width': 'auto' }" backgroundColor="lightenTeal" v-bind="props"
+            class="row-pointer" :elevation="isHovering ? 20 : 8" :class="{ 'on-hover': isHovering }">
+            <template #title>
+              <div class="position-relative text-grey-darken-4">
+                <span @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">{{
+                  project.title
+                }}</span>
+                <v-btn class="position-absolute" style="right: 0" id="parent" variant="text" rounded>
+                  <v-icon> mdi-dots-vertical </v-icon>
+                  <v-menu activator="parent">
+                    <v-list>
+                      <v-list-item>
+                        <v-list-item-title><Button variant="text"
+                            @click="() => { editProject(project.id!); state.inviteEmail = project.contributers }">Edit</Button></v-list-item-title>
+                        <v-list-item-title><Button variant="text"
+                            @click="() => { state.isDeleted = true; state.projectId = project.id! }">Delete</Button></v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn>
               </div>
-            </v-card-text>
-          </template>
-        </Card>
-      </v-hover>
+            </template>
+            <template #text>
+              <v-card-text @click="$router.push({ name: RouterEnum.KEEP, params: { id: project.id, isShared: 0 } })">
+                {{ project.description }}
+                <span v-if="project.description == '' || project.description == null" class="text-grey font-italic">No
+                  description provided
+                </span>
+                <div class="avatar-container">
+                  <span v-for="(contributer, index) in project.contributers">
+                    <v-avatar v-if="index < 3" class="font-weight-medium  text-uppercase mr-1 row-pointer"
+                      :style="{ backgroundColor: getRandomColor() }"> {{ contributer.charAt(0) }}
+                      <v-tooltip
+                        activator="parent" location="bottom">{{ contributer }}</v-tooltip></v-avatar>
+                    <span v-if="index === 3" class="text-grey text-caption align-self-center">
+                      (+{{ project.contributers!.length - 3 }} others)
+                      <v-tooltip
+                        activator="parent" location="bottom">
+                        {{project.contributers?.slice(3).join(" , ")}}
+                      </v-tooltip>
+                    </span>
+                  </span>
+                </div>
+              </v-card-text>
+            </template>
+          </Card>
+        </v-hover>
       </v-col>
     </v-row>
   </v-container>
@@ -342,9 +349,10 @@ function getRandomColor() {
               <v-textarea label="Description" color="primary" variant="outlined" v-model="state.description"
                 clearable></v-textarea>
             </v-col>
-             <v-col cols="12" sm="6" md="2" lg="2">
-              <v-btn v-if="state.isShared" color="primary" variant="outlined" @click="state.openInvite = true">Invite</v-btn>
-            </v-col> 
+            <v-col cols="12" sm="6" md="2" lg="2">
+              <v-btn v-if="state.isShared" color="primary" variant="outlined"
+                @click="state.openInvite = true">Invite</v-btn>
+            </v-col>
             <v-col cols="12" sm="6" md="10" lg="10">
               <span v-for="(selection, index) in state.inviteEmail" :key="selection">
                 <v-chip closable v-if="index < 2" @click:close="state.inviteEmail.splice(index, 1)">
@@ -443,19 +451,21 @@ function getRandomColor() {
   max-height: 200px;
   overflow-y: scroll;
 }
+
 .border-color {
   border: 1px solid gray;
 }
+
 .row-pointer:hover {
   cursor: pointer;
 }
+
 .avatar-container {
   position: absolute;
   bottom: 8px;
   left: 8px;
 }
-.on-hover{
+
+.on-hover {
   background-color: rgba(#FFF, 0.8)
-}
- 
-</style>
+}</style>
