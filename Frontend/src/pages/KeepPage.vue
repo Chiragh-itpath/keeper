@@ -3,7 +3,7 @@ import { RouterEnum } from '@/enum/RouterEnum'
 import Button from '@/components/ButtonComponent.vue'
 import Card from '@/components/CardComponent.vue'
 import { reactive } from 'vue'
-import { ref } from 'vue'
+import { ref} from 'vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import TextFieldText from '@/components/TextFieldText.vue'
 import TextFieldEmail from '@/components/TextFieldEmail.vue'
@@ -42,13 +42,16 @@ const state = reactive({
   isDeleted:false,
   isError:false,
   errorMsg:'',
-  HasFullAccess:true
+  HasFullAccess:true,
+  isShared:true
 })
 
 const form = ref()
 const route = useRoute()
 const router = useRouter()
 var filteredkeeps = ref(Keeps.value)
+const isShared = Number(route.params.isShared) == 1;
+
 function formatDate(datetime: Date) {
   const date = new Date(datetime)
   const year = date.getFullYear()
@@ -63,13 +66,6 @@ watch(route, async () => {
     filteredkeeps.value = await GetKeeps(route.params.id.toString(),Number.parseInt(route.params.isShared.toString()))
   }
 })
-// watch(Keeps,async () => {
-//   if (route.name == RouterEnum.KEEP_BY_TAG) {
-//     filteredkeeps.value = await GetKeepByTag(route.params.id.toString())
-//   } else {
-//     filteredkeeps.value = Keeps.value
-//   }
-// })
 let date = ref()
 watch(date, () => {
   if (date.value != '' && date.value != null) {
@@ -132,8 +128,6 @@ async function CreateKeep(): Promise<void> {
     form.value.reset()
     state.dialog = false
   }
-  
-    // await Mail(mailObj)
   state.inviteEmail = []
   let res=await GetKeeps(proid.value,Number.parseInt(route.params.isShared.toString()))
   if(res.message=="Shared Keep"){
@@ -194,7 +188,10 @@ async function setKeepData() {
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="10" sm="12">
+      <v-col cols="12" md="1" sm="12" class="my-auto ">
+        <Button onclick="history.back()" :rounded="false" variant="elevated">Back</Button>
+      </v-col>
+      <v-col cols="12" md="9" sm="12">
         <v-text-field color="primary" type="date" v-model="date"></v-text-field>
         <!-- <v-date-picker :landscape="true" :reactive="true"></v-date-picker> -->
       </v-col>
@@ -216,10 +213,6 @@ async function setKeepData() {
       <RecordNotFoundComponent icon="mdi-google-keep" title="Keeps you add appear here" v-else></RecordNotFoundComponent>
     </div>
     <v-row  class="ma-6" v-else>
-      <v-col cols="12">
-        <Button @Click="()=>router.push({name:RouterEnum.KEEP,params:{id:projectId}})" v-if="route.fullPath.indexOf('Tag') > 0">All keeps</Button>
-        <Button @Click="()=>router.push({name:RouterEnum.PROJECT})" v-else>Back to Projects</Button>
-      </v-col>
       <v-col
         v-for="(keep, index) in filteredkeeps"
         :key="index"
@@ -246,7 +239,7 @@ async function setKeepData() {
                           >Edit</Button
                         ></v-list-item-title
                       >
-                      <v-list-item-title
+                      <v-list-item-title v-if="!isShared"
                         ><Button variant="text" @click="()=> {state.isDeleted=true ; state.KeepId=keep.id!}"
                           >Delete</Button
                         ></v-list-item-title
