@@ -1,9 +1,40 @@
 .hide-scrollerbar {
-  overflow: hidden;
+    overflow: hidden;
 }
 *::-webkit-scrollbar {
-  display: none;
+    display: none;
+}
+.v-card::-webkit-scrollbar {
+    display: block;
+    width: 10px;
+    background-color: #f5f5f5;
+}
+.v-card::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5;
+}
+.v-card::-webkit-scrollbar-thumb {
+    background-color: #fff;
+    background-image: -webkit-gradient(
+        linear,
+        40% 0%,
+        75% 84%,
+        from(#26a69a),
+        to(#21d3c1),
+        color-stop(0.6, #80cbc4)
+    );
 }
 .text-rotate {
-  transform: rotate(-10deg);
+    transform: rotate(-10deg);
+}
+
+.v-btn {
+    text-transform: capitalize !important;
+}
+
+.bg {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background: url('../images/pexels-lukas-317356.jpg') center center/cover no-repeat fixed;
 }

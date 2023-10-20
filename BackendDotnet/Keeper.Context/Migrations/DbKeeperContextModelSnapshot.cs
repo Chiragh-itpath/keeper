@@ -22,21 +22,6 @@ namespace Keeper.Context.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("FileModelItemModel", b =>
-                {
-                    b.Property<Guid>("FilesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ItemsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("FilesId", "ItemsId");
-
-                    b.HasIndex("ItemsId");
-
-                    b.ToTable("FileModelItemModel");
-                });
-
             modelBuilder.Entity("Keeper.Context.Model.FileModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -47,9 +32,34 @@ namespace Keeper.Context.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OriginalName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("Keeper.Context.Model.ItemFileLinkerModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemFileLinker");
                 });
 
             modelBuilder.Entity("Keeper.Context.Model.ItemModel", b =>
@@ -58,7 +68,7 @@ namespace Keeper.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -78,8 +88,7 @@ namespace Keeper.Context.Migrations
 
                     b.Property<string>("Number")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -95,15 +104,19 @@ namespace Keeper.Context.Migrations
                     b.Property<string>("URL")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("UpdatedOn")
+                    b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("KeepId");
+
+                    b.HasIndex("UpdatedById");
 
                     b.ToTable("Items");
                 });
@@ -114,7 +127,7 @@ namespace Keeper.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -134,7 +147,7 @@ namespace Keeper.Context.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -142,26 +155,15 @@ namespace Keeper.Context.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("ProjectId");
 
+                    b.HasIndex("TagId");
+
+                    b.HasIndex("UpdatedById");
+
                     b.ToTable("Keeps");
-                });
-
-            modelBuilder.Entity("Keeper.Context.Model.KeepUserModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("KeepId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("keepUser");
                 });
 
             modelBuilder.Entity("Keeper.Context.Model.ProjectModel", b =>
@@ -170,7 +172,7 @@ namespace Keeper.Context.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
@@ -190,7 +192,7 @@ namespace Keeper.Context.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -198,16 +200,51 @@ namespace Keeper.Context.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("TagId");
+
+                    b.HasIndex("UpdatedById");
+
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("Keeper.Context.Model.ProjectUserModel", b =>
+            modelBuilder.Entity("Keeper.Context.Model.SharedKeepsModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("HasFullAccess")
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("KeepId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeepId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SharedKeeps");
+                });
+
+            modelBuilder.Entity("Keeper.Context.Model.SharedProjectsModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("ProjectId")
@@ -218,7 +255,11 @@ namespace Keeper.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectUser");
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SharedProjects");
                 });
 
             modelBuilder.Entity("Keeper.Context.Model.TagModel", b =>
@@ -233,6 +274,9 @@ namespace Keeper.Context.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -275,22 +319,105 @@ namespace Keeper.Context.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("FileModelItemModel", b =>
+            modelBuilder.Entity("Keeper.Context.Model.ItemFileLinkerModel", b =>
                 {
-                    b.HasOne("Keeper.Context.Model.FileModel", null)
+                    b.HasOne("Keeper.Context.Model.FileModel", "File")
                         .WithMany()
-                        .HasForeignKey("FilesId")
+                        .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Keeper.Context.Model.ItemModel", null)
+                    b.HasOne("Keeper.Context.Model.ItemModel", "Item")
                         .WithMany()
-                        .HasForeignKey("ItemsId")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Keeper.Context.Model.ItemModel", b =>
+                {
+                    b.HasOne("Keeper.Context.Model.UserModel", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.KeepModel", "Keep")
+                        .WithMany()
+                        .HasForeignKey("KeepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.UserModel", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Keep");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Keeper.Context.Model.KeepModel", b =>
+                {
+                    b.HasOne("Keeper.Context.Model.UserModel", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.ProjectModel", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.TagModel", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
+
+                    b.HasOne("Keeper.Context.Model.UserModel", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Tag");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Keeper.Context.Model.ProjectModel", b =>
+                {
+                    b.HasOne("Keeper.Context.Model.UserModel", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.TagModel", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
+
+                    b.HasOne("Keeper.Context.Model.UserModel", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Tag");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Keeper.Context.Model.SharedKeepsModel", b =>
                 {
                     b.HasOne("Keeper.Context.Model.KeepModel", "Keep")
                         .WithMany()
@@ -298,23 +425,42 @@ namespace Keeper.Context.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Keep");
-                });
-
-            modelBuilder.Entity("Keeper.Context.Model.KeepModel", b =>
-                {
                     b.HasOne("Keeper.Context.Model.ProjectModel", "Project")
-                        .WithMany("Keeps")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Keeper.Context.Model.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Keep");
+
                     b.Navigation("Project");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Keeper.Context.Model.ProjectModel", b =>
+            modelBuilder.Entity("Keeper.Context.Model.SharedProjectsModel", b =>
                 {
-                    b.Navigation("Keeps");
+                    b.HasOne("Keeper.Context.Model.ProjectModel", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Keeper.Context.Model.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

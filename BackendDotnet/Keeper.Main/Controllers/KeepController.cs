@@ -1,16 +1,12 @@
 ﻿using Keeper.Common.Response;
-using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
-using Keeper.Context.Model;
-using Keeper.Services.Services;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
-    /*[Authorize]*/
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class KeepController : ControllerBase
@@ -20,45 +16,40 @@ namespace Keeper.Main.Controllers
         {
             _keepService = keepService;
         }
+
         [HttpPost("")]
-        public async Task<ResponseModel<string>> Post(KeepVM keep)
+        public async Task<ResponseModel<KeepViewModel>> Post(AddKeep keep)
         {
-            return await _keepService.SaveAsync(keep);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _keepService.AddAsync(keep, userId);
         }
-        [HttpGet]
-        [Route("{ProjectId}/{UserId}/{isShared}")]
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAll(Guid ProjectId, Guid UserId, int isShared)
+        [HttpGet("")]
+        public async Task<ResponseModel<List<KeepViewModel>>> GetAll(Guid ProjectId)
         {
-            return await _keepService.GetAllAsync(ProjectId, UserId, isShared);
-
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _keepService.GetAllAsync(ProjectId, userId);
         }
-        [HttpGet]
-        [Route("{Id}")]
-        public async Task<ResponseModel<KeepModel>> GetById(Guid Id)
+        [HttpGet("{id}")]
+        public async Task<ResponseModel<KeepViewModel>> GetById([FromRoute] Guid Id)
         {
-            return await _keepService.GetByIdAsync(Id);
-
-        }
-        [HttpGet]
-        [Route("Tag/{userId}/{tagId}")]
-        public async Task<ResponseModel<List<KeepModel>>> GetByTag(Guid userId, Guid tagId)
-        {
-            return await _keepService.GetByTagAsync(userId, tagId);
+            return await _keepService.GetAsync(Id);
         }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update(KeepVM keep)
+        public async Task<ResponseModel<KeepViewModel>> Update(EditKeep keep)
         {
-            return await _keepService.UpdatedAsync(keep);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _keepService.UpdateAsync(keep, userId);
         }
         [HttpDelete("{Id}")]
         public async Task<ResponseModel<string>> Delete(Guid Id)
         {
-            return await _keepService.DeleteByIdAsync(Id);
-        }
-        [HttpGet("shared/{userid}")]
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeeps(Guid userid)
-        {
-            return await _keepService.SharedKeepsAsync(userid);
+            return await _keepService.DeleteAsync(Id);
         }
     }
 }

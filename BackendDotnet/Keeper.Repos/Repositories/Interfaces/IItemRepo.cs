@@ -4,10 +4,10 @@ namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IItemRepo
     {
-        Task<bool> SaveAsync(ItemModel item, List<FileModel> files);
-        Task<bool> DeleteAsync(ItemModel item);
-        Task<bool> UpdateAsync(ItemModel item, List<FileModel> files);
-        Task<ItemModel> GetByIdAsync(Guid id);
-        Task<IEnumerable<ItemModel>> GetAllAsync(Guid KeepId);
+        Task<List<ItemModel>> GetAllAsync(Guid KeepId);
+        Task<ItemModel?> GetAsync(Guid ItemId);
+        Task<Guid> SaveAsync(ItemModel item);
+        Task<Guid> Update(ItemModel item);
+        Task Delete(ItemModel item);
     }
 }

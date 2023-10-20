@@ -5,10 +5,9 @@ namespace Keeper.Services.Services.Interfaces
 {
     public interface IAccountService
     {
-        Task<ResponseModel<string>> RegisterAsync(RegisterVM register);
-        Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM);
-        Task<ResponseModel<OTPModel>> GenerateOTP(string email);
-        Task<ResponseModel<string>> UpdatePasswordAsync(LoginVM user);
-        Task<ResponseModel<string>> ConfirmationOfSharedItemAsync(SharedItemVM sharedItem);
+        Task<ResponseModel<string>> RegisterAsync(RegisterModel register);
+        Task<ResponseModel<TokenModel>> LoginAsync(LoginModel loginVM);
+        Task<ResponseModel<string>> GetOTP(string email);
+        Task<ResponseModel<string>> UpdatePasswordAsync(PasswordResetModel resetModel);
     }
 }

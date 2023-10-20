@@ -1,6 +1,5 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
-using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
@@ -9,71 +8,43 @@ namespace Keeper.Services.Services
 {
     public class TagService : ITagService
     {
-        private readonly ITagRepo _tagRepo;
+        private readonly ITagRepo _repo;
         public TagService(ITagRepo tagRepo)
         {
-            _tagRepo = tagRepo;
+            _repo = tagRepo;
         }
-        public async Task<ResponseModel<List<TagVM>>> GetAllAsync()
+        public ResponseModel<IList<TagModel>> GetAll(Guid userId)
         {
-            var data = await _tagRepo.GetAllAsync();
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
-        }
-        public async Task<ResponseModel<TagModel>> GetByIdAsync(Guid Id)
-        {
-            var data = await _tagRepo.GetByIdAsync(Id);
-            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
-        }
-        public async Task<ResponseModel<List<TagVM>>> GetByTypeAsync(TagType type)
-        {
-            var data = await _tagRepo.GetByTypeAsync(type);
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
-        }
-        public async Task<ResponseModel<TagModel>> GetByTitleAsync(string title)
-        {
-            var data = await _tagRepo.GetByTitleAsync(title);
-            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record", IsSuccess = true, Data = data };
-        }
-        public async Task<ResponseModel<TagModel>> SaveAsync(TagModel tagModel)
-        {
-            var data = await _tagRepo.SaveAsync(tagModel);
-
-            return new ResponseModel<TagModel>() { StatusName = StatusType.SUCCESS, Message = "Record Inserted", IsSuccess = true, Data = data };
-        }
-        public async Task<bool> DeleteByIdAsync(Guid id)
-        {
-            return await _tagRepo.DeleteByIdAsync(id);
-        }
-        ResponseModel<List<TagVM>> GetResponse(StatusType statusName, string message, bool isSuccess, List<TagVM>? data = null, object? metadata = null)
-        {
-            return new ResponseModel<List<TagVM>>()
+            var tags = _repo.GetAll(userId);
+            return new ResponseModel<IList<TagModel>>()
             {
-                StatusName = statusName,
-                Message = message,
-                IsSuccess = isSuccess,
-                Data = data,
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "",
+                Data = tags
             };
         }
-        List<TagVM> ConvertToVM(IEnumerable<TagModel> data)
+        public async Task<TagModel?> GetByIdAsync(Guid id)
         {
-            List<TagVM> list = new List<TagVM>();
-            foreach (var item in data)
+            return await _repo.GetByIdAsync(id);
+        }
+        public async Task<TagModel?> AddAsync(string? tag, Guid userId, TagType type)
+        {
+            if (string.IsNullOrEmpty(tag))
             {
-                list.Add(new TagVM() { Title = item.Title, Type = item.Type });
+                return null;
             }
-            return list;
-        }
-
-        public async Task<ResponseModel<List<TagVM>>> GetForProjectAsync(Guid userid)
-        {
-            var data = await _tagRepo.GetForProjectAsync(userid);
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
-        }
-
-        public async Task<ResponseModel<List<TagVM>>> GetForKeepsAsync(Guid userid, Guid projectid)
-        {
-            var data = await _tagRepo.GetForKeepAsync(userid, projectid);
-            return GetResponse(StatusType.SUCCESS, "List of Records", true, ConvertToVM(data));
+            var res = _repo.GetAll(userId).FirstOrDefault(x => x.Title.Equals(tag) && x.Type == type);
+            if (res == null)
+            {
+                return await _repo.AddAsync(new TagModel()
+                {
+                    Title = tag,
+                    UserId = userId,
+                    Type = type
+                });
+            }
+            return res;
         }
     }
 }

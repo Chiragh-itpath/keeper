@@ -1,23 +1,14 @@
 ﻿using Keeper.Common.Response;
-using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
-using Keeper.Context.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keeper.Services.Services.Interfaces
 {
     public interface IKeepService
     {
-        Task<ResponseModel<string>> SaveAsync(KeepVM keep);
-        Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId, Guid UserId, int isShared);
-        Task<ResponseModel<KeepModel>> GetByIdAsync(Guid Id);
-        Task<ResponseModel<string>> DeleteByIdAsync(Guid Id);
-        Task<ResponseModel<string>> UpdatedAsync(KeepVM keep);
-        Task<ResponseModel<List<KeepModel>>> GetByTagAsync(Guid userId, Guid tagId);
-        Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeepsAsync(Guid userId);
+        Task<ResponseModel<List<KeepViewModel>>> GetAllAsync(Guid projectId, Guid userId);
+        Task<ResponseModel<KeepViewModel>> GetAsync(Guid id);
+        Task<ResponseModel<KeepViewModel>> AddAsync(AddKeep addKeep,Guid userId);
+        Task<ResponseModel<KeepViewModel>> UpdateAsync(EditKeep editKeep, Guid userId);
+        Task<ResponseModel<string>> DeleteAsync(Guid id);
     }
 }

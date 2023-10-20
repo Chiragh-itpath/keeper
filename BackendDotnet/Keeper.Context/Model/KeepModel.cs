@@ -1,15 +1,10 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keeper.Context.Model
 {
-    public class KeepModel : IDisposable
+    [Table("Keeps")]
+    public class KeepModel 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,18 +14,15 @@ namespace Keeper.Context.Model
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public bool IsDeleted { get; set; } = false;
-
-        public Guid CreatedBy { get; set; }
-        public Guid? UpdatedBy { get; set; }
+        public Guid CreatedById { get; set; }
+        public virtual UserModel CreatedBy { get; set; }
+        public Guid? UpdatedById { get; set; }
+        public virtual UserModel UpdatedBy { get; set; }
         public Guid? TagId { get; set; }
+        public virtual TagModel? Tag {  get; set; }
 
-        [ForeignKey(nameof(ProjectModel))]
+        [ForeignKey("ProjectId")]
         public Guid ProjectId { get; set; }
         public virtual ProjectModel? Project { get; set; }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

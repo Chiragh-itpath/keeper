@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Keeper.Context.Model
 {
+    [Table("Files")]
     public class FileModel
     {
         [Key]
@@ -11,6 +12,6 @@ namespace Keeper.Context.Model
         public Guid Id { get; set; }
         [Required]
         public string FilePath { get; set; } = default!;
-        public virtual ICollection<ItemModel>? Items { get; set; }
+        public string OriginalName { get; set; } = default!;
     }
 }

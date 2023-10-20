@@ -7,7 +7,7 @@ namespace Keeper.Repos.Config
 {
     public static class Bootstraper
     {
-        public static void RegisterRepos(this IServiceCollection services)
+        public static IServiceCollection RegisterRepos(this IServiceCollection services)
         {
             services.AddTransient<IUserRepo, UserRepo>();
             services.AddTransient<ITagRepo, TagRepo>();
@@ -15,8 +15,11 @@ namespace Keeper.Repos.Config
             services.AddTransient<IAccountRepo, AccountRepo>();
             services.AddTransient<IKeepRepo, KeepRepo>();
             services.AddTransient<IItemRepo, ItemRepo>();
-            services.AddTransient<IKeepUserRepo, KeepUserRepo>();
-            services.AddTransient<IProjectUserRepo, ProjectUserRepo>();
+            services.AddTransient<IFileRepo, FileRepo>();
+            services.AddTransient<IItemFileLInkerRepo, ItemFileLInkerRepo>();
+            services.AddTransient<IProjectShareRepo, ShareProjectRepo>();
+            services.AddTransient<IKeepShareRepo, ShareKeepRepo>();
+            return services;
         }
     }
 }

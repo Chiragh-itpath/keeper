@@ -1,6 +1,8 @@
-import type { TagTypeEnum } from '@/enum/TagTypeEnum'
+import type { TagTypeEnum } from '@/Models/enum'
 
 export interface ITag {
-  title: string
-  type: TagTypeEnum
+    id: string
+    title: string
+    type: TagTypeEnum
+    userId: string
 }

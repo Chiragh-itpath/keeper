@@ -1,47 +1,56 @@
 <script setup lang="ts">
-import ButtonComponent from '@/components/ButtonComponent.vue'
-import { eventBus } from '@/data/EventBus'
-import { useUserStore } from '@/stores/UserStore'
-import Button from '@/components/ButtonComponent.vue'
-import { RouterEnum } from '@/enum/RouterEnum';
-let { logout } = useUserStore()
+import { UserStore, Uitlity } from '@/stores'
+import InviteNotification from '@/components/InviteNotification.vue'
+import { RouterEnum } from '@/Models/enum'
+import { onMounted } from 'vue';
+let { logout, User, myProfile } = UserStore()
+const { ToggleSideBar } = Uitlity()
 
-function toggleSideBar() {
-  eventBus.emit('toggle-sidebar')
+const toggleSidebar = (): void => {
+    ToggleSideBar()
 }
-
-const props = withDefaults(
-  defineProps<{
-    disableToggle?: boolean
-  }>(),
-  {
-    disableToggle: false
-  }
-)
+onMounted(async () => {
+    await myProfile()
+})
 </script>
 <template>
-  <v-app-bar>
-    <template v-slot:prepend>
-      <button-component
-        v-if="props.disableToggle"
-        variant="text"
-        :rounded="false"
-        flat
-        @click="toggleSideBar()"
-      >
-        <v-icon size="x-large"> mdi-menu </v-icon>
-      </button-component>
-    </template>
-    <v-app-bar-title @click="()=>$router.push({name:RouterEnum.PROJECT})" class="pointer">Keeper</v-app-bar-title>
-    <template v-slot:append>
-      <div class="pa-5">
-        <Button variant="outlined" @click="logout"> Logout </Button>
-      </div>
-    </template>
-  </v-app-bar>
+    <v-app-bar>
+        <v-hover v-slot="{ isHovering, props }">
+            <div role="button" class="mx-5 rounded-circle" :class="isHovering ? 'bg-blue-grey-lighten-4' : ''"
+                v-bind="props" @click="toggleSidebar">
+                <v-icon color="primary" class="ma-2">mdi-menu</v-icon>
+            </div>
+        </v-hover>
+        <router-link :to="{ name: RouterEnum.PROJECT }" class="text-primary text-h5 ms-0">Keeper</router-link>
+        <v-spacer></v-spacer>
+        <div class="d-flex align-center me-10">
+            <invite-notification />
+
+            <v-menu :close-on-content-click="false" transition="scale-transition" location="bottom">
+                <template v-slot:activator="{ props }">
+                    <v-avatar color="primary" v-bind="props" role="button">{{ User.email[0]?.toUpperCase() }}</v-avatar>
+                </template>
+                <v-card width="400" class="bg-grey-lighten-5">
+                    <v-card-title class="">
+                        <div class="text-center">
+                            <div class="my-3">
+                                <v-avatar color="primary">{{ User.email[0]?.toUpperCase() }}</v-avatar>
+                            </div>
+                            <div>Hi, {{ User.userName }}</div>
+                            <div class="text-grey my-3"> {{ User.email }}</div>
+                        </div>
+                    </v-card-title>
+                    <v-card-actions class="justify-center mb-3">
+                        <v-btn variant="outlined" color="primary" @click="logout" width="150" height="40"
+                            append-icon="mdi-logout"> Logout </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-menu>
+        </div>
+    </v-app-bar>
 </template>
 <style>
 .pointer {
-  cursor: pointer;
+    cursor: pointer;
 }
 </style>

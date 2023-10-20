@@ -6,12 +6,11 @@ namespace Keeper.Context.Config
 {
     public static class Bootstraper
     {
-        public static void RegisterDbContext(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection RegisterDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             string ConnectionString = configuration.GetConnectionString("DbConnection");
             services.AddDbContext<DbKeeperContext>(option => option.UseSqlServer(ConnectionString));
+            return services;
         }
-
-
     }
 }

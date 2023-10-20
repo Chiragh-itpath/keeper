@@ -1,179 +1,157 @@
 ﻿using Keeper.Common.Enums;
 using Keeper.Common.Response;
-using Keeper.Common.View_Models;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
-using Keeper.Repos.Interfaces;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Keeper.Services.Services
 {
-    public class KeepService:IKeepService
+    public class KeepService : IKeepService
     {
-        private readonly IKeepRepo _repo;
-        private readonly ITagService _tagService;
-        private readonly IUserRepo _userRepo;
-        private readonly IMailService _mailService;
-        private readonly IKeepUserService _keepUserService;
-        public KeepService(IKeepRepo repo, ITagService tagService,IUserRepo userRepo, IMailService mailService)
+        private readonly IKeepRepo _keepRepo;
+        private readonly IProjectRepo _projectRepo;
+        private readonly IProjectShareRepo _projectShareRepo;
+        private readonly ITagService _tag;
+        public KeepService(IKeepRepo keepRepo, ITagService tagService, IProjectRepo projectRepo, IProjectShareRepo projectShareRepo)
         {
-            _repo = repo;
-            _tagService = tagService;
-            _userRepo = userRepo;
-            _mailService = mailService;
+            _keepRepo = keepRepo;
+            _tag = tagService;
+            _projectRepo = projectRepo;
+            _projectShareRepo = projectShareRepo;
         }
-
-        public async Task<ResponseModel<string>> DeleteByIdAsync(Guid Id)
+        public async Task<ResponseModel<List<KeepViewModel>>> GetAllAsync(Guid projectId, Guid userId)
         {
-            await _repo.DeleteByIdAsync(Id); 
-            return new ResponseModel<string>()
+            List<KeepModel> result;
+            var project = await _projectRepo.GetByIdAsync(projectId);
+            var sharedProject = await _projectShareRepo.GetAsync(projectId, userId);
+            if (project?.CreatedById == userId || sharedProject != null)
+                result = await _keepRepo.GetAllAsync(projectId);
+            else
+                result = await _keepRepo.GetAllShared(projectId, userId);
+
+            var keeps = result.Select(item => new KeepViewModel
+            {
+                Id = item.Id,
+                Title = item.Title,
+                ProjectId = item.ProjectId,
+                CreatedBy = item.CreatedBy.Email,
+                CreatedOn = item.CreatedOn,
+                Updatedby = item.UpdatedBy?.Email,
+                UpdatedOn = item.UpdatedOn,
+                Tag = item.Tag?.Title,
+            }).ToList();
+
+            return new ResponseModel<List<KeepViewModel>>()
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
-                Message = "keep Deleted",
+                Message = "",
+                Data = keeps
             };
         }
-
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid ProjectId,Guid UserId, int isShared)
+        public async Task<ResponseModel<KeepViewModel>> GetAsync(Guid id)
         {
-            return await _repo.GetAllAsync(ProjectId,UserId,isShared);
-        }
-        public async Task<ResponseModel<KeepModel>> GetByIdAsync(Guid Id)
-        {
-            var result = await _repo.GetByIdAsync(Id);
-
-            return new ResponseModel<KeepModel>
+            var result = await _keepRepo.GetAsync(id);
+            if (result == null)
             {
-                StatusName = StatusType.SUCCESS,
-                IsSuccess = true,
-                Data = result
-            };
-        }
-
-        public async Task<ResponseModel<List<KeepModel>>> GetByTagAsync(Guid userId, Guid tagId)
-        {
-            var result = await _repo.GetByTagAsync(userId, tagId);
-            return new ResponseModel<List<KeepModel>>
-            {
-                StatusName = StatusType.SUCCESS,
-                IsSuccess = true,
-                Data = result
-            };
-        }
-        public async Task<ResponseModel<string>> SaveAsync(KeepVM keep)
-            {
-            Guid? tagId = Guid.NewGuid();
-            try
-            {
-                if (keep.TagTitle != null && keep.TagTitle != "")
+                return new ResponseModel<KeepViewModel>()
                 {
-                    var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
-                    if (tagdata.Data == null)
-                    {
-                        TagModel tag = new TagModel()
-                        {
-                            Id = tagId.Value,
-                            Title = keep.TagTitle,
-                            Type = TagType.KEEP
-                        };
-                        await _tagService.SaveAsync(tag);
-                    }
-                    else
-                    {
-                        tagId = tagdata.Data.Id;
-                    }
-                }
-                else
-                {
-                    tagId = null;
-                }
-                KeepModel model = new KeepModel();
-                {
-                    model.Title = keep.Title;
-                    model.CreatedOn = DateTime.Now;
-                    model.CreatedBy = keep.CreatedBy;
-                    model.ProjectId = keep.ProjectId;
-                    model.TagId = tagId;
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "No Keep Found"
                 };
-                var response = await _repo.SaveAsync(model);
-                if (keep.mail != null)
-                {
-                    keep.mail.TypeId = response.Id;
-                    await _mailService.SendEmailAsync(keep.mail);
-                }
-
             }
-            catch(Exception ex) { 
-            }
-            
-                return new ResponseModel<string>
-                {
-                    StatusName = StatusType.SUCCESS,
-                    IsSuccess = true,
-                    Message = "keep Created SuccessFully",
-                };
-        }
-
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> SharedKeepsAsync(Guid userId)
-        {
-           var response=await _repo.SharedKeepAsync(userId);
-            return new ResponseModel<IEnumerable<KeepModel>>
+            KeepViewModel keep = new()
+            {
+                Id = result.Id,
+                Title = result.Title,
+                ProjectId = result.ProjectId,
+                CreatedBy = result.CreatedBy.Email,
+                CreatedOn = result.CreatedOn,
+                Updatedby = result.UpdatedBy?.Email,
+                UpdatedOn = result.UpdatedOn,
+                Tag = result.Tag?.Title,
+            };
+            return new ResponseModel<KeepViewModel>()
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
-                Message = "All shared Keeps",
-                Data = response
+                Message = "",
+                Data = keep
             };
         }
-
-        public async Task<ResponseModel<string>> UpdatedAsync(KeepVM keep)
+        public async Task<ResponseModel<KeepViewModel>> AddAsync(AddKeep addKeep, Guid userId)
         {
-            Guid? tagid = Guid.NewGuid();
-            if (keep.TagTitle != null && keep.TagTitle != "")
+            KeepModel keep = new()
             {
-                var tagdata = await _tagService.GetByTitleAsync(keep.TagTitle);
-                if (tagdata.Data == null)
+                Title = addKeep.Title,
+                ProjectId = addKeep.ProjectId,
+                CreatedById = userId,
+                CreatedOn = DateTime.Now,
+            };
+
+            if (!string.IsNullOrEmpty(addKeep.Tag))
+            {
+                var project = await _projectRepo.GetByIdAsync(addKeep.ProjectId);
+                var tag = await _tag.AddAsync(addKeep.Tag, project!.CreatedById, TagType.KEEP);
+                keep.TagId = tag?.Id;
+            }
+            var keepId = await _keepRepo.SaveAsync(keep);
+            var res = await GetAsync(keepId);
+            res.Message = "Keep Added";
+            return res;
+        }
+        public async Task<ResponseModel<KeepViewModel>> UpdateAsync(EditKeep editKeep, Guid userId)
+        {
+            var keep = await _keepRepo.GetAsync(editKeep.Id);
+            if (keep == null)
+            {
+                return new ResponseModel<KeepViewModel>()
                 {
-                    TagModel tag = new TagModel()
-                    {
-                        Id = tagid.Value,
-                        Title = keep.TagTitle,
-                        Type = TagType.PROJECT
-                    };
-                    await _tagService.SaveAsync(tag);
-                }
-                else
-                {
-                    tagid = tagdata.Data.Id;
-                }
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "No Keep Found"
+                };
+            }
+            keep.Title = editKeep.Title;
+            keep.UpdatedOn = DateTime.Now;
+            keep.UpdatedById = userId;
+            if (!string.IsNullOrEmpty(editKeep.Tag))
+            {
+                var project = await _projectRepo.GetByIdAsync(editKeep.ProjectId);
+                var tag = await _tag.AddAsync(editKeep.Tag, project!.CreatedById, TagType.KEEP);
+                keep.TagId = tag?.Id;
             }
             else
             {
-                tagid = null;
+                keep.TagId = null;
             }
-            KeepModel existingModel = await _repo.GetByIdAsync((Guid)keep.Id!);
-            existingModel.Id = (Guid)keep.Id!;
-            existingModel.Title = keep.Title;
-            existingModel.UpdatedOn = DateTime.Now;
-            existingModel.UpdatedBy = (Guid)keep.UpdatedBy!;
-            existingModel.TagId=tagid;
-            await _repo.UpdatedAsync(existingModel);
-            if (keep.mail != null)
+            var keepId = await _keepRepo.UpdateAsync(keep);
+            var res = await GetAsync(keepId);
+            res.Message = "Keep Updated";
+            return res;
+
+        }
+        public async Task<ResponseModel<string>> DeleteAsync(Guid id)
+        {
+            var keep = await _keepRepo.GetAsync(id);
+            if (keep == null)
             {
-                keep.mail.TypeId = existingModel.Id;
-                await _mailService.SendEmailAsync(keep.mail);
+                return new ResponseModel<string>()
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "No Keep Found"
+                };
             }
+            await _keepRepo.DeleteAsync(keep);
             return new ResponseModel<string>()
             {
                 StatusName = StatusType.SUCCESS,
                 IsSuccess = true,
-                Message = "keep Updated SuccessFully",
+                Message = "Keep Deleted",
+                Data = id.ToString()
             };
         }
     }

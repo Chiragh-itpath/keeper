@@ -7,31 +7,38 @@ namespace Keeper.Repos.Repositories
 {
     public class UserRepo : IUserRepo
     {
-        private readonly DbKeeperContext _dbKeeperContext;
-        public UserRepo(DbKeeperContext dbKeeperContext)
+        private readonly DbKeeperContext _db;
+        public UserRepo(DbKeeperContext db)
         {
-            _dbKeeperContext = dbKeeperContext;
+            _db = db;
         }
+
         public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
-            return await _dbKeeperContext.Users.ToListAsync();
+            return await _db.Users.ToListAsync();
         }
-        public async Task<UserModel> GetByEmailAsync(string email)
+        public async Task<UserModel?> GetByEmailAsync(string email)
         {
-            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Email == email) ?? new UserModel();
+            return await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
-        public async Task<UserModel> GetByIdAsync(Guid id)
+        
+        public bool UpdateUser(UserModel user)
         {
-            return await _dbKeeperContext.Users.FirstOrDefaultAsync(x => x.Id == id) ?? new UserModel();
+            _db.Update(user);
+            return _db.SaveChanges() == 1;
+        }
+        public async Task<List<UserModel>> GetEmailList(string email)
+        {
+            return await _db.Users
+                .Where(x => x.Email.StartsWith(email))
+                .ToListAsync();
         }
 
-        public async Task<bool> UpdateUser(UserModel user)
+        public async Task<UserModel?> GetById(Guid userId)
         {
-            _dbKeeperContext.Update(user);
-            return _dbKeeperContext.SaveChanges() == 1;
-
-
-
+            return await _db.Users
+                .Where(x => x.Id == userId)
+                .FirstOrDefaultAsync();
         }
     }
 }

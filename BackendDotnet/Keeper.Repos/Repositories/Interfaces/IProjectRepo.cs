@@ -1,26 +1,15 @@
-﻿using Keeper.Common.Response;
-using Keeper.Common.View_Models;
-using Keeper.Context.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Keeper.Context.Model;
 
 namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IProjectRepo
     {
         Task<List<ProjectModel>> GetAllAsync(Guid userId);
-        Task<ProjectModel> GetByIdAsync(Guid Id);
-        Task<ProjectModel> SaveAsync(ProjectModel project);
-        Task<ProjectModel> DeleteByIdAsync(Guid projectid);
-        Task<ProjectModel> UpdatedAsync(ProjectModel project);
-        Task<List<ProjectModel>> GetByTagAsync(Guid userId, Guid tagId);
-        Task<IEnumerable<ProjectModel>> SharedProject(Guid userId);
-        Task<string> OwnerName(Guid projectId);
-        Task<IEnumerable<string>> ContributorName(Guid projectId);
-        Task<bool> IsContributorExist(Guid projectId, Guid userId);
+        Task<ProjectModel?> GetByIdAsync(Guid Id);
+        Task<Guid> SaveAsync(ProjectModel project);
+        Task<Guid> UpdateAsync(ProjectModel project);
+        Task DeleteAsync(ProjectModel projectid);
+        Task<List<ProjectModel>> GetSharedAsync(Guid userId);
     }
      
 }

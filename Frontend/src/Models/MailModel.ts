@@ -1,6 +1,6 @@
-import type { TagTypeEnum } from "@/enum/TagTypeEnum"
+import type { TagTypeEnum } from '@/Models/enum'
 
 export interface IMail {
-  ToEmail: string[]
-  Type:TagTypeEnum
+    ToEmail: string[]
+    Type: TagTypeEnum
 }

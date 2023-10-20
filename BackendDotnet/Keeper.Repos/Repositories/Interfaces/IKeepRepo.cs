@@ -1,21 +1,14 @@
-﻿using Keeper.Common.Response;
-using Keeper.Context.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Keeper.Context.Model;
 
 namespace Keeper.Repos.Repositories.Interfaces
 {
     public interface IKeepRepo
     {
-        Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid projectId, Guid UserId, int isShared);
-        Task<KeepModel> GetByIdAsync(Guid Id);
-        Task<KeepModel> SaveAsync(KeepModel keep);
-        Task<bool> DeleteByIdAsync(Guid keepid);
-        Task<bool> UpdatedAsync(KeepModel keepModel);
-        Task<List<KeepModel>> GetByTagAsync(Guid userId, Guid tagId);
-        Task<IEnumerable<KeepModel>> SharedKeepAsync(Guid userId);
+        Task<List<KeepModel>> GetAllAsync(Guid ProjectId);
+        Task<List<KeepModel>> GetAllShared(Guid projectId, Guid userId);
+        Task<KeepModel?> GetAsync(Guid id);
+        Task<Guid> SaveAsync(KeepModel keep);
+        Task<Guid> UpdateAsync(KeepModel Keep);
+        Task DeleteAsync(KeepModel keep);
     }
 }

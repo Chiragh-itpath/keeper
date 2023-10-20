@@ -1,46 +1,37 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
-using Keeper.Context.Model;
 using Keeper.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUserService _user;
 
         public UserController(IUserService userService)
         {
-            _userService = userService;
+            _user = userService;
         }
-        [HttpGet("{id}")]
-        public async Task<ResponseModel<UserVM>> Get(Guid id)
+
+        [HttpGet("Me")]
+        public async Task<ResponseModel<UserViewModel>> Me()
         {
-            return await _userService.GetByIdAsync(id);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _user.GetByIdAsync(userId);
         }
-        [HttpGet("Email/{email}")]
-        public async Task<ResponseModel<UserModel>> Get(string email)
+
+        [AllowAnonymous]
+        [HttpGet("CheckMail")]
+        public async Task<ResponseModel<UserViewModel>> CheckEmail(string email)
         {
-            var res = await _userService.GetByEmailAsync(email);
-            if (res.Email == null)
-            {
-                return new ResponseModel<UserModel>()
-                {
-                    IsSuccess = false,
-                    Message = "Not exist",
-                    StatusName = Common.Enums.StatusType.NOT_FOUND
-                };
-            }
-            return new ResponseModel<UserModel>()
-            {
-                IsSuccess = true,
-                Message = "User data by email",
-                StatusName = Common.Enums.StatusType.SUCCESS,
-                Data = res
-            };
+            return await _user.CheckEmail(email);
         }
     }
 }

@@ -1,49 +1,80 @@
-﻿using Keeper.Context.Model;
+﻿using Keeper.Common.Enums;
+using Keeper.Common.OtherModels;
+using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-using Keeper.Repos.Repositories;
-using Keeper.Services.Interfaces;
 
 namespace Keeper.Services.Services
 {
     public class MailService : IMailService
     {
         private readonly MailSettings _mailSettings;
-        private readonly IUserService _userService;
-        public MailService(IOptions<MailSettings> mailSettings, IUserService userService)
+        public MailService(IOptions<MailSettings> mailSettings)
         {
             _mailSettings = mailSettings.Value;
-            _userService = userService;
         }
-        public async Task SendEmailAsync(MailRequest mailRequest)
+        public async Task SendEmailAsync(MailModel mail)
         {
-            var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-            foreach (string multiemailid in mailRequest.ToEmail)
+            MimeMessage email = new()
             {
-                var data = await _userService.GetByEmailAsync(multiemailid);
-                email.To.Add(MailboxAddress.Parse(multiemailid));
-                email.Subject = "You're Invited! Collaborate with us on Keeper";
-                var builder = new BodyBuilder();
-                string href = $"http://localhost:5173/verification/{(int)mailRequest.Type}/{data.Id}/{mailRequest.TypeId}";
-                builder.HtmlBody = $"<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">\r\n  <div style=\"margin:50px auto;width:70%;padding:20px 0\">\r\n    <div style=\"border-bottom:1px solid #eee\">\r\n      <a href=\"\" style=\"font-size:1.4em;color: #4DB6AC;text-decoration:none;font-weight:600\">Keeper</a>\r\n    </div>\r\n    <p>Hello There,</p>\r\n    <p>I hope this email finds you in good spirits. We would be delighted if you could join us in a collaborative effort.Your contributions will be synchronized in real-time, making collaboration seamless and efficient.<br><br>Please accept this invitation by clicking the button below:</p>\r\n   <a href='{href}'> <h4 style=\"background: #4DB6AC;margin: 0 auto;width: max-content;padding: 0 20px;color: #fff;border-radius: 4px;\">Join Us</h4></a>\r\n    <p style=\"font-size:0.9em;\">Regards,<br />Keeper Team</p>\r\n    <hr style=\"border:none;border-top:1px solid #eee\" />\r\n    <div style=\"float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300\">\r\n      \r\n      <p>Ahmedabad</p>\r\n      <p>India</p>\r\n    </div>\r\n  </div>\r\n</div>";
-                email.Body = builder.ToMessageBody();
-                SmtpClient smtp = new SmtpClient();
-                smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-                smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-                await smtp.SendAsync(email);
-                smtp.Disconnect(true);
-            }
+                Sender = MailboxAddress.Parse(_mailSettings.Mail),
+                Subject = mail.Subject,
+                Body = MessageBodyHelper(mail.Category,mail.Subject,mail.From,mail.Message)
+            };
+            email.To.Add(MailboxAddress.Parse(mail.To));
+            using var client = new SmtpClient();
+            client.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+            client.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+            await client.SendAsync(email);
+            client.Disconnect(true);
+        }
+        private static MimeEntity MessageBodyHelper(MailCategory category,string subject = "", string from = "keeper@yopmail.com", string extra = "")
+        {
+            StringBuilder messageBody = new();
+            messageBody.Append("<div style=\"font-family: Helvetica, Arial, sans-serif; min-width: 1000px;overflow: auto;line-height: 2;\">");
+            messageBody.Append("<div style=\"margin: 50px auto; width: 70%; padding: 20px 0\">");
+            messageBody.Append("<div style=\"border-bottom: 1px solid #eee\">");
+            messageBody.Append("<a href=\"http://localhost:5173/\" target=\"_blank\"  ");
+            messageBody.Append("style=\"font-size: 1.4em; color: #4db6ac;text-decoration: none; font-weight: 600;\">Keeper</a></div>");
+            messageBody.Append("<p style=\"text-align: center; font-size: 30px;\">");
+            messageBody.Append($"<b>{subject}</b></p>");
+            if (category == MailCategory.SendInvitation)
+            {
 
+                messageBody.Append($"<p> <a style=\"color: #4db6ac;\" href=\"mailto:{from}\">{from} &nbsp</a>");
+                messageBody.Append("has invited you to collaborate on");
+                messageBody.Append($"<span style=\"color: #4db6ac\"> {extra} </span> </p> ");
+                messageBody.Append("<p>Please Check your notification on &nbsp");
+                messageBody.Append("<a href=\"http://localhost:5173/\" target=\"_blank\" style=\"color: #4db6ac;\" >Site</a></p>");
+            }
+            if (category == MailCategory.AcceptInvitation)
+            {
+                messageBody.Append($"<p> <a style=\"color: #4db6ac;\" href=\"mailto:{from}\">{from}</a>&nbsp;has Accepted your Invitation </p>");
+            }
+            if(category == MailCategory.RejectInvitation)
+            {
+                messageBody.Append($"<p> <a style=\"color: #4db6ac;\" href=\"mailto:{from}\">{from}</a>has Rejected your Invitation </p>");
+            }
+            if(category == MailCategory.OTP)
+            {
+                messageBody.Append("<p>Here is you verification code please copy it and verify your Email</p>");
+                messageBody.Append("<p style=\"background:#5ddbcd;text-align:center;min-height:50px;");
+                messageBody.Append("display:flex;justify-content:center;align-items:center;\">");
+                messageBody.Append($"<span> Code:<b> {extra}</b></span></p>");
+            }
+            messageBody.Append("<hr style=\"border: none; border-top: 1px solid #eee\" />");
+            messageBody.Append("<div style=\"float: right; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300;\">");
+            messageBody.Append("<p>Ahmedabad</p> <p>India</p>");
+            messageBody.Append("</div></div></div>");
+            var messageBodyBuilder = new BodyBuilder
+            {
+                HtmlBody = messageBody.ToString()
+            };
+            return messageBodyBuilder.ToMessageBody();
         }
     }
 }

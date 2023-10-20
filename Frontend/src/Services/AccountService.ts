@@ -1,48 +1,21 @@
-import type { ILogin } from '@/Models/LoginModel'
-import type { IRegister } from '@/Models/RegisterModel'
-import { http } from '@/GlobalConfig/ApiClient'
-import type { ISharedItem } from '@/Models/SharedItem'
-async function signup(user: IRegister): Promise<any> {
-  try {
-    const response = await http.post('/Account/Register', user)
-    return response
-  } catch (e) {
-    return e
-  }
+import { http } from '@/config/ApiClient'
+import type { ILogin, IPasswordReset, IRegister } from '@/Models/UserModels'
+import type { IToken } from '@/Models/TokenModel'
+
+const signup = async (user: IRegister): Promise<void> => {
+    await http.post('Account/Register', user)
 }
 
-async function signin(user: ILogin): Promise<any> {
-  try {
-    const response = await http.post('/Account/Login', user)
-    return [response, null]
-  } catch (error) {
-    return [null, error]
-  }
-}
-async function GenerateOTP(email: string): Promise<any> {
-  try {
-    const response = await http.post('/Account/GenerateOTP', {
-      email: email
-    })
+const signin = async (user: ILogin): Promise<IToken | null> => {
+    const response: IToken = await http.post('Account/Login', user)
     return response
-  } catch (e) {
-    return e
-  }
 }
-async function ChangePassword(user: ILogin): Promise<any> {
-  try {
-    const response = await http.post('/Account/ChangePassword', user)
+
+const getOtp = async (email: string): Promise<string | null> => {
+    const response: string = await http.get(`Account/otp?email=${email}`)
     return response
-  } catch (e) {
-    return e
-  }
 }
-async function SharedItem(ItemDetails:ISharedItem): Promise<any> {
-  try {
-    const response = await http.post('/Account/SharedItem', ItemDetails)
-    return response
-  } catch (e) {
-    return e
-  }
+const ResetPassword = async (passwordReset: IPasswordReset): Promise<void> => {
+    await http.put(`Account/ResetPassword`, passwordReset)
 }
-export { signup, signin, GenerateOTP, ChangePassword,SharedItem }
+export { signup, signin, getOtp, ResetPassword }
