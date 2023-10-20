@@ -1,12 +1,13 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
-using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Keeper.Main.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ItemController : ControllerBase
@@ -16,31 +17,38 @@ namespace Keeper.Main.Controllers
         {
             _itemService = itemService;
         }
-
-        [HttpPost]
-        public async Task<ResponseModel<string>> Post([FromForm] ItemVM itemVM)
-        {
-            return await _itemService.SaveAsync(itemVM);
-        }
-        [HttpPut]
-        public async Task<ResponseModel<string>> Update([FromForm] ItemVM itemVM)
-        {
-            return await _itemService.UpdateAsync(itemVM);
-        }
         [HttpGet("{id}")]
-        public async Task<ResponseModel<ItemModel>> Get(Guid id)
+        public async Task<ResponseModel<ItemViewModel>> GetById([FromRoute] Guid id)
         {
-            return await _itemService.GetByIdAsync(id);
+            return await _itemService.GetAsync(id);
         }
-        [HttpDelete("{id}")]
+
+        [HttpGet("")]
+        public async Task<ResponseModel<List<ItemViewModel>>> GetAll(Guid keepId)
+        {
+            return await _itemService.GetAllAsync(keepId);
+        }
+
+        [HttpPost("")]
+        public async Task<ResponseModel<ItemViewModel>> Post([FromForm] AddItem addItem)
+        {
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _itemService.SaveAsync(addItem,userId);
+        }
+        [HttpPut("")]
+        public async Task<ResponseModel<ItemViewModel>> Put([FromForm] EditItem editItem)
+        {
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _itemService.UpdateAsync(editItem,userId);
+        }
+        [HttpDelete("{Id}")]
         public async Task<ResponseModel<string>> Delete(Guid id)
         {
             return await _itemService.DeleteAsync(id);
-        }
-        [HttpGet("Keep/{KeepId}")]
-        public async Task<ResponseModel<IEnumerable<ItemModel>>> GetAll(Guid KeepId)
-        {
-            return await _itemService.GetAllAsync(KeepId);
         }
     }
 }

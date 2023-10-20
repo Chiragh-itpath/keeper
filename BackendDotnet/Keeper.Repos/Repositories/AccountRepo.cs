@@ -9,25 +9,23 @@ namespace Keeper.Repos.Repositories
 {
     public class AccountRepo : IAccountRepo
     {
-        private readonly DbKeeperContext _dbKeeperContext;
+        private readonly DbKeeperContext _db;
 
 
         public AccountRepo(DbKeeperContext dbKeeperContext)
         {
-            _dbKeeperContext = dbKeeperContext;
+            _db = dbKeeperContext;
         }
 
         public async Task<bool> RegisterAsync(UserModel user)
         {
-            _dbKeeperContext.Users.Add(user);
-            return _dbKeeperContext.SaveChanges() == 1;
+            _db.Users.Add(user);
+            return await _db.SaveChangesAsync() == 1;
         }
-        public async Task<bool> UpdatePasswordAsync(LoginVM user)
+        public async Task<bool> UpdatePasswordAsync(UserModel user)
         {
-            var person = await _dbKeeperContext.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
-            person.Password = user.Password;
-            person.UpdateOn = DateTime.Now;
-            return await _dbKeeperContext.SaveChangesAsync() > 0;
+            _db.Entry(user).State = EntityState.Modified;
+            return await _db.SaveChangesAsync() > 0;
         }
     }
 }

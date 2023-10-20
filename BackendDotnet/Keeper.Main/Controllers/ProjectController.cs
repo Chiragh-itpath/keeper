@@ -1,11 +1,7 @@
-﻿using Keeper.Common.Enums;
-using Keeper.Common.Response;
-using Keeper.Common.View_Models;
+﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
-using Keeper.Context.Model;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Keeper.Main.Controllers
@@ -16,60 +12,53 @@ namespace Keeper.Main.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
+
         public ProjectController(IProjectService projectService)
         {
             _projectService = projectService;
         }
 
         [HttpPost("")]
-        public async Task<ResponseModel<string>> Post(ProjectVM projectVM)
+        public async Task<ResponseModel<ProjectViewModel>> Post(AddProject project)
         {
-            return await _projectService.SaveAsync(projectVM);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _projectService.SaveAsync(project, userId);
         }
         [HttpGet("")]
-        public async Task<ResponseModel<List<ProjectVM>>> GetAll(Guid UserId)
+        public async Task<ResponseModel<List<ProjectViewModel>>> GetAll()
         {
-            return await _projectService.GetAllAsync(UserId);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _projectService.GetAllAsync(userId);
         }
-        [HttpGet("shared/{UserId}")]
-        public async Task<ResponseModel<List<ProjectVM>>> SharedProjects(Guid UserId)
+        [HttpGet("Shared")]
+        public async Task<ResponseModel<List<ProjectViewModel>>> GetShared()
         {
-            return await _projectService.SharedProjects(UserId);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _projectService.GetShared(userId);
         }
-        [HttpGet]
-        [Route("{Id}")]
-        public async Task<ResponseModel<ProjectModel>> GetById(Guid Id)
+        [HttpGet("{Id}")]
+        public async Task<ResponseModel<ProjectViewModel>> GetById([FromRoute] Guid Id)
         {
             return await _projectService.GetByIdAsync(Id);
         }
-        [HttpGet]
-        [Route("Tag/{userId}/{tagId}")]
-        public async Task<ResponseModel<List<ProjectModel>>> GetByTag(Guid userId, Guid tagId)
-        {
-            return await _projectService.GetByTagAsync(userId, tagId);
-
-        }
         [HttpPut]
-        public async Task<ResponseModel<string>> Update(ProjectVM project)
+        public async Task<ResponseModel<ProjectViewModel>> Update(EditProject project)
         {
-            return await _projectService.UpdatedAsync(project);
+            var user = User.Identities.First();
+            var claims = user.Claims.ToList();
+            var userId = Guid.Parse(claims.ElementAt(3).Value);
+            return await _projectService.UpdateAsync(project, userId);
         }
         [HttpDelete("{id}")]
         public async Task<ResponseModel<string>> Delete(Guid id)
         {
             return await _projectService.DeleteByIdAsync(id);
-        }
-        [HttpGet]
-        [Route("owner/{projectId}")]
-        public async Task<string> OwnerName(Guid projectId)
-        {
-            return await _projectService.OwnerName(projectId);
-        }
-        [HttpGet]
-        [Route("contributor/{projectId}")]
-        public async Task<IEnumerable<string>> ContributorName(Guid projectId)
-        {
-            return await _projectService.ContributorName(projectId); 
         }
 
     }

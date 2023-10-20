@@ -1,58 +1,26 @@
-import { http } from '@/GlobalConfig/ApiClient'
-import type { Ikeep } from '@/Models/KeepModel'
+import { http } from '@/config/ApiClient'
+import type { IAddKeep, IEditKeep, IKeep } from '@/Models/KeepModels'
 
-export async function Insert(Keep: Ikeep): Promise<any> {
-  try {
-    const response = await http.post('/Keep', Keep)
+const GetAll = async (projectId: string): Promise<IKeep[] | null> => {
+    const response: IKeep[] = await http.get(`Keep?ProjectId=${projectId}`)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function Update(keep: Ikeep): Promise<any> {
-  try {
-    const response = await http.put('/Keep', keep)
+const GetById = async (keepId: string): Promise<IKeep | null> => {
+    const response: IKeep = await http.get(`Keep/${keepId}`)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function Delete(KeepId: string): Promise<any> {
-  try {
-    const response = await http.delete(`/Keep/${KeepId}`)
+const Insert = async (addKeep: IAddKeep): Promise<IKeep | null> => {
+    console.log(addKeep)
+    const response: IKeep = await http.post('Keep/', addKeep)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function GetAll(ProjectId: string,UserId:string,isShared:number): Promise<any> {
-  try {
-    // const response = await http.get(`/Keep?ProjectId=${ProjectId}/${UserId}`)
-    const response = await http.get(`/Keep/${ProjectId}/${UserId}/${isShared}`)
+const Update = async (editKeep: IEditKeep): Promise<IKeep | null> => {
+    const response: IKeep = await http.put('Keep/', editKeep)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function GetById(KeepId: string): Promise<any> {
-  try {
-    const response = await http.get(`/Keep/${KeepId}`)
-    return response.data.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
+const Delete = async (keepId: string): Promise<boolean> => {
+    const response = await http.delete(`Keep/${keepId}`)
+    return response != null
 }
-export async function GetByTag(UserId: string, TagId: string): Promise<any> {
-  try {
-    const response = await http.get(`/Keep/Tag/${UserId}/${TagId}`)
-    return response.data.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
+
+export { GetAll, GetById, Insert, Update, Delete }

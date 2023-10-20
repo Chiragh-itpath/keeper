@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Keeper.Context.Model
 {
-    public class TagModel : IDisposable
+    [Table("Tags")]
+    public class TagModel 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -12,10 +13,6 @@ namespace Keeper.Context.Model
         [Required]
         public string Title { get; set; } = default!;
         public TagType Type { get; set; }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
+        public Guid UserId { get; set; }
     }
 }

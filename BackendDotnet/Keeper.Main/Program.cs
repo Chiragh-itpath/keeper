@@ -1,62 +1,53 @@
-using Microsoft.EntityFrameworkCore;
+using Keeper.Common.Enums;
+using Keeper.Common.Response;
 using Keeper.Context.Config;
 using Keeper.Repos.Config;
 using Keeper.Services.Config;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Keeper.Context.Model;
-using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddCors(option =>
-{
-    option.AddPolicy("Allow All", builder =>
-    {
-        builder.AllowAnyOrigin()
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
-});
 
-
-builder.Services.RegisterDbContext(builder.Configuration);
-builder.Services.RegisterRepos();
-builder.Services.RegisterServices();
-builder.Services.AddSwaggerGen();
-builder.Services.Configure<ApiBehaviorOptions>(option =>
-{
-
-    option.SuppressModelStateInvalidFilter = true;
-});
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services
+    .RegisterCORS()
+    .RegisterDbContext(builder.Configuration)
+    .RegisterRepos()
+    .RegisterServices()
+    .RegisterServices()
+    .AddSwagger()
+    .ConfigureApiBehavior()
+    .ConfigAuth(builder.Configuration)
+    .AddMailServices(builder.Configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.DefaultModelExpandDepth(-1);
+    });
 }
-
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler(e =>
+{
+    e.Run(async context =>
+    {
+        Console.WriteLine(context.Response.ToString());
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        ResponseModel<string> errorResponse = new()
+        {
+            StatusName = StatusType.INTERNAL_SERVER_ERROR,
+            IsSuccess = false,
+            Message = "Something went Wrong"
+        };
+        var jsonResponse = JsonSerializer.Serialize(errorResponse);
+        await context.Response.WriteAsync(jsonResponse);
+    });
+});
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("Allow All");
 app.UseAuthentication();

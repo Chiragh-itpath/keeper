@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Keeper.Context.Model
 {
-    public class UserModel : IDisposable
+    [Table("Users")]
+    public class UserModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,9 +19,5 @@ namespace Keeper.Context.Model
         public string Password { get; set; } = default!;
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdateOn { get; set; }
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
     }
 }

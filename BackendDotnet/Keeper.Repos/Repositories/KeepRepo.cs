@@ -1,104 +1,61 @@
-﻿using Dapper;
-using Keeper.Common.Enums;
-using Keeper.Common.Response;
-using Keeper.Common.View_Models;
-using Keeper.Common.ViewModels;
-using Keeper.Context;
-using Keeper.Context.Migrations;
+﻿using Keeper.Context;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Results;
 
 namespace Keeper.Repos.Repositories
 {
     public class KeepRepo : IKeepRepo
     {
-        private readonly DbKeeperContext _dbKeeperContext;
-        private readonly IConfiguration _configuration;
-        public KeepRepo(DbKeeperContext dbKeeperContext, IConfiguration configuration)
+        private readonly DbKeeperContext _db;
+        public KeepRepo(DbKeeperContext dbKeeperContext)
         {
-            _dbKeeperContext = dbKeeperContext;
-            _configuration = configuration;
+            _db = dbKeeperContext;
         }
 
-        public async Task<bool> DeleteByIdAsync(Guid keepid)
+        public async Task<List<KeepModel>> GetAllAsync(Guid ProjectId)
         {
-            var result = await GetByIdAsync(keepid);
-            result.IsDeleted = true;
-            return await UpdatedAsync(result);
+            return await _db.Keeps
+                .Include(k => k.Tag)
+                .Include(k => k.CreatedBy)
+                .Include(k => k.UpdatedBy)
+                .Where(x => x.ProjectId == ProjectId && !x.IsDeleted)
+                .ToListAsync();
+        }
+        public async Task<List<KeepModel>> GetAllShared(Guid projectId, Guid UserId)
+        {
+            return await (from k in _db.Keeps
+                          join sk in _db.SharedKeeps on new { KeepId = k.Id, k.ProjectId, UserId } equals new { sk.KeepId, sk.ProjectId, sk.UserId }
+                          select k).ToListAsync();
+        }
+        public async Task<KeepModel?> GetAsync(Guid id)
+        {
+            return await _db.Keeps
+                .Include(k => k.Tag)
+                .Include(k => k.CreatedBy)
+                .Include(k => k.UpdatedBy)
+                .Where(x => x.Id == id && x.IsDeleted == false)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<ResponseModel<IEnumerable<KeepModel>>> GetAllAsync(Guid projectId, Guid UserId, int isShared)
+        public async Task<Guid> SaveAsync(KeepModel keep)
         {
-            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-            try
-            {
-                var query = "select top 1 * from ProjectUser where ProjectId=@projectsId";
-                var sharedkeep = await con.QueryFirstOrDefaultAsync<ProjectUserModel>(query, new { projectsId = projectId });
-                if (isShared == 0 || sharedkeep.HasFullAccess == true)
-                {
-                    var AllKeeps = "select keeps.* from keeps join Projects on Keeps.ProjectId=Projects.Id where Projects.Id=@projectId and keeps.IsDeleted='0'";
-                    var result = await con.QueryAsync<KeepModel>(AllKeeps, new { projectId = projectId });
-                    return new ResponseModel<IEnumerable<KeepModel>>() {
-                        IsSuccess = true,
-                        Message = "All Keeps",
-                        Data = result,
-                        StatusName=StatusType.SUCCESS
-                    };
-
-                }
-                query = "select distinct k.* from Keeps k join keepUser ku on k.Id = ku.KeepId join ProjectUser pu on ku.UserId = pu.UserId and pu.UserId = @userId where pu.HasFullAccess = '0' and k.ProjectId = @projectId";
-                var keeps = await con.QueryAsync<KeepModel>(query, new { userId = UserId, projectId = projectId });
-                return new ResponseModel<IEnumerable<KeepModel>>()
-                {
-                    IsSuccess = true,
-                    Message = "Shared Keep",
-                    Data = keeps,
-                    StatusName = StatusType.SUCCESS
-                };
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public async Task<KeepModel> GetByIdAsync(Guid Id)
-        {
-            return await _dbKeeperContext.Keeps.FindAsync(Id);
+            await _db.Keeps.AddAsync(keep);
+            await _db.SaveChangesAsync();
+            return keep.Id;
         }
 
-        public async Task<List<KeepModel>> GetByTagAsync(Guid userId, Guid tagId)
+        public async Task<Guid> UpdateAsync(KeepModel Keep)
         {
-            return await _dbKeeperContext.Keeps.Where(x => (x.CreatedBy == userId && x.TagId == tagId) && x.IsDeleted == false).ToListAsync();
+            _db.Entry(Keep).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return Keep.Id;
         }
-
-        public async Task<KeepModel> SaveAsync(KeepModel keep)
+        public async Task DeleteAsync(KeepModel keep)
         {
-            await _dbKeeperContext.Keeps.AddAsync(keep);
-            _dbKeeperContext.SaveChangesAsync();
-            return keep;
-        }
-
-        public async Task<IEnumerable<KeepModel>> SharedKeepAsync(Guid userId)
-        {
-            var con = new SqlConnection(_configuration.GetConnectionString("DbConnection"));
-            string query = "select distinct k.* from Keeps k inner join KeepModelUserModel KU on k.Id=KU.KeepsId where (KU.UsersId=@uid and k.createdby!=@uid) and IsDeleted='false'";
-            var result = await con.QueryAsync<KeepModel>(query, new { uid = userId });
-            return result;
-        }
-
-        public async Task<bool> UpdatedAsync(KeepModel keepModel)
-        {
-            _dbKeeperContext.Entry(keepModel).State = EntityState.Modified;
-            return _dbKeeperContext.SaveChanges() == 1;
+            keep.IsDeleted = true;
+            await UpdateAsync(keep);
         }
     }
 }

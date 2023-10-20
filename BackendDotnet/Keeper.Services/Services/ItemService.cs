@@ -4,186 +4,156 @@ using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
 using Keeper.Repos.Repositories.Interfaces;
 using Keeper.Services.Services.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Keeper.Services.Services
 {
     public class ItemService : IItemService
     {
-        private readonly IItemRepo _itemRepo;
-        private readonly IWebHostEnvironment _env;
-        public ItemService(IItemRepo itemRepo, IWebHostEnvironment env)
+        private readonly IItemRepo _repo;
+        private readonly IFileService _file;
+        public ItemService(IItemRepo itemRepo, IFileService file)
         {
-            _itemRepo = itemRepo;
-            _env = env;
-
+            _repo = itemRepo;
+            _file = file;
         }
-
-        public async Task<ResponseModel<ItemModel>> GetByIdAsync(Guid id)
+        public async Task<ResponseModel<List<ItemViewModel>>> GetAllAsync(Guid keepId)
         {
-            var item = await _itemRepo.GetByIdAsync(id);
-            if (item.Id == Guid.Empty)
-                return new ResponseModel<ItemModel>
-                {
-                    IsSuccess = true,
-                    StatusName = StatusType.NOT_FOUND,
-                    Message = "Not Found"
-                };
-            return new ResponseModel<ItemModel>
+            var data = await _repo.GetAllAsync(keepId);
+            var items = data.Select(item => new ItemViewModel
             {
-                IsSuccess = true,
+                Id = item.Id,
+                Title = item.Title,
+                Type = item.Type,
+                Number = item.Number,
+                URL = item.URL,
+                Description = item.Description,
+                KeepId = item.KeepId,
+                CreatedBy = item.CreatedBy.Email,
+                CreatedOn = item.CreatedOn,
+                UpdatedOn = item.UpdatedOn,
+                UpdatedBy = item.UpdatedBy?.Email,
+                To = item.To,
+                DiscussedBy = item.DiscussedBy,
+            }).ToList();
+            return new ResponseModel<List<ItemViewModel>>
+            {
                 StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "",
+                Data = items
+            };
+        }
+        public async Task<ResponseModel<ItemViewModel>> GetAsync(Guid id)
+        {
+            var data = await _repo.GetAsync(id);
+            if (data == null)
+            {
+                return new ResponseModel<ItemViewModel>
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "Not Found",
+                };
+            }
+            var res = await _file.GetAllFiles(data.Id);
+
+            var item = new ItemViewModel()
+            {
+                Id = data.Id,
+                Title = data.Title,
+                Type = data.Type,
+                Number = data.Number,
+                URL = data.URL,
+                Description = data.Description,
+                CreatedBy = data.CreatedBy.Email,
+                CreatedOn = data.CreatedOn,
+                UpdatedOn = data.UpdatedOn,
+                UpdatedBy = data.UpdatedBy?.Email,
+                To = data.To,
+                DiscussedBy = data.DiscussedBy,
+                Files = res
+            };
+            return new ResponseModel<ItemViewModel>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "",
                 Data = item
             };
-
         }
-
+        public async Task<ResponseModel<ItemViewModel>> SaveAsync(AddItem addItem, Guid userId)
+        {
+            ItemModel item = new()
+            {
+                Title = addItem.Title,
+                Description = addItem.Description,
+                Type = addItem.Type,
+                URL = addItem.URL,
+                Number = addItem.Number,
+                KeepId = addItem.KeepId,
+                CreatedById = userId,
+                CreatedOn = DateTime.Now,
+                To = addItem.To,
+                DiscussedBy = addItem.DiscussedBy,
+            };
+            var itemId = await _repo.SaveAsync(item);
+            if (addItem.Files != null)
+            {
+                await _file.AddAsync(userId, item.KeepId, itemId, addItem.Files);
+            }
+            var res = await GetAsync(itemId);
+            res.Message = "Item Added";
+            return res;
+        }
+        public async Task<ResponseModel<ItemViewModel>> UpdateAsync(EditItem editItem, Guid userId)
+        {
+            var res = await _repo.GetAsync(editItem.Id);
+            if (res == null)
+            {
+                return new ResponseModel<ItemViewModel>
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "Item Not Found",
+                };
+            }
+            res.Title = editItem.Title;
+            res.Description = editItem.Description;
+            res.Type = editItem.Type;
+            res.URL = editItem.URL;
+            res.Number = editItem.Number;
+            res.To = editItem.To;
+            res.DiscussedBy = editItem.DiscussedBy;
+            res.UpdatedById = userId;
+            res.UpdatedOn = DateTime.Now;
+            var itemId = await _repo.Update(res);
+            if (editItem.Files != null)
+            {
+                await _file.AddAsync(res.CreatedById, res.KeepId, res.Id, editItem.Files);
+            }
+            var response = await GetAsync(itemId);
+            response.Message = "Item Updated";
+            return response;
+        }
         public async Task<ResponseModel<string>> DeleteAsync(Guid id)
         {
-            ItemModel item = await _itemRepo.GetByIdAsync(id);
-            item.IsDeleted = true;
-            await _itemRepo.DeleteAsync(item);
+            var res = await _repo.GetAsync(id);
+            if (res == null)
+            {
+                return new ResponseModel<string>
+                {
+                    StatusName = StatusType.NOT_FOUND,
+                    IsSuccess = false,
+                    Message = "Item Not Found",
+                };
+            }
+            await _repo.Delete(res);
             return new ResponseModel<string>
             {
-                IsSuccess = true,
                 StatusName = StatusType.SUCCESS,
-                Message = "deleted"
-            };
-        }
-
-        public async Task<ResponseModel<string>> SaveAsync(ItemVM itemVM)
-        {
-            try
-            {
-                ItemModel item = new()
-                {
-                    Title = itemVM.Title,
-                    Description = itemVM.Description,
-                    URL = itemVM.URL,
-                    Type = itemVM.Type,
-                    Number = itemVM.Number,
-                    To = itemVM.To,
-                    DiscussedBy = itemVM.DiscussedBy,
-                    KeepId = itemVM.KeepId,
-                    CreatedBy = (Guid)itemVM.CreatedBy!,
-                    CreatedOn = DateTime.Now,
-                    Files = new List<FileModel>()
-                };
-                string wwwroot = _env.WebRootPath;
-                string UserDirecotry = Path.Combine(wwwroot, itemVM.CreatedBy.ToString());
-                if (!Directory.Exists(UserDirecotry))
-                    Directory.CreateDirectory(UserDirecotry);
-                string ProjectDirecotry = Path.Combine(UserDirecotry, itemVM.KeepId.ToString());
-                if (!Directory.Exists(ProjectDirecotry))
-                    Directory.CreateDirectory(ProjectDirecotry);
-                List<FileModel> files = new();
-
-                itemVM.Files?.ForEach(file =>
-                {
-                    string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
-                    string FilePath = Path.Combine(ProjectDirecotry, FileName);
-                    using var stream = new FileStream(FilePath, FileMode.Create);
-                    file.CopyTo(stream);
-                    FileModel filemodel = new()
-                    {
-                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), itemVM.KeepId.ToString(), FileName),
-                        Items = new List<ItemModel>()
-                    };
-                    files.Add(filemodel);
-                });
-
-
-                await _itemRepo.SaveAsync(item, files);
-                return new ResponseModel<string>
-                {
-                    IsSuccess = true,
-                    StatusName = StatusType.SUCCESS,
-                    Message = "inserted"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel<string>
-                {
-                    IsSuccess = false,
-                    StatusName = StatusType.NOT_VALID,
-                    Message = "not inserted"
-                };
-            }
-        }
-        public async Task<ResponseModel<string>> UpdateAsync(ItemVM itemVM)
-        {
-            try
-            {
-                ItemModel existingItem = await _itemRepo.GetByIdAsync((Guid)itemVM.Id!);
-                if (existingItem.Id == Guid.Empty)
-                    return new ResponseModel<string>
-                    {
-                        IsSuccess = true,
-                        StatusName = StatusType.NOT_FOUND,
-                        Message = "Not Found"
-                    };
-                existingItem.Title = itemVM.Title;
-                existingItem.Description = itemVM.Description;
-                existingItem.URL = itemVM.URL;
-                existingItem.Type = itemVM.Type;
-                existingItem.Number = itemVM.Number;
-                existingItem.To = itemVM.To;
-                existingItem.DiscussedBy = itemVM.DiscussedBy;
-                existingItem.UpdatedBy = (Guid)itemVM.UpdatedBy!;
-                existingItem.UpdatedOn = DateTime.Now;
-                string wwwroot = _env.WebRootPath;
-                string UserDirecotry = Path.Combine(wwwroot, existingItem.CreatedBy.ToString());
-                if (!Directory.Exists(UserDirecotry))
-                    Directory.CreateDirectory(UserDirecotry);
-                string ProjectDirecotry = Path.Combine(UserDirecotry, existingItem.KeepId.ToString());
-                if (!Directory.Exists(ProjectDirecotry))
-                    Directory.CreateDirectory(ProjectDirecotry);
-                List<FileModel> files = new();
-
-                itemVM.Files?.ForEach(file =>
-                {
-                    string FileName = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString() + Path.GetExtension(file.FileName);
-                    string FilePath = Path.Combine(ProjectDirecotry, FileName);
-                    using var stream = new FileStream(FilePath, FileMode.Create);
-                    file.CopyTo(stream);
-                    FileModel filemodel = new()
-                    {
-                        FilePath = Path.Combine(itemVM.CreatedBy.ToString(), existingItem.KeepId.ToString(), FileName),
-                        Items = new List<ItemModel>() { existingItem }
-                    };
-                    files.Add(filemodel);
-                });
-                await _itemRepo.UpdateAsync(existingItem, files);
-                return new ResponseModel<string>
-                {
-                    IsSuccess = true,
-                    StatusName = StatusType.SUCCESS,
-                    Message = "Updated"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResponseModel<string>
-                {
-                    IsSuccess = false,
-                    StatusName = StatusType.NOT_FOUND,
-                    Message = " Not Updated"
-
-                };
-            }
-
-        }
-
-        public async Task<ResponseModel<IEnumerable<ItemModel>>> GetAllAsync(Guid KeepId)
-        {
-            var items = await _itemRepo.GetAllAsync(KeepId);
-            return new ResponseModel<IEnumerable<ItemModel>>()
-            {
                 IsSuccess = true,
-                StatusName = StatusType.SUCCESS,
-                Message = "list of all items",
-                Data = items
+                Message = "Item Deleted",
+                Data = id.ToString()
             };
         }
     }

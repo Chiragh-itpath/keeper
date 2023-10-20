@@ -1,8 +1,8 @@
-import type { StatusType } from '@/enum/StatusType'
+import type { StatusType } from '@/Models/enum'
 
-export interface IResponse<Type = 'class'> {
-  StatusName: StatusType
-  IsSuccess: boolean
-  Message: string
-  Data: Type
+export interface IResponse {
+    statusName: StatusType
+    isSuccess: boolean
+    message: string
+    data: any
 }

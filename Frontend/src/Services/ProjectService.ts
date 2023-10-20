@@ -1,85 +1,29 @@
-import type { IProject } from '@/Models/ProjectModel'
-import { http } from '@/GlobalConfig/ApiClient'
+import { http } from '@/config/ApiClient'
+import type { IAddProject, IEditProject, IProject } from '@/Models/ProjectModels'
 
-export async function Insert(Project: IProject): Promise<any> {
-  try {
-    const response = await http.post('/Project', Project)
+const Insert = async (Project: IAddProject): Promise<IProject | null> => {
+    const response: IProject = await http.post('Project', Project)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function GetById(ProjectId: string): Promise<any> {
-  try {
-    const response = await http.get(`/Project/${ProjectId}`)
-    return response.data.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
-export async function GetAll(UserId: string): Promise<any> {
-  try {
-    const response = await http.get(`/Project?UserId=${UserId}`)
+const GetById = async (ProjectId: string): Promise<IProject | null> => {
+    const response: IProject = await http.get(`Project/${ProjectId}`)
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function GetByTag(UserId: string, TagId: string): Promise<any> {
-  try {
-    const response = await http.get(`/Project/Tag/${UserId}/${TagId}`)
-    return response.data.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
+const GetAll = async (): Promise<IProject[] | null> => {
+    const response: IProject[] = await http.get('Project')
+    return response
+}
+const Update = async (Project: IEditProject): Promise<IProject | null> => {
+    const response: IProject = await http.put('Project', Project)
+    return response
+}
+const Delete = async (ProjectId: string): Promise<boolean> => {
+    const res = await http.delete(`Project/${ProjectId}`)
+    return res != null
 }
 
-export async function Delete(ProjectId: string): Promise<any> {
-  try {
-    const response = await http.delete(`/Project/${ProjectId}`)
+const GetAllShared = async (): Promise<IProject[] | null> => {
+    const response: IProject[] = await http.get('Project/Shared')
     return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
 }
-export async function Update(Project: IProject): Promise<any> {
-  try {
-    const response = await http.put('/Project', Project)
-    return response
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
-export async function SharedProject(UserId:string): Promise<any> {
-  try {
-    const response = await http.get(`/Project/shared/${UserId}`)
-    return response.data.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
-export async function OwnerName(projectId:string): Promise<any> {
-  try {
-    const response = await http.get(`/Project/owner/${projectId}`)
-    return response.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
-export async function ContributorName(projectId:string): Promise<any> {
-  try {
-    const response = await http.get(`/Project/contributor/${projectId}`)
-    return response.data
-  } catch (e) {
-    console.log(e)
-    return e
-  }
-}
+export { Insert, GetById, GetAll, Update, Delete, GetAllShared }

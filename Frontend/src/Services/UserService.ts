@@ -1,19 +1,12 @@
-import type { IUser } from '@/Models/UserModel'
-import { http } from '@/GlobalConfig/ApiClient'
-const GetUser = async (id: string): Promise<IUser> => {
-  const response = await http.get(`User/${id}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  return response.data.data
+import { http } from '@/config/ApiClient'
+import type { IUser } from '@/Models/UserModels'
+
+const GetByEmail = async (email: string): Promise<IUser | null> => {
+    const response: IUser = await http.get(`User/CheckMail?email=${email}`)
+    return response
 }
-async function GetByEmail(email:string):Promise<any>{
-  const response=await http.get(`User/Email/${email}`)
-  return response.data.data
+const GetMyProfile = async (): Promise<IUser | null> => {
+    const response: IUser = await http.get('User/Me')
+    return response
 }
-async function GetById(id:string):Promise<any>{
-  const response=await http.get(`User/${id}`)
-  return response.data.data
-}
-export { GetUser,GetByEmail,GetById }
+export { GetByEmail, GetMyProfile }

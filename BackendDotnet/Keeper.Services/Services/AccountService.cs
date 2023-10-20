@@ -1,4 +1,5 @@
 ﻿using Keeper.Common.Enums;
+using Keeper.Common.OtherModels;
 using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
 using Keeper.Context.Model;
@@ -8,13 +9,8 @@ using Keeper.Services.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Mail;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Win32;
-using Microsoft.Data.SqlClient;
-using Dapper;
 
 namespace Keeper.Services.Services
 {
@@ -23,21 +19,15 @@ namespace Keeper.Services.Services
         private readonly IAccountRepo _accountRepo;
         private readonly IConfiguration _configuration;
         private readonly IUserRepo _userRepo;
-        private readonly IProjectRepo _projectRepo;
-        private readonly IKeepRepo _keepRepo;
-        private readonly IProjectUserService _projectUserService;
-        private readonly IKeepUserService _keepUserService;
-        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo,IProjectRepo projectRepo, IKeepRepo keepRepo, IProjectUserService projectUserService, IKeepUserService keepUserService)
+        private readonly IMailService _mail;
+        public AccountService(IAccountRepo accountRepo, IConfiguration configuration, IUserRepo userRepo, IMailService mail)
         {
             _accountRepo = accountRepo;
             _configuration = configuration;
             _userRepo = userRepo;
-            _projectRepo = projectRepo;
-            _keepRepo = keepRepo;
-            _projectUserService = projectUserService;
-            _keepUserService = keepUserService;
+            _mail = mail;
         }
-        public async Task<ResponseModel<string>> RegisterAsync(RegisterVM register)
+        public async Task<ResponseModel<string>> RegisterAsync(RegisterModel register)
         {
             UserModel userModel = new()
             {
@@ -49,7 +39,7 @@ namespace Keeper.Services.Services
                 UpdateOn = null
             };
             var user = await _userRepo.GetByEmailAsync(register.Email);
-            if (user.Id != Guid.Empty)
+            if (user != null)
             {
                 return new ResponseModel<string>
                 {
@@ -58,88 +48,99 @@ namespace Keeper.Services.Services
                     Message = "Email already exists"
                 };
             }
-            try
+            userModel.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
+            await _accountRepo.RegisterAsync(userModel);
+            return new ResponseModel<string>
             {
-                userModel.Password = BCrypt.Net.BCrypt.HashPassword(register.Password);
-                bool res = await _accountRepo.RegisterAsync(userModel);
-                if (res)
-                {
-                    return new ResponseModel<string>
-                    {
-                        IsSuccess = true,
-                        StatusName = StatusType.SUCCESS,
-                        Message = "Registered successfully"
-                    };
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception)
-            {
-                return new ResponseModel<string>
-                {
-                    IsSuccess = false,
-                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
-                    Message = "Error occured"
-                };
-            }
+                IsSuccess = true,
+                StatusName = StatusType.SUCCESS,
+                Message = "Registered successfully"
+            };
         }
-
-        public async Task<ResponseModel<TokenModel>> LoginAsync(LoginVM loginVM)
+        public async Task<ResponseModel<TokenModel>> LoginAsync(LoginModel login)
         {
-            var user = await _userRepo.GetByEmailAsync(loginVM.Email);
-            if (user.Id == Guid.Empty)
+            var user = await _userRepo.GetByEmailAsync(login.Email);
+            if (user == null)
             {
+
                 return new ResponseModel<TokenModel>
                 {
                     StatusName = StatusType.NOT_FOUND,
-                    Message = "Email is not registered",
-                    IsSuccess = false
+                    IsSuccess = false,
+                    Message = "Email is not registered"
                 };
             }
-            try
-            {
-                if (BCrypt.Net.BCrypt.Verify(loginVM.Password, user.Password))
-                {
-
-                    return new ResponseModel<TokenModel>
-                    {
-                        IsSuccess = true,
-                        StatusName = StatusType.SUCCESS,
-                        Message = "Logged in successfully",
-                        Data = new TokenModel() { UserId = user.Id, Token = GenerateToken(user) }
-                    };
-                }
-                else
-                {
-                    return new ResponseModel<TokenModel>
-                    {
-                        StatusName = StatusType.NOT_VALID,
-                        Message = "Password is not matched",
-                        IsSuccess = false
-                    };
-                }
-            }
-            catch (Exception)
+            if (!BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
             {
                 return new ResponseModel<TokenModel>
                 {
+                    StatusName = StatusType.NOT_VALID,
                     IsSuccess = false,
-                    StatusName = StatusType.INTERNAL_SERVER_ERROR,
-                    Message = "Error occured"
+                    Message = "Password does not match"
                 };
             }
+            var Token = new TokenModel
+            {
+                Token = GenerateToken(user)
+            };
+            return new ResponseModel<TokenModel>
+            {
+                IsSuccess = true,
+                StatusName = StatusType.SUCCESS,
+                Message = "",
+                Data = Token
+            };
         }
-        public string GenerateToken(UserModel user)
+        public async Task<ResponseModel<string>> GetOTP(string email)
+        {
+            string otp = OtpGenerator;
+            await _mail.SendEmailAsync(new MailModel
+            {
+                Category = MailCategory.OTP,
+                From = "",
+                To = email,
+                Subject = "Email Verification",
+                Message = otp
+            });
+            return new ResponseModel<string>
+            {
+                StatusName = StatusType.SUCCESS,
+                IsSuccess = true,
+                Message = "Mail Sent",
+                Data = otp
+            };
+        }
+        public async Task<ResponseModel<string>> UpdatePasswordAsync(PasswordResetModel resetModel)
+        {
+            var user = await _userRepo.GetByEmailAsync(resetModel.Email);
+            if (user != null)
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(resetModel.Password);
+                if (await _accountRepo.UpdatePasswordAsync(user))
+                {
+                    return new ResponseModel<string>()
+                    {
+                        StatusName = StatusType.SUCCESS,
+                        IsSuccess = true,
+                        Message = "Password changed successfully!"
+                    };
+                }
+            }
+            return new ResponseModel<string>()
+            {
+                StatusName = StatusType.NOT_VALID,
+                IsSuccess = false,
+                Message = "Password is not changed!"
+            };
+        }
+        private string GenerateToken(UserModel user)
         {
             var claims = new[]
             {
-                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
-                        new Claim("Id", user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                new Claim("Id", user.Id.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -152,123 +153,17 @@ namespace Keeper.Services.Services
                 signingCredentials: signIn);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public async Task<ResponseModel<string>> UpdatePasswordAsync(LoginVM user)
+        private static string OtpGenerator
         {
-            user.Password= BCrypt.Net.BCrypt.HashPassword(user.Password);
-            if(await _accountRepo.UpdatePasswordAsync(user))
+            get
             {
-                return new ResponseModel<string>()
-                {
-                    IsSuccess = true,
-                    Message = "Password changed successfully!",
-                    StatusName = StatusType.SUCCESS
-                };
-            }
-            return new ResponseModel<string>()
-            {
-                IsSuccess = false,
-                Message = "Password is not changed!",
-                StatusName = StatusType.NOT_VALID
-            };
-        }
-        public async Task<ResponseModel<OTPModel>> GenerateOTP(string email)
-        {
-            var user = await _userRepo.GetByEmailAsync(email);
-            if (user.Id == Guid.Empty)
-            {
-                return new ResponseModel<OTPModel>
-                {
-                    StatusName = StatusType.NOT_FOUND,
-                    Message = "Email is not registered",
-                    IsSuccess = false
-                };
-            }
-
-            var otp = SendOTP(email);
-            if(otp!=0)
-            {
-                return new ResponseModel<OTPModel>
-                {
-                    StatusName = StatusType.SUCCESS,
-                    Message = "OTP send",
-                    IsSuccess = true,
-                    Data=new OTPModel()
-                    {
-                        Email=email,
-                        OTP=otp
-                    }
-                };
-            }
-            return new ResponseModel<OTPModel>
-            {
-                StatusName = StatusType.NOT_VALID,
-                Message = "Incorrect Email Address",
-                IsSuccess = false
-            };
-        }
-        public int SendOTP(string email)
-        {
-            try
-            {
-                var fromMail = "keeper.vueproject@outlook.com";
-                var userName = "keeper.vueproject@outlook.com";
-                var emailPassword = "Keeper123@@";
-                int otp = Convert.ToInt32(new Random().Next(0, 1000000).ToString("D6"));
-                MailMessage message = new MailMessage();
-                message.To.Add(new MailAddress(email));
-                message.From = new MailAddress(fromMail);
-                message.Subject = "OTP Verification";
-                message.Body = $"<div style=\"font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2\">\r\n  <div style=\"margin:50px auto;width:70%;padding:20px 0\">\r\n    <div style=\"border-bottom:1px solid #eee\">\r\n      <a href=\"\" style=\"font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600\">Keeper</a>\r\n    </div>\r\n    <p style=\"font-size:1.1em\">Hi,</p>\r\n    <p>Thank you for choosing Keeper. Use the following OTP to complete your change the password procedures. OTP is valid for 5 minutes</p>\r\n    <h2 style=\"background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;\">{otp}</h2>\r\n    <p style=\"font-size:0.9em;\">Regards,<br />Keeper Team</p>\r\n    <hr style=\"border:none;border-top:1px solid #eee\" />\r\n    <div style=\"float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300\">\r\n      <p>SMS</p>\r\n      <p>Ahmedabad</p>\r\n      <p>India</p>\r\n    </div>\r\n  </div>\r\n</div>";
-                message.IsBodyHtml = true;
-
-                SmtpClient smtp = new SmtpClient();
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.UseDefaultCredentials = false;
-                smtp.Host = "smtp.office365.com";
-                smtp.Port = 587;
-                smtp.Credentials = new NetworkCredential(userName, emailPassword);
-                smtp.EnableSsl = true;
-
-                message.IsBodyHtml = true;
-                smtp.Send(message);
+                const string characters = "0123456789";
+                const int otpLength = 6;
+                Random random = new();
+                string otp = new(Enumerable.Repeat(characters, otpLength)
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
                 return otp;
             }
-            catch
-            {
-                return 0;
-            }
-        }
-
-        public async Task<ResponseModel<string>> ConfirmationOfSharedItemAsync(SharedItemVM sharedItem)
-        {
-          
-            try
-            {
-            if (sharedItem.Type == 0)
-            {
-                var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
-                var projectdata = await _projectRepo.GetByIdAsync(sharedItem.TypeId);
-                await _projectUserService.SaveAsync(userdata.Id, projectdata.Id, true);
-            }
-            else
-            {
-                var userdata = await _userRepo.GetByIdAsync(sharedItem.UId);
-                var keepdata = await _keepRepo.GetByIdAsync(sharedItem.TypeId);
-                    var projectdata = await _projectRepo.GetByIdAsync(keepdata.ProjectId);
-                await _projectUserService.SaveAsync(userdata.Id, projectdata.Id, false);
-                await _keepUserService.SaveAsync(userdata.Id,keepdata.Id);
-            }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return new ResponseModel<string>()
-            {
-                StatusName=StatusType.SUCCESS,
-                IsSuccess=true,
-                Message="Confirmation Done"
-            };
         }
     }
 }

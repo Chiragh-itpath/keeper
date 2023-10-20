@@ -1,9 +1,7 @@
 ﻿using Keeper.Common.Response;
 using Keeper.Common.ViewModels;
-using Keeper.Services.Interfaces;
 using Keeper.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Nodes;
 
 namespace Keeper.Main.Controllers
 {
@@ -17,29 +15,24 @@ namespace Keeper.Main.Controllers
             _accountService = accountService;
         }
         [HttpPost("Register")]
-        public async Task<ResponseModel<string>> Register(RegisterVM register)
+        public async Task<ResponseModel<string>> Register(RegisterModel register)
         {
             return await _accountService.RegisterAsync(register);
         }
         [HttpPost("Login")]
-        public async Task<ResponseModel<TokenModel>> Login(LoginVM loginVM)
+        public async Task<ResponseModel<TokenModel>> Login(LoginModel loginVM)
         {
             return await _accountService.LoginAsync(loginVM);
         }
-        [HttpPost("GenerateOTP")]
-        public async Task<ResponseModel<OTPModel>> GenerateOTP(OTPModel oTPModel)
+        [HttpGet("otp")]
+        public async Task<ResponseModel<string>> GetOTP(string email)
         {
-            return await _accountService.GenerateOTP(oTPModel.Email);
+            return await _accountService.GetOTP(email);
         }
-        [HttpPost("ChangePassword")]
-        public async Task<ResponseModel<string>> ChangePassword(LoginVM loginVM)
+        [HttpPut("ResetPassword")]
+        public async Task<ResponseModel<string>> ResetPassword(PasswordResetModel resetModel)
         {
-            return await _accountService.UpdatePasswordAsync(loginVM);
-        }
-        [HttpPost("SharedItem")]
-        public async Task<ResponseModel<string>> ConfirmationOfSharedItem(SharedItemVM sharedItem)
-        {
-            return await _accountService.ConfirmationOfSharedItemAsync(sharedItem);
+            return await _accountService.UpdatePasswordAsync(resetModel);
         }
     }
 }
